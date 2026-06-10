@@ -1,0 +1,92 @@
+<div class="auth-container">
+  <div class="auth-card">
+
+    <div class="auth-header">
+      <h1 class="brand">MentorMatch</h1>
+      <p class="subtitle">Create your account</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input
+          id="fullName"
+          type="text"
+          formControlName="fullName"
+          placeholder="Enter your name"
+          [class.input-error]="fullName?.invalid && fullName?.touched"
+        />
+        <span class="error-text" *ngIf="fullName?.invalid && fullName?.touched">
+          <span *ngIf="fullName?.errors?.['required']">Full name is required</span>
+          <span *ngIf="fullName?.errors?.['minlength']">Minimum 2 characters</span>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          [class.input-error]="email?.invalid && email?.touched"
+        />
+        <span class="error-text" *ngIf="email?.invalid && email?.touched">
+          <span *ngIf="email?.errors?.['required']">Email is required</span>
+          <span *ngIf="email?.errors?.['email']">Enter a valid email</span>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Minimum 6 characters"
+          [class.input-error]="password?.invalid && password?.touched"
+        />
+        <span class="error-text" *ngIf="password?.invalid && password?.touched">
+          <span *ngIf="password?.errors?.['required']">Password is required</span>
+          <span *ngIf="password?.errors?.['minlength']">Minimum 6 characters</span>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="role">I am a</label>
+        <select
+          id="role"
+          formControlName="role"
+          [class.input-error]="role?.invalid && role?.touched"
+        >
+          <option value="">Select your role</option>
+          <option value="STUDENT">Student</option>
+          <option value="MENTOR">Mentor</option>
+        </select>
+        <span class="error-text" *ngIf="role?.invalid && role?.touched">
+          Role is required
+        </span>
+      </div>
+
+      <div class="server-error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="success-msg" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="isLoading">
+        {{ isLoading ? 'Creating account...' : 'Create Account' }}
+      </button>
+
+    </form>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a routerLink="/auth/login">Sign in</a>
+    </p>
+
+  </div>
+</div>
