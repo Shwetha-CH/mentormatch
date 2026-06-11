@@ -1,6 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import { StudentDashboardComponent } from './pages/dashboard/student-dashboard.component';
+import { StudentProfileComponent } from './pages/profile/student-profile.component';
+import { BrowseMentorsComponent } from './pages/browse-mentors/browse-mentors.component';
+import { MySessionsComponent } from './pages/my-sessions/my-sessions.component';
 
 const routes: Routes = [
   {
@@ -11,7 +15,17 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: StudentDashboardComponent
-  }
+  },
+  {
+    path: 'profile',
+    component: StudentProfileComponent
+  },
+  {
+    path: 'mentors',
+    component: BrowseMentorsComponent
+  },
+  { path: 'sessions',     component: MySessionsComponent },
+  { path: 'sessions/:id', component: MySessionsComponent }
 ];
 
 @NgModule({
