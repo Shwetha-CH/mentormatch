@@ -1,5 +1,6 @@
 package com.mentormatch.app.service;
 
+import com.mentormatch.app.dto.AdminUserDetailResponse;
 import com.mentormatch.app.dto.BroadcastRequest;
 import com.mentormatch.app.entity.User;
 import com.mentormatch.app.entity.Role;
@@ -71,6 +72,28 @@ public class AdminService {
         return new AdminStats(totalUsers, totalMentors, totalStudents);
     }
 
+    public AdminUserDetailResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+
+        return new AdminUserDetailResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole().name(),
+                user.getIsActive(),
+                user.getCreatedAt()
+        );
+    }
+    // 7. Change user role
+    public User updateUserRole(Long userId, Role newRole) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        user.setRole(newRole);
+        return userRepository.save(user);
+    }
+
     // ── Inner class to carry dashboard stats ─────────────────
 
     public static class AdminStats {
@@ -87,5 +110,6 @@ public class AdminService {
         public long getTotalUsers() { return totalUsers; }
         public long getTotalMentors() { return totalMentors; }
         public long getTotalStudents() { return totalStudents; }
+
     }
 }
