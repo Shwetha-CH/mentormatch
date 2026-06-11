@@ -1,15 +1,10 @@
 package com.mentormatch.app.controller;
 
-import com.mentormatch.app.dto.BroadcastRequest;
-import com.mentormatch.app.dto.SupportReplyRequest;
-import com.mentormatch.app.dto.SupportTicketRequest;
+import com.mentormatch.app.dto.AdminUpdateRoleRequest;
+import com.mentormatch.app.dto.AdminUserDetailResponse;
 import com.mentormatch.app.entity.Role;
-import com.mentormatch.app.entity.SupportTicket;
-import com.mentormatch.app.entity.SupportTicket.TicketCategory;
-import com.mentormatch.app.entity.SupportTicket.TicketStatus;
 import com.mentormatch.app.entity.User;
 import com.mentormatch.app.service.AdminService;
-import com.mentormatch.app.service.SupportTicketService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +16,9 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
-    private final SupportTicketService supportTicketService;
 
-    public AdminController(AdminService adminService,
-                           SupportTicketService supportTicketService) {
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.supportTicketService = supportTicketService;
     }
 
     // ── User Management ───────────────────────────────────────
@@ -63,38 +55,6 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getPlatformStats());
     }
 
-    // ── Support Tickets ───────────────────────────────────────
-
-    // GET /api/admin/support — get all tickets, optional filters
-    @GetMapping("/support")
-    public ResponseEntity<List<SupportTicket>> getAllTickets(
-            @RequestParam(required = false) TicketStatus status,
-            @RequestParam(required = false) TicketCategory category) {
-
-        if (status != null && category != null) {
-            return ResponseEntity.ok(supportTicketService.getTicketsByStatusAndCategory(status, category));
-        } else if (status != null) {
-            return ResponseEntity.ok(supportTicketService.getTicketsByStatus(status));
-        } else if (category != null) {
-            return ResponseEntity.ok(supportTicketService.getTicketsByCategory(category));
-        }
-        return ResponseEntity.ok(supportTicketService.getAllTickets());
-    }
-
-    // GET /api/admin/support/{id} — get single ticket
-    @GetMapping("/support/{id}")
-    public ResponseEntity<SupportTicket> getTicketById(@PathVariable Long id) {
-        return ResponseEntity.ok(supportTicketService.getTicketById(id));
-    }
-
-    // PATCH /api/admin/support/{id}/reply — admin replies and updates status
-    @PatchMapping("/support/{id}/reply")
-    public ResponseEntity<SupportTicket> replyToTicket(
-            @PathVariable Long id,
-            @Valid @RequestBody SupportReplyRequest request) {
-        return ResponseEntity.ok(supportTicketService.replyToTicket(id, request));
-    }
-
     // ── Broadcast ─────────────────────────────────────────────
 
     // POST /api/admin/notifications/broadcast
@@ -105,4 +65,21 @@ public class AdminController {
     //     adminService.broadcast(request);
     //     return ResponseEntity.ok("Broadcast sent successfully");
     // }
+
+    // ── Individual User ───────────────────────────────────────
+
+    // GET /api/admin/users/{id} — get single user detail
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        AdminUserDetailResponse user = adminService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    // PATCH /api/admin/users/{id}/role — change user role
+    @PatchMapping("/users/{id}/role")
+    public ResponseEntity<User> updateUserRole(
+            @PathVariable Long id,
+            @Valid @RequestBody AdminUpdateRoleRequest request) {
+        return ResponseEntity.ok(adminService.updateUserRole(id, request.getRole()));
+    }
 }
