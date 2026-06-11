@@ -1,2 +1,4 @@
 # This is gitignore in backend
 # Include node_modules if present
+.idea/
+target/
