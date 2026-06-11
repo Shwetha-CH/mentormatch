@@ -59,12 +59,23 @@ public class JwtTokenProvider {
         return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
+//    public boolean validateToken(String token) {
+//        try {
+//            parseClaims(token);
+//            return true;
+//        } catch (JwtException | IllegalArgumentException e) {
+//            return false;
+//        }
+//    }
     public boolean validateToken(String token) {
         try {
-            parseClaims(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token);
+        return true;
+        } catch (Exception e) {
+            return false;  // ← must catch ALL exceptions and return false
         }
     }
 
@@ -79,4 +90,5 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 }
