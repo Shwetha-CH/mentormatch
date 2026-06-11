@@ -4,7 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f7f2bf8b-0ac4-41e0-986c-456eb354538a" name="Changes" comment="" />
+    <list default="true" id="f7f2bf8b-0ac4-41e0-986c-456eb354538a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/mentormatch/app/controller/AdminController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/mentormatch/app/service/AdminService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/mentormatch/app/service/SupportTicketService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mentormatch/app/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mentormatch/app/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/MentorMatchApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/MentorMatchApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/AppConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/AppConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/CorsFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/CorsFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/DataInitializer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/DataInitializer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/OpenApiConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/OpenApiConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/controller/AuthController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/ApiResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/ApiResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/AuthResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/AuthResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/LoginRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/LoginRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/RefreshTokenRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/RefreshTokenRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/RegisterRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/dto/RegisterRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/entity/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/entity/Role.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/entity/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/entity/User.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/exception/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/filter/JwtAuthFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/filter/JwtAuthFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/repository/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/repository/UserRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/security/JwtTokenProvider.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/security/JwtTokenProvider.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/security/UserDetailsServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/security/UserDetailsServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/service/AuthService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/service/AuthService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/mentormatch/app/service/MentorService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/mentormatch/app/service/MentorService.class" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,16 +66,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;Spring Boot.MentorMatchApplication.executor&quot;: &quot;Debug&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.MentorMatchApplication.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.MentorMatchApplication.executor": "Debug",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "to.speed.mode.migration.done": "true"
   }
-}</component>
+}]]></component>
+  <component name="RunManager">
+    <configuration name="MentorMatchApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.mentormatch.app.MentorMatchApplication" />
+      <module name="mentormatch" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.mentormatch.app.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.MentorMatchApplication" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
