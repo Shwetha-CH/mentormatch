@@ -5,7 +5,9 @@ import com.mentormatch.app.dto.LoginRequest;
 import com.mentormatch.app.dto.RefreshTokenRequest;
 import com.mentormatch.app.dto.RegisterRequest;
 import com.mentormatch.app.entity.Role;
+import com.mentormatch.app.entity.StudentProfile;
 import com.mentormatch.app.entity.User;
+import com.mentormatch.app.repository.StudentRepository;
 import com.mentormatch.app.repository.UserRepository;
 import com.mentormatch.app.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,15 +24,17 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final StudentRepository studentRepository;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtTokenProvider jwtTokenProvider,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager, StudentRepository studentRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManager = authenticationManager;
+        this.studentRepository = studentRepository;
     }
 
     public void register(RegisterRequest request) {
@@ -57,7 +61,15 @@ public class AuthService {
                 true
         );
 
-        userRepository.save(user);
+//        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        if (role == Role.STUDENT) {
+            StudentProfile studentProfile = new StudentProfile();
+            studentProfile.setUser(savedUser);
+            studentProfile.setTotalSessions(0);
+            studentRepository.save(studentProfile);
+        }
     }
 
     public AuthResponse login(LoginRequest request) {
