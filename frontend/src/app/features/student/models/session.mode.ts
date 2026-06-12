@@ -4,9 +4,6 @@ export type PlanType      = 'SINGLE'  | 'DAILY'    | 'WEEKLY'    | 'MONTHLY';
 export interface SessionMentor {
     id: number;
     fullName: string;
-    jobTitle: string;
-    company: string;
-    profilePhotoUrl: string;
 }
 
 export interface Session {

@@ -41,15 +41,15 @@ export class SessionService {
 const DUMMY_SESSIONS: Session[] = [
     {
         id: 1,
-        mentor: { id: 1, fullName: 'Arjun Sharma',  jobTitle: 'Senior Java Architect', company: 'Infosys', profilePhotoUrl: '' },
+        mentor: { id: 1, fullName: 'Arjun Sharma' },
         topic: 'System Design Interview Prep',
-        message: 'I want to crack product-based company interviews.',
+        message: 'I want to improve my interview preparation.',
         status: 'ACCEPTED', planType: 'WEEKLY', totalOccurrences: 4,
         rejectionReason: '', createdAt: '2026-06-01T10:00:00', scheduledAt: '2026-06-15T10:00:00'
     },
     {
         id: 2,
-        mentor: { id: 2, fullName: 'Priya Nair', jobTitle: 'Full Stack Developer', company: 'TCS', profilePhotoUrl: '' },
+        mentor: { id: 2, fullName: 'Priya Nair' },
         topic: 'Java Spring Boot Fundamentals',
         message: 'Need help with Spring Boot basics and REST APIs.',
         status: 'PENDING', planType: 'SINGLE', totalOccurrences: 1,
@@ -57,7 +57,7 @@ const DUMMY_SESSIONS: Session[] = [
     },
     {
         id: 3,
-        mentor: { id: 3, fullName: 'Rahul Verma', jobTitle: 'DSA Instructor', company: 'Wipro', profilePhotoUrl: '' },
+        mentor: { id: 3, fullName: 'Rahul Verma' },
         topic: 'DSA Problem Solving',
         message: 'Want to improve problem solving for coding rounds.',
         status: 'COMPLETED', planType: 'DAILY', totalOccurrences: 5,
@@ -65,7 +65,7 @@ const DUMMY_SESSIONS: Session[] = [
     },
     {
         id: 4,
-        mentor: { id: 4, fullName: 'Sneha Reddy', jobTitle: 'Cloud Engineer', company: 'Amazon', profilePhotoUrl: '' },
+        mentor: { id: 4, fullName: 'Sneha Reddy' },
         topic: 'AWS Cloud Fundamentals',
         message: 'Want to learn AWS for my upcoming project.',
         status: 'REJECTED', planType: 'SINGLE', totalOccurrences: 1,
@@ -74,7 +74,7 @@ const DUMMY_SESSIONS: Session[] = [
     },
     {
         id: 5,
-        mentor: { id: 5, fullName: 'Karthik Iyer', jobTitle: 'ML Engineer', company: 'Google', profilePhotoUrl: '' },
+        mentor: { id: 5, fullName: 'Karthik Iyer' },
         topic: 'Machine Learning Basics',
         message: 'Interested in starting ML with Python.',
         status: 'CANCELLED', planType: 'WEEKLY', totalOccurrences: 3,

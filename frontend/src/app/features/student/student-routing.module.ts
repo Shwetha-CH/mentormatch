@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { StudentDashboardComponent } from './pages/dashboard/student-dashboard.component';
 import { StudentProfileComponent } from './pages/profile/student-profile.component';
 import { BrowseMentorsComponent } from './pages/browse-mentors/browse-mentors.component';
+import { MentorDetailComponent } from './pages/mentor-detail/mentor-detail.component';
 import { MySessionsComponent } from './pages/my-sessions/my-sessions.component';
 
 const routes: Routes = [
@@ -23,6 +24,10 @@ const routes: Routes = [
   {
     path: 'mentors',
     component: BrowseMentorsComponent
+  },
+  {
+    path: 'mentors/:id',
+    component: MentorDetailComponent
   },
   { path: 'sessions',     component: MySessionsComponent },
   { path: 'sessions/:id', component: MySessionsComponent }

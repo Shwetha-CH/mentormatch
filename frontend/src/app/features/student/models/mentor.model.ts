@@ -9,11 +9,8 @@ export interface MentorProfile {
     user: MentorUser;
     bio: string;
     industry: string;
-    jobTitle: string;
-    company: string;
     skills: string[];
     isAvailable: boolean;
-    profilePhotoUrl: string;
     rating: number;
 }
 
