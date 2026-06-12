@@ -1,0 +1,94 @@
+<div class="page">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1>My Sessions</h1>
+            <p class="sub">Track all your mentorship bookings</p>
+        </div>
+        <button class="btn-primary" (click)="browseMentors()">+ Book new session</button>
+    </div>
+
+    <!-- Loading / error -->
+    <div *ngIf="loading"  class="state-msg">Loading sessions…</div>
+    <div *ngIf="errorMsg" class="banner error">{{ errorMsg }}</div>
+
+    <ng-container *ngIf="!loading && !errorMsg">
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn"
+                    *ngFor="let tab of tabs"
+                    [class.active]="activeTab === tab.value"
+                    (click)="applyTab(tab.value)">
+                {{ tab.label }}
+                <span class="tab-count" *ngIf="tab.count > 0">{{ tab.count }}</span>
+            </button>
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="filteredSessions.length === 0" class="empty-state">
+            <p class="empty-icon">📭</p>
+            <p class="empty-title">No {{ activeTab === 'ALL' ? '' : activeTab.toLowerCase() }} sessions yet</p>
+            <p class="empty-sub" *ngIf="activeTab === 'ALL'">
+                Book a session with a mentor to get started.
+            </p>
+            <button class="btn-primary" *ngIf="activeTab === 'ALL'" (click)="browseMentors()">
+                Browse mentors
+            </button>
+        </div>
+
+        <!-- Session cards -->
+        <div class="session-list">
+            <div class="session-card"
+                 *ngFor="let session of filteredSessions"
+                 (click)="viewSession(session.id)">
+
+                <!-- Left: mentor avatar -->
+                <div class="mentor-avatar">
+                    <img *ngIf="session.mentor.profilePhotoUrl"
+                         [src]="session.mentor.profilePhotoUrl"
+                         [alt]="session.mentor.fullName" />
+                    <span *ngIf="!session.mentor.profilePhotoUrl">
+            {{ getInitials(session.mentor.fullName) }}
+          </span>
+                </div>
+
+                <!-- Middle: session info -->
+                <div class="session-info">
+                    <div class="session-top">
+                        <h3>{{ session.topic }}</h3>
+                        <span class="status-badge" [ngClass]="getStatusClass(session.status)">
+              {{ session.status }}
+            </span>
+                    </div>
+
+                    <p class="mentor-name">
+                        with <strong>{{ session.mentor.fullName }}</strong>
+                        <span *ngIf="session.mentor.jobTitle"> · {{ session.mentor.jobTitle }}</span>
+                        <span *ngIf="session.mentor.company">, {{ session.mentor.company }}</span>
+                    </p>
+
+                    <div class="session-meta">
+            <span class="meta-item">
+              {{ getPlanIcon(session.planType) }} {{ session.planType }}
+                <span *ngIf="session.totalOccurrences > 1"> · {{ session.totalOccurrences }} sessions</span>
+            </span>
+                        <span class="meta-dot">·</span>
+                        <span class="meta-item">🕐 {{ formatDate(session.scheduledAt) }}</span>
+                    </div>
+
+                    <!-- Rejection reason -->
+                    <div class="rejection-note" *ngIf="session.status === 'REJECTED' && session.rejectionReason">
+                        <span class="rej-label">Reason:</span> {{ session.rejectionReason }}
+                    </div>
+                </div>
+
+                <!-- Right: arrow -->
+                <div class="card-arrow">›</div>
+
+            </div>
+        </div>
+
+    </ng-container>
+</div>

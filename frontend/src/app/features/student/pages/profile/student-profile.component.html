@@ -1,0 +1,86 @@
+<div class="profile-page">
+
+    <div *ngIf="loading" class="state-msg">Loading profile…</div>
+
+    <ng-container *ngIf="!loading">
+
+        <div class="page-header">
+            <div class="avatar">{{ initials }}</div>
+            <div class="header-text">
+                <h2>{{ profile.fullName }}</h2>
+                <span class="email">{{ profile.email }}</span>
+            </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+            <div class="card">
+                <p class="card-label">Basic info</p>
+
+                <div class="field">
+                    <label for="headline">Headline <span class="req">*</span></label>
+                    <input id="headline" type="text" formControlName="headline"
+                           placeholder="e.g. CS final year student, VIT Chennai" />
+                    <span class="err"
+                          *ngIf="form.get('headline')?.invalid && form.get('headline')?.touched">
+            Required · max 255 characters
+          </span>
+                </div>
+
+                <div class="field">
+                    <label for="currentRole">Current role <span class="req">*</span></label>
+                    <input id="currentRole" type="text" formControlName="currentRole"
+                           placeholder="e.g. Fresher, Junior developer" />
+                    <span class="err"
+                          *ngIf="form.get('currentRole')?.invalid && form.get('currentRole')?.touched">
+            Required · max 100 characters
+          </span>
+                </div>
+            </div>
+
+            <div class="card">
+                <p class="card-label">Interests</p>
+                <div class="tags-box" (click)="tagEl.focus()">
+          <span class="tag" *ngFor="let tag of interestTags">
+            {{ tag }}
+              <button type="button" class="tag-x"
+                      (click)="removeTag(tag)"
+                      [attr.aria-label]="'Remove ' + tag">×</button>
+          </span>
+                    <input #tagEl
+                           class="tag-input"
+                           [(ngModel)]="tagInputValue"
+                           [ngModelOptions]="{standalone: true}"
+                           placeholder="Add topic…"
+                           (keydown)="onTagKeydown($event)"
+                           (blur)="commitTag()" />
+                </div>
+                <p class="hint">Enter or comma to add · Backspace removes last</p>
+            </div>
+
+            <div class="card">
+                <p class="card-label">Learning goals</p>
+                <div class="field" style="margin-bottom:0">
+                    <label for="goals">What do you want to achieve?</label>
+                    <textarea id="goals" formControlName="goals" rows="5"
+                              placeholder="The more specific, the better — mentors read this before accepting."></textarea>
+                    <div class="goals-footer">
+                        <span class="err" *ngIf="form.get('goals')?.hasError('maxlength')">Max 500 characters</span>
+                        <span class="char" [class.over]="goalsLength > 500">{{ goalsLength }} / 500</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="banner success" *ngIf="saveSuccess">✓ Profile saved successfully</div>
+            <div class="banner error"   *ngIf="errorMsg">{{ errorMsg }}</div>
+
+            <div class="action-row">
+                <button type="button" class="btn-ghost" (click)="goToDashboard()">Cancel</button>
+                <button type="submit" class="btn-primary" [disabled]="saving">
+                    {{ saving ? 'Saving…' : 'Save profile' }}
+                </button>
+            </div>
+
+        </form>
+    </ng-container>
+</div>
