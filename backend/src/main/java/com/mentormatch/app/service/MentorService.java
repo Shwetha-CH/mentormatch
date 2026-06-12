@@ -1,14 +1,13 @@
 package com.mentormatch.app.service;
 
 import com.mentormatch.app.dto.MentorProfileRequest;
+import com.mentormatch.app.dto.MentorProfileResponse;
 import com.mentormatch.app.entity.MentorProfile;
 import com.mentormatch.app.entity.User;
 import com.mentormatch.app.repository.MentorRepository;
 import com.mentormatch.app.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -17,41 +16,47 @@ public class MentorService {
 
     private final MentorRepository mentorRepository;
     private final UserRepository userRepository;
-    private final FileStorageService fileStorageService;
 
     // Dependency Injection via constructor
-    public MentorService(MentorRepository mentorRepository, UserRepository userRepository, FileStorageService fileStorageService) {
+    public MentorService(MentorRepository mentorRepository, UserRepository userRepository) {
         this.mentorRepository = mentorRepository;
         this.userRepository = userRepository;
-        this.fileStorageService = fileStorageService;
     }
 
     // Corresponds to GET /api/mentors (public + filters)
-    public List<MentorProfile> getMentors(String industry, Double minRating, String skill) {
-        return mentorRepository.findAvailableMentorsWithFilters(industry, minRating, skill);
+    public List<MentorProfileResponse> getMentors(String industry, Double minRating, String skill) {
+        return mentorRepository.findAvailableMentorsWithFilters(industry, minRating, skill)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     // Corresponds to GET /api/mentors/{id}
-    public MentorProfile getMentorById(Long id) {
-        return mentorRepository.findById(id)
+    public MentorProfileResponse getMentorById(Long id) {
+        MentorProfile profile = mentorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mentor profile not found with ID: " + id));
+        return mapToResponse(profile);
     }
 
     // Corresponds to GET /api/mentors/recommended
-    public List<MentorProfile> getRecommendedMentors() {
-        return mentorRepository.findTop5ByIsAvailableTrueOrderByRatingDesc();
+    public List<MentorProfileResponse> getRecommendedMentors() {
+        return mentorRepository.findTop5ByIsAvailableTrueOrderByRatingDesc()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     // Corresponds to GET /api/mentors/me
-    public MentorProfile getMyProfile(String email) {
+    public MentorProfileResponse getMyProfile(String email) {
         User user = getUserByEmail(email);
-        return mentorRepository.findByUserId(user.getId())
+        MentorProfile profile = mentorRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Mentor profile has not been set up yet."));
+        return mapToResponse(profile);
     }
 
     // Corresponds to PUT /api/mentors/me
     @Transactional
-    public MentorProfile updateMyProfile(String email, MentorProfileRequest request) {
+    public MentorProfileResponse updateMyProfile(String email, MentorProfileRequest request) {
         User user = getUserByEmail(email);
 
         // Find existing profile, or create a new one if it doesn't exist
@@ -60,11 +65,9 @@ public class MentorService {
         profile.setUser(user);
         profile.setBio(request.getBio());
         profile.setIndustry(request.getIndustry());
-        profile.setJobTitle(request.getJobTitle());
-        profile.setCompany(request.getCompany());
         profile.setSkills(request.getSkills());
 
-        return mentorRepository.save(profile);
+        return mapToResponse(mentorRepository.save(profile));
     }
 
     // Corresponds to PATCH /api/mentors/me/availability
@@ -78,28 +81,25 @@ public class MentorService {
         mentorRepository.save(profile);
     }
 
-    // NEW: Method to handle file storage and updating the profile URL
-    @Transactional
-    public MentorProfile uploadProfilePhoto(String email, MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
-
-        // Generate the download URL dynamically based on the current server context
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/mentors/photos/")
-                .path(fileName)
-                .toUriString();
-
-        User user = getUserByEmail(email);
-        MentorProfile profile = mentorRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
-
-        profile.setProfilePhotoUrl(fileDownloadUri);
-        return mentorRepository.save(profile);
-    }
-
     // Helper method
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
+    }
+
+    private MentorProfileResponse mapToResponse(MentorProfile profile) {
+        User user = profile.getUser();
+        MentorProfileResponse.UserSummary userSummary =
+                new MentorProfileResponse.UserSummary(user.getId(), user.getFullName(), user.getEmail());
+
+        return new MentorProfileResponse(
+                profile.getId(),
+                userSummary,
+                profile.getBio(),
+                profile.getIndustry(),
+                profile.getSkills(),
+                profile.getIsAvailable(),
+                profile.getRating()
+        );
     }
 }

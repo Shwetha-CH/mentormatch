@@ -1,0 +1,41 @@
+<div class="detail-page">
+  <button class="back-btn" type="button" (click)="goBack()">Back to mentors</button>
+
+  <div *ngIf="loading" class="state-msg">Loading mentor profile...</div>
+  <div *ngIf="errorMsg" class="banner error">{{ errorMsg }}</div>
+
+  <ng-container *ngIf="!loading && mentor">
+    <div class="profile-head">
+      <div class="avatar">
+        {{ initials }}
+        <span class="avail-dot" [class.online]="mentor.isAvailable"></span>
+      </div>
+
+      <div class="head-info">
+        <h1>{{ mentor.user.fullName }}</h1>
+        <p class="sub">{{ mentor.industry || 'Industry not set' }}</p>
+        <div class="rating">
+          <span class="stars">{{ getRatingStars(mentor.rating) }}</span>
+          <span>{{ mentor.rating.toFixed(1) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <p class="card-label">Bio</p>
+        <p class="bio">{{ mentor.bio || 'This mentor has not added a bio yet.' }}</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Skills</p>
+        <div class="skills-row" *ngIf="mentor.skills.length; else noSkills">
+          <span class="skill-tag" *ngFor="let skill of mentor.skills">{{ skill }}</span>
+        </div>
+        <ng-template #noSkills>
+          <p class="muted">No skills listed yet.</p>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -14,7 +14,7 @@
                 <div class="rec-avatar">{{ getInitials(m.user.fullName) }}</div>
                 <div class="rec-info">
                     <p class="rec-name">{{ m.user.fullName }}</p>
-                    <p class="rec-title">{{ m.jobTitle }}</p>
+                    <p class="rec-title">{{ m.industry || 'Mentor' }}</p>
                 </div>
                 <span class="avail-dot" [class.online]="m.isAvailable"></span>
             </div>
@@ -80,10 +80,7 @@
                  (click)="viewMentor(mentor.id)">
 
                 <div class="mentor-avatar">
-                    <img *ngIf="mentor.profilePhotoUrl"
-                         [src]="mentor.profilePhotoUrl"
-                         [alt]="mentor.user.fullName" />
-                    <span *ngIf="!mentor.profilePhotoUrl">{{ getInitials(mentor.user.fullName) }}</span>
+                    <span>{{ getInitials(mentor.user.fullName) }}</span>
                     <span class="avail-dot" [class.online]="mentor.isAvailable"></span>
                 </div>
 
@@ -91,9 +88,7 @@
                     <div class="mentor-top">
                         <div>
                             <h3>{{ mentor.user.fullName }}</h3>
-                            <p class="mentor-title">{{ mentor.jobTitle }}
-                                <span *ngIf="mentor.company"> · {{ mentor.company }}</span>
-                            </p>
+                            <p class="mentor-title">{{ mentor.industry || 'Industry not set' }}</p>
                         </div>
                         <div class="mentor-rating">
                             <span class="stars">{{ getRatingStars(mentor.rating) }}</span>

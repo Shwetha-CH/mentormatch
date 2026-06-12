@@ -1,0 +1,121 @@
+<div class="mentor-page">
+
+  <div *ngIf="loading" class="state-msg">Loading mentor dashboard...</div>
+
+  <ng-container *ngIf="!loading">
+
+    <div class="dash-header">
+      <div class="header-left">
+        <div class="avatar-wrap">
+          <span>{{ initials }}</span>
+        </div>
+        <div>
+          <h1>{{ displayName }}</h1>
+          <p class="sub">{{ profile?.industry || 'Set up your mentor profile' }}</p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="availability-btn"
+        [class.available]="profile?.isAvailable"
+        [disabled]="!profile || availabilitySaving"
+        (click)="toggleAvailability()">
+        <span class="dot"></span>
+        {{ profile?.isAvailable ? 'Available' : 'Unavailable' }}
+      </button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-val">{{ profileCompletion }}%</span>
+        <span class="stat-lbl">Profile complete</span>
+      </div>
+      <div class="stat-card accent-green">
+        <span class="stat-val">{{ profile?.rating || 0 }}</span>
+        <span class="stat-lbl">Current rating</span>
+      </div>
+      <div class="stat-card accent-blue">
+        <span class="stat-val">{{ skillTags.length }}</span>
+        <span class="stat-lbl">Listed skills</span>
+      </div>
+    </div>
+
+    <div class="banner success" *ngIf="saveSuccess">Profile saved successfully.</div>
+    <div class="banner error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <div class="main-grid">
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="card edit-card">
+        <div class="card-head">
+          <p class="card-label">Edit profile</p>
+          <button type="submit" class="btn-primary" [disabled]="saving">
+            {{ saving ? 'Saving...' : 'Save profile' }}
+          </button>
+        </div>
+
+        <div class="field">
+          <label for="industry">Industry <span class="req">*</span></label>
+          <input id="industry" type="text" formControlName="industry" placeholder="Software / IT" />
+          <span class="err" *ngIf="form.get('industry')?.invalid && form.get('industry')?.touched">
+            Required, max 100 characters
+          </span>
+        </div>
+
+        <div class="field">
+          <label for="bio">Bio <span class="req">*</span></label>
+          <textarea id="bio" rows="6" formControlName="bio" placeholder="Tell students what you can help with."></textarea>
+          <div class="bio-footer">
+            <span class="err" *ngIf="form.get('bio')?.hasError('maxlength')">Max 1000 characters</span>
+            <span class="char" [class.over]="bioLength > 1000">{{ bioLength }} / 1000</span>
+          </div>
+        </div>
+
+        <div class="skills-block">
+          <label>Skills</label>
+          <div class="tags-box" (click)="skillEl.focus()">
+            <span class="tag" *ngFor="let skill of skillTags">
+              {{ skill }}
+              <button type="button" class="tag-x" (click)="removeSkill(skill)" [attr.aria-label]="'Remove ' + skill">x</button>
+            </span>
+            <input
+              #skillEl
+              class="tag-input"
+              [(ngModel)]="skillInputValue"
+              [ngModelOptions]="{standalone: true}"
+              placeholder="Add skill..."
+              (keydown)="onSkillKeydown($event)"
+              (blur)="commitSkill()" />
+          </div>
+          <p class="hint">Press Enter or comma to add a skill.</p>
+        </div>
+      </form>
+
+      <div class="side-col">
+        <div class="card photo-card">
+          <p class="card-label">Profile avatar</p>
+          <div class="photo-preview">
+            <span>{{ initials }}</span>
+          </div>
+        </div>
+
+        <div class="card summary-card">
+          <p class="card-label">Public preview</p>
+          <p class="profile-name">{{ displayName }}</p>
+          <p class="profile-role">{{ profile?.industry || form.value.industry || 'Industry not set' }}</p>
+          <p class="profile-bio">{{ profile?.bio || form.value.bio || 'Add a bio so students understand your mentoring style.' }}</p>
+          <div class="tag-row" *ngIf="skillTags.length">
+            <span class="tag muted" *ngFor="let skill of skillTags.slice(0, 6)">{{ skill }}</span>
+          </div>
+        </div>
+
+        <div class="card account-card">
+          <p class="card-label">Account</p>
+          <p class="profile-name">{{ displayName }}</p>
+          <p class="profile-meta">{{ email }}</p>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

@@ -6,8 +6,6 @@ public class MentorProfileRequest {
 
     private String bio;
     private String industry;
-    private String jobTitle;
-    private String company;
     private List<String> skills;
 
     // --- Getters & Setters ---
@@ -26,22 +24,6 @@ public class MentorProfileRequest {
 
     public void setIndustry(String industry) {
         this.industry = industry;
-    }
-
-    public String getJobTitle() {
-        return jobTitle;
-    }
-
-    public void setJobTitle(String jobTitle) {
-        this.jobTitle = jobTitle;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
     }
 
     public List<String> getSkills() {

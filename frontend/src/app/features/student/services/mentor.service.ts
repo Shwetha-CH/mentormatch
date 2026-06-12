@@ -24,19 +24,50 @@ export class MentorService {
         if (filters.minRating) params = params.set('minRating', filters.minRating.toString());
         if (filters.skill)     params = params.set('skill',     filters.skill);
 
-        return this.http.get<ApiResponse<MentorProfile[]>>(this.API, { params })
-            .pipe(map(res => res.data));
+        return this.http.get<ApiResponse<unknown[]> | unknown[]>(this.API, { params })
+            .pipe(map(res => this.mapMentorList(res)));
     }
 
     // GET /api/mentors/{id}
     getMentorById(id: number): Observable<MentorProfile> {
-        return this.http.get<ApiResponse<MentorProfile>>(`${this.API}/${id}`)
-            .pipe(map(res => res.data));
+        return this.http.get<ApiResponse<unknown> | unknown>(`${this.API}/${id}`)
+            .pipe(map(res => this.mapMentor(this.unwrapResponse(res))));
     }
 
     // GET /api/mentors/recommended
     getRecommended(): Observable<MentorProfile[]> {
-        return this.http.get<ApiResponse<MentorProfile[]>>(`${this.API}/recommended`)
-            .pipe(map(res => res.data));
+        return this.http.get<ApiResponse<unknown[]> | unknown[]>(`${this.API}/recommended`)
+            .pipe(map(res => this.mapMentorList(res)));
+    }
+
+    private mapMentorList(response: ApiResponse<unknown[]> | unknown[]): MentorProfile[] {
+        const data = this.unwrapResponse(response);
+        return Array.isArray(data) ? data.map(item => this.mapMentor(item)) : [];
+    }
+
+    private unwrapResponse<T>(response: ApiResponse<T> | T): T {
+        if (response && typeof response === 'object' && 'data' in response) {
+            return (response as ApiResponse<T>).data;
+        }
+        return response as T;
+    }
+
+    private mapMentor(raw: any): MentorProfile {
+        const user = raw?.user ?? {};
+        const fullName = user.fullName ?? raw?.fullName ?? raw?.name ?? 'Mentor';
+
+        return {
+            id: Number(raw?.id ?? 0),
+            user: {
+                id: Number(user.id ?? raw?.userId ?? 0),
+                fullName,
+                email: user.email ?? raw?.email ?? ''
+            },
+            bio: raw?.bio ?? '',
+            industry: raw?.industry ?? '',
+            skills: Array.isArray(raw?.skills) ? raw.skills : [],
+            isAvailable: raw?.isAvailable ?? raw?.available ?? false,
+            rating: Number(raw?.rating ?? 0)
+        };
     }
 }

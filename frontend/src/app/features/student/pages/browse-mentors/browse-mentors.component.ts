@@ -47,19 +47,28 @@ export class BrowseMentorsComponent implements OnInit {
     // re-filter on any form value change
     this.filterForm.valueChanges
         .pipe(debounceTime(300), distinctUntilChanged())
-        .subscribe(() => this.applyFilters());
+        .subscribe(() => this.loadMentors());
   }
 
   loadMentors(): void {
     this.loading = true;
-    this.mentorService.getMentors().subscribe({
+    this.errorMsg = '';
+    const { skill, industry, minRating } = this.filterForm.value;
+
+    this.mentorService.getMentors({
+      skill: skill || undefined,
+      industry: industry || undefined,
+      minRating: minRating > 0 ? minRating : undefined
+    }).subscribe({
       next: (mentors) => {
         this.allMentors = mentors;
-        this.filteredMentors = mentors;
+        this.applyFilters();
         this.loading = false;
       },
-      error: () => {
-        this.errorMsg = 'Failed to load mentors. Please try again.';
+      error: (err) => {
+        this.errorMsg = err.status === 404
+            ? 'Mentor API was not found on localhost:8081. Start or restart the backend, then refresh.'
+            : 'Failed to load mentors. Please try again.';
         this.loading = false;
       }
     });
@@ -73,21 +82,17 @@ export class BrowseMentorsComponent implements OnInit {
   }
 
   applyFilters(): void {
-    const { skill, industry, minRating, available } = this.filterForm.value;
+    const { available } = this.filterForm.value;
 
     this.filteredMentors = this.allMentors.filter(m => {
-      const matchSkill    = !skill     || m.skills?.some(s =>
-          s.toLowerCase().includes(skill.toLowerCase()));
-      const matchIndustry = !industry  || m.industry === industry;
-      const matchRating   = !minRating || (m.rating ?? 0) >= minRating;
       const matchAvail    = !available || m.isAvailable === true;
-      return matchSkill && matchIndustry && matchRating && matchAvail;
+      return matchAvail;
     });
   }
 
   clearFilters(): void {
     this.filterForm.reset({ skill: '', industry: '', minRating: 0, available: false });
-    this.filteredMentors = this.allMentors;
+    this.loadMentors();
   }
 
   viewMentor(id: number): void {
