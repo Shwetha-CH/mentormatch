@@ -19,6 +19,8 @@ export class MentorDashboardComponent implements OnInit {
   loading = true;
   saving = false;
   availabilitySaving = false;
+  deleting = false;
+  confirmDelete = false;
   saveSuccess = false;
   errorMsg = '';
 
@@ -31,6 +33,7 @@ export class MentorDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       industry: ['', [Validators.required, Validators.maxLength(100)]],
+      hourlyRate: [null, [Validators.min(0), Validators.max(100000)]],
       bio: ['', [Validators.required, Validators.maxLength(1000)]]
     });
 
@@ -49,6 +52,7 @@ export class MentorDashboardComponent implements OnInit {
       error: () => {
         this.loading = false;
         this.profile = null;
+        this.resetForm();
         this.errorMsg = 'Complete your mentor profile to start appearing in student search.';
       }
     });
@@ -59,6 +63,7 @@ export class MentorDashboardComponent implements OnInit {
     this.skillTags = profile.skills ?? [];
     this.form.patchValue({
       industry: profile.industry ?? '',
+      hourlyRate: profile.hourlyRate ?? null,
       bio: profile.bio ?? ''
     });
   }
@@ -75,6 +80,9 @@ export class MentorDashboardComponent implements OnInit {
 
     this.mentorService.updateMyProfile({
       industry: this.form.value.industry,
+      hourlyRate: this.form.value.hourlyRate === null || this.form.value.hourlyRate === ''
+        ? null
+        : Number(this.form.value.hourlyRate),
       bio: this.form.value.bio,
       skills: this.skillTags
     }).subscribe({
@@ -108,6 +116,45 @@ export class MentorDashboardComponent implements OnInit {
       error: () => {
         this.errorMsg = 'Availability update failed. Save your profile first, then try again.';
         this.availabilitySaving = false;
+      }
+    });
+  }
+
+  requestDeleteProfile(): void {
+    if (!this.profile || this.deleting) {
+      return;
+    }
+    this.confirmDelete = true;
+    this.saveSuccess = false;
+    this.errorMsg = '';
+  }
+
+  cancelDeleteProfile(): void {
+    this.confirmDelete = false;
+  }
+
+  deleteProfile(): void {
+    if (!this.profile || this.deleting) {
+      return;
+    }
+
+    this.deleting = true;
+    this.errorMsg = '';
+
+    this.mentorService.deleteMyProfile().subscribe({
+      next: () => {
+        this.profile = null;
+        this.skillTags = [];
+        this.skillInputValue = '';
+        this.resetForm();
+        this.confirmDelete = false;
+        this.deleting = false;
+        this.saveSuccess = true;
+        setTimeout(() => (this.saveSuccess = false), 3000);
+      },
+      error: () => {
+        this.errorMsg = 'Profile delete failed. Please try again.';
+        this.deleting = false;
       }
     });
   }
@@ -159,9 +206,18 @@ export class MentorDashboardComponent implements OnInit {
   get profileCompletion(): number {
     const fields = [
       this.form.get('industry')?.value,
+      this.form.get('hourlyRate')?.value !== null && this.form.get('hourlyRate')?.value !== '',
       this.form.get('bio')?.value,
       this.skillTags.length > 0
     ];
     return Math.round((fields.filter(Boolean).length / fields.length) * 100);
+  }
+
+  private resetForm(): void {
+    this.form.reset({
+      industry: '',
+      hourlyRate: null,
+      bio: ''
+    });
   }
 }

@@ -75,6 +75,15 @@ public class MentorController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Availability updated", null));
     }
 
+    // DELETE /api/mentors/me
+    @PreAuthorize("hasRole('MENTOR')")
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> deleteMyProfile(Authentication authentication) {
+        String email = authentication.getName();
+        mentorService.deleteMyProfile(email);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Mentor profile deleted successfully", null));
+    }
+
     // GET /api/mentors/{id}
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<MentorProfileResponse>> getMentorById(@PathVariable Long id) {

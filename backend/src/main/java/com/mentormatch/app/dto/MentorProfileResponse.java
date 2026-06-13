@@ -8,18 +8,20 @@ public class MentorProfileResponse {
     private UserSummary user;
     private String bio;
     private String industry;
+    private Integer hourlyRate;
     private List<String> skills;
     private Boolean isAvailable;
     private Double rating;
 
     public MentorProfileResponse() {}
 
-    public MentorProfileResponse(Long id, UserSummary user, String bio, String industry,
+    public MentorProfileResponse(Long id, UserSummary user, String bio, String industry, Integer hourlyRate,
                                  List<String> skills, Boolean isAvailable, Double rating) {
         this.id = id;
         this.user = user;
         this.bio = bio;
         this.industry = industry;
+        this.hourlyRate = hourlyRate;
         this.skills = skills;
         this.isAvailable = isAvailable;
         this.rating = rating;
@@ -36,6 +38,9 @@ public class MentorProfileResponse {
 
     public String getIndustry() { return industry; }
     public void setIndustry(String industry) { this.industry = industry; }
+
+    public Integer getHourlyRate() { return hourlyRate; }
+    public void setHourlyRate(Integer hourlyRate) { this.hourlyRate = hourlyRate; }
 
     public List<String> getSkills() { return skills; }
     public void setSkills(List<String> skills) { this.skills = skills; }

@@ -6,6 +6,7 @@ public class MentorProfileRequest {
 
     private String bio;
     private String industry;
+    private Integer hourlyRate;
     private List<String> skills;
 
     // --- Getters & Setters ---
@@ -24,6 +25,14 @@ public class MentorProfileRequest {
 
     public void setIndustry(String industry) {
         this.industry = industry;
+    }
+
+    public Integer getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public void setHourlyRate(Integer hourlyRate) {
+        this.hourlyRate = hourlyRate;
     }
 
     public List<String> getSkills() {
