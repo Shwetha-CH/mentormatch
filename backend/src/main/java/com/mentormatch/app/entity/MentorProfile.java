@@ -24,6 +24,9 @@ public class MentorProfile {
     @Column(name = "industry")
     private String industry;
 
+    @Column(name = "hourly_rate")
+    private Integer hourlyRate;
+
     // Creates a separate table 'mentor_skills' to store multiple tags/skills for a
     // mentor,
     // which helps with your "Browse filters" feature.
@@ -43,9 +46,10 @@ public class MentorProfile {
     public MentorProfile() {
     }
 
-    public MentorProfile(User user, String industry, List<String> skills) {
+    public MentorProfile(User user, String industry, Integer hourlyRate, List<String> skills) {
         this.user = user;
         this.industry = industry;
+        this.hourlyRate = hourlyRate;
         this.skills = skills;
         this.isAvailable = true;
         this.rating = 0.0;
@@ -83,6 +87,14 @@ public class MentorProfile {
 
     public void setIndustry(String industry) {
         this.industry = industry;
+    }
+
+    public Integer getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public void setHourlyRate(Integer hourlyRate) {
+        this.hourlyRate = hourlyRate;
     }
 
     public List<String> getSkills() {

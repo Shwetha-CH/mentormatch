@@ -32,4 +32,9 @@ export class MentorProfileService {
     return this.http.patch<ApiResponse<void>>(`${this.API}/me/availability`, null, { params })
       .pipe(map(() => void 0));
   }
+
+  deleteMyProfile(): Observable<void> {
+    return this.http.delete<ApiResponse<void>>(`${this.API}/me`)
+      .pipe(map(() => void 0));
+  }
 }

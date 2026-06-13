@@ -65,6 +65,9 @@ export class MentorService {
             },
             bio: raw?.bio ?? '',
             industry: raw?.industry ?? '',
+            hourlyRate: raw?.hourlyRate === null || raw?.hourlyRate === undefined
+                ? null
+                : Number(raw.hourlyRate),
             skills: Array.isArray(raw?.skills) ? raw.skills : [],
             isAvailable: raw?.isAvailable ?? raw?.available ?? false,
             rating: Number(raw?.rating ?? 0)

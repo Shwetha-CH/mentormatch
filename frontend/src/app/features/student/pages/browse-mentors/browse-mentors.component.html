@@ -15,6 +15,7 @@
                 <div class="rec-info">
                     <p class="rec-name">{{ m.user.fullName }}</p>
                     <p class="rec-title">{{ m.industry || 'Mentor' }}</p>
+                    <p class="rec-title" *ngIf="m.hourlyRate && m.hourlyRate > 0">₹{{ m.hourlyRate }} / hr</p>
                 </div>
                 <span class="avail-dot" [class.online]="m.isAvailable"></span>
             </div>
@@ -89,6 +90,7 @@
                         <div>
                             <h3>{{ mentor.user.fullName }}</h3>
                             <p class="mentor-title">{{ mentor.industry || 'Industry not set' }}</p>
+                            <p class="mentor-title" *ngIf="mentor.hourlyRate && mentor.hourlyRate > 0">₹{{ mentor.hourlyRate }} / hour</p>
                         </div>
                         <div class="mentor-rating">
                             <span class="stars">{{ getRatingStars(mentor.rating) }}</span>

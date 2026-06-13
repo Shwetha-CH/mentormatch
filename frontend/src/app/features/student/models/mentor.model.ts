@@ -9,6 +9,7 @@ export interface MentorProfile {
     user: MentorUser;
     bio: string;
     industry: string;
+    hourlyRate: number | null;
     skills: string[];
     isAvailable: boolean;
     rating: number;

@@ -65,6 +65,7 @@ public class MentorService {
         profile.setUser(user);
         profile.setBio(request.getBio());
         profile.setIndustry(request.getIndustry());
+        profile.setHourlyRate(request.getHourlyRate());
         profile.setSkills(request.getSkills());
 
         return mapToResponse(mentorRepository.save(profile));
@@ -79,6 +80,16 @@ public class MentorService {
 
         profile.setIsAvailable(isAvailable);
         mentorRepository.save(profile);
+    }
+
+    // Corresponds to DELETE /api/mentors/me
+    @Transactional
+    public void deleteMyProfile(String email) {
+        User user = getUserByEmail(email);
+        MentorProfile profile = mentorRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        mentorRepository.delete(profile);
     }
 
     // Helper method
@@ -97,6 +108,7 @@ public class MentorService {
                 userSummary,
                 profile.getBio(),
                 profile.getIndustry(),
+                profile.getHourlyRate(),
                 profile.getSkills(),
                 profile.getIsAvailable(),
                 profile.getRating()

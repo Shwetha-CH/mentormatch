@@ -14,6 +14,7 @@
       <div class="head-info">
         <h1>{{ mentor.user.fullName }}</h1>
         <p class="sub">{{ mentor.industry || 'Industry not set' }}</p>
+        <p class="sub" *ngIf="mentor.hourlyRate && mentor.hourlyRate > 0">₹{{ mentor.hourlyRate }} / hour</p>
         <div class="rating">
           <span class="stars">{{ getRatingStars(mentor.rating) }}</span>
           <span>{{ mentor.rating.toFixed(1) }}</span>

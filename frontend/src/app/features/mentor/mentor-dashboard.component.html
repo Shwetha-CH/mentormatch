@@ -43,6 +43,15 @@
 
     <div class="banner success" *ngIf="saveSuccess">Profile saved successfully.</div>
     <div class="banner error" *ngIf="errorMsg">{{ errorMsg }}</div>
+    <div class="banner warning" *ngIf="confirmDelete">
+      Delete your mentor profile? Students will no longer see you in mentor search.
+      <div class="confirm-row">
+        <button type="button" class="btn-danger" [disabled]="deleting" (click)="deleteProfile()">
+          {{ deleting ? 'Deleting...' : 'Delete profile' }}
+        </button>
+        <button type="button" class="btn-secondary" [disabled]="deleting" (click)="cancelDeleteProfile()">Cancel</button>
+      </div>
+    </div>
 
     <div class="main-grid">
 
@@ -59,6 +68,14 @@
           <input id="industry" type="text" formControlName="industry" placeholder="Software / IT" />
           <span class="err" *ngIf="form.get('industry')?.invalid && form.get('industry')?.touched">
             Required, max 100 characters
+          </span>
+        </div>
+
+        <div class="field">
+          <label for="hourlyRate">Hourly rate in rupees</label>
+          <input id="hourlyRate" type="number" min="0" max="100000" formControlName="hourlyRate" placeholder="e.g. 500" />
+          <span class="err" *ngIf="form.get('hourlyRate')?.invalid && form.get('hourlyRate')?.touched">
+            Enter a value between 0 and 100000
           </span>
         </div>
 
@@ -103,6 +120,7 @@
           <p class="card-label">Public preview</p>
           <p class="profile-name">{{ displayName }}</p>
           <p class="profile-role">{{ profile?.industry || form.value.industry || 'Industry not set' }}</p>
+          <p class="profile-meta" *ngIf="(profile?.hourlyRate || form.value.hourlyRate) > 0">₹{{ profile?.hourlyRate || form.value.hourlyRate }} / hour</p>
           <p class="profile-bio">{{ profile?.bio || form.value.bio || 'Add a bio so students understand your mentoring style.' }}</p>
           <div class="tag-row" *ngIf="skillTags.length">
             <span class="tag muted" *ngFor="let skill of skillTags.slice(0, 6)">{{ skill }}</span>
@@ -113,6 +131,14 @@
           <p class="card-label">Account</p>
           <p class="profile-name">{{ displayName }}</p>
           <p class="profile-meta">{{ email }}</p>
+        </div>
+
+        <div class="card danger-card">
+          <p class="card-label">Profile controls</p>
+          <p class="profile-bio">Delete this mentor profile if you no longer want students to find you.</p>
+          <button type="button" class="btn-danger full" [disabled]="!profile || deleting" (click)="requestDeleteProfile()">
+            Delete profile
+          </button>
         </div>
       </div>
     </div>
