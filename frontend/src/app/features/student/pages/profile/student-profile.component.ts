@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StudentService } from '../../services/student.service';
 import { StudentProfile } from '../../models/student-profile.model';
+import {AuthService} from "../../../../core/services/auth.service";
 
 @Component({
   selector: 'app-student-profile',
@@ -17,6 +18,8 @@ export class StudentProfileComponent implements OnInit {
   interestTags: string[] = [];
   tagInputValue = '';
 
+  deleting = false;
+
   loading = true;
   saving = false;
   saveSuccess = false;
@@ -25,7 +28,8 @@ export class StudentProfileComponent implements OnInit {
   constructor(
       private fb: FormBuilder,
       private studentService: StudentService,
-      private router: Router
+      private router: Router,
+      private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -116,5 +120,19 @@ export class StudentProfileComponent implements OnInit {
 
   goToDashboard(): void {
     this.router.navigate(['/student/dashboard']);
+  }
+  deleteProfile(): void {
+    const confirmed=confirm('Are you sure you want to delete this profile?');
+    if (!confirmed) return ;
+    this.deleting= true;
+    this.studentService.deleteProfile().subscribe({
+      next: () => {
+        this.authService.logout();
+      },
+      error: () => {
+        this.errorMsg = 'Could not delete this profile. Try again.';
+        this.deleting = false;
+      }
+    })
   }
 }

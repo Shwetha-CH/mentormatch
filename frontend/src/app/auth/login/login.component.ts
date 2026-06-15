@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import  {StudentService} from "../../features/student/services/student.service";
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private studentService: StudentService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -38,10 +40,27 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: (response) => {
+      next: () => {
         this.isLoading = false;
-        this.authService.redirectToDashboard();
-      },
+        const role = this.authService.getRole();
+        if(role==='STUDENT'){
+          this.studentService.getProfile().subscribe({
+            next: (Profile) => {
+              if (!Profile.headline || Profile.headline.trim() === '') {
+                this.router.navigate(['/student/profile']);
+              } else {
+                this.router.navigate(['/student/dashboard']);
+              }
+            },
+            error: () => {
+              this.router.navigate(['/students/dashboard']);
+            }
+          })
+          }
+        else {
+          this.authService.redirectToDashboard();
+        }
+        },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.message || 'Login failed. Please try again.';

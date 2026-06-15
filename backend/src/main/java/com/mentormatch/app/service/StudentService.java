@@ -6,6 +6,7 @@ import com.mentormatch.app.entity.StudentProfile;
 import com.mentormatch.app.entity.User;
 import com.mentormatch.app.repository.StudentRepository;
 import com.mentormatch.app.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,5 +61,13 @@ public class StudentService {
         res.setCurrentRole(profile.getCurrentRole());
         res.setTotalSessions(profile.getTotalSessions());
         return res;
+    }
+    @Transactional
+    public void deleteAccount(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        studentRepo.deleteByUser(user);
+        userRepo.delete(user);
     }
 }

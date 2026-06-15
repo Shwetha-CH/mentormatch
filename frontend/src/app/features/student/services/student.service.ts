@@ -19,4 +19,7 @@ export class StudentService {
   updateProfile(req: UpdateStudentRequest): Observable<StudentProfile> {
     return this.http.put<StudentProfile>(`${this.API}/me`, req);
   }
+  deleteProfile():Observable<any>{
+    return this.http.delete(`${this.API}/me`);
+  }
 }
