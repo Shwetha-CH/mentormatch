@@ -4,6 +4,7 @@ import com.mentormatch.app.dto.AdminSessionResponse;
 import com.mentormatch.app.dto.AdminUserDetailResponse;
 import com.mentormatch.app.dto.BroadcastRequest;
 import com.mentormatch.app.entity.*;
+import com.mentormatch.app.entity.Session.SessionStatus;
 import com.mentormatch.app.repository.MentorRepository;
 import com.mentormatch.app.repository.UserRepository;
 import org.springframework.stereotype.Service;

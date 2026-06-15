@@ -1,7 +1,7 @@
 package com.mentormatch.app.repository;
 
 import com.mentormatch.app.entity.Session;
-import com.mentormatch.app.entity.SessionStatus;
+import com.mentormatch.app.entity.Session.SessionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
