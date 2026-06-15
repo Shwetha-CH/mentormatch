@@ -1,0 +1,33 @@
+<!-- src/app/features/student/mentor-reviews/mentor-reviews.component.html -->
+
+<div class="reviews-section">
+
+    <div *ngIf="loading" class="state-msg">Loading reviews…</div>
+
+    <ng-container *ngIf="!loading">
+
+        <!-- Summary -->
+        <div class="summary-row" *ngIf="reviews.length > 0">
+            <span class="avg-num">{{ avgRating.toFixed(1) }}</span>
+            <span class="stars-display">{{ getStars(avgRating) }}</span>
+            <span class="total-count">{{ reviews.length }} review{{ reviews.length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="reviews.length === 0" class="state-msg">No reviews yet.</div>
+
+        <!-- Review cards -->
+        <div class="review-item" *ngFor="let r of reviews">
+            <div class="review-header">
+                <div class="reviewer-avatar">{{ getInitials(r.reviewerName) }}</div>
+                <div class="reviewer-info">
+                    <span class="reviewer-name">{{ r.reviewerName }}</span>
+                    <span class="review-date">{{ formatDate(r.createdAt) }}</span>
+                </div>
+                <span class="stars-display small">{{ getStars(r.rating) }}</span>
+            </div>
+            <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
+        </div>
+
+    </ng-container>
+</div>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionService } from '../../services/session.service';
-import { Session, SessionStatus } from '../../models/session.mode';
+import { Session, SessionStatus } from '../../models/session.model';
 
 type TabStatus = 'ALL' | SessionStatus;
 

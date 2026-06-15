@@ -46,10 +46,13 @@ export class AuthService {
   }
 
   login(request: LoginRequest): Observable<ApiResponse<AuthResponse>> {
+    console.log('Attempting login for:', request.email);
     return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/login`, request).pipe(
       tap(response => {
+        console.log('Login response received:', response);
         if (response.success && response.data) {
           this.storeTokens(response.data);
+          console.log('Tokens and user data stored');
         }
       })
     );
@@ -86,7 +89,9 @@ export class AuthService {
 
   getRole(): string | null {
     const user = this.getUserData();
-    return user ? user.role : null;
+    const role = user ? user.role : null;
+    console.log('Current user role from storage:', role);
+    return role;
   }
 
   getFullName(): string | null {
@@ -100,7 +105,9 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getAccessToken();
+    const loggedIn = !!this.getAccessToken();
+    console.log('isLoggedIn check:', loggedIn);
+    return loggedIn;
   }
 
   logout(): void {
@@ -111,7 +118,10 @@ export class AuthService {
   }
 
   redirectToDashboard(): void {
-    const role = this.getRole();
+    const rawRole = this.getRole() || '';
+    const role = rawRole.toUpperCase().trim();
+    console.log('Redirecting based on role:', role);
+
     if (role === 'STUDENT') {
       this.router.navigate(['/student/dashboard']);
     } else if (role === 'MENTOR') {
@@ -119,6 +129,7 @@ export class AuthService {
     } else if (role === 'ADMIN') {
       this.router.navigate(['/admin/dashboard']);
     } else {
+      console.warn('Unknown or missing role:', role);
       this.router.navigate(['/auth/login']);
     }
   }

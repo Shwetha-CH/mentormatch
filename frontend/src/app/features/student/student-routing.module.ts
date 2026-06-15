@@ -7,7 +7,11 @@ import { BrowseMentorsComponent } from './pages/browse-mentors/browse-mentors.co
 import { MentorDetailComponent } from './pages/mentor-detail/mentor-detail.component';
 import { MySessionsComponent } from './pages/my-sessions/my-sessions.component';
 
+// Added by Gnaneshwar
+import { NotificationsComponent } from './pages/notifications/notifications.component';
+
 const routes: Routes = [
+  { path: 'notifications', component: NotificationsComponent },
   {
     path: '',
     redirectTo: 'dashboard',
