@@ -55,4 +55,12 @@ export class AdminService {
   getSessionById(sessionId: number): Observable<AdminSession> {
     return this.http.get<AdminSession>(`${this.apiUrl}/sessions/${sessionId}`);
   }
+
+  getTop5Mentors(): Observable<AdminUserDetail[]> {
+    return this.http.get<AdminUserDetail[]>(`${this.apiUrl}/mentors/top5`);
+  }
+
+  getRecentSessions(): Observable<AdminSession[]> {
+    return this.http.get<AdminSession[]>(`${this.apiUrl}/sessions/recent`);
+  }
 }

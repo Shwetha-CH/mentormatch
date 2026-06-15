@@ -99,4 +99,15 @@ public class AdminController {
     public ResponseEntity<AdminSessionResponse> getSessionById(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getSessionById(id));
     }
+
+    @GetMapping("/mentors/top5")
+    public ResponseEntity<List<AdminUserDetailResponse>> getTop5Mentors() {
+        return ResponseEntity.ok(adminService.getTop5MentorsByRating());
+    }
+
+    // GET /api/admin/sessions/recent
+    @GetMapping("/sessions/recent")
+    public ResponseEntity<List<AdminSessionResponse>> getRecentSessions() {
+        return ResponseEntity.ok(adminService.getRecentSessions());
+    }
 }

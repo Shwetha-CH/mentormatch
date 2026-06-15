@@ -4,9 +4,6 @@
   max-width: 1400px;
 }
 
-/* ────────────────────────────────────────────────────────────
-   PAGE HEADER
-   ──────────────────────────────────────────────────────────── */
 .page-header {
   margin-bottom: 32px;
 }
@@ -26,9 +23,6 @@
   font-weight: 400;
 }
 
-/* ────────────────────────────────────────────────────────────
-   CONTENT WRAPPER
-   ──────────────────────────────────────────────────────────── */
 .content-wrapper {
   display: flex;
   flex-direction: column;
@@ -45,7 +39,7 @@
 }
 
 /* ────────────────────────────────────────────────────────────
-   CHARTS SECTION - Side by Side
+   CHARTS SECTION
    ──────────────────────────────────────────────────────────── */
 .charts-section {
   display: grid;
@@ -93,7 +87,266 @@
 }
 
 /* ────────────────────────────────────────────────────────────
-   LOADING STATE
+   TABLES SECTION
+   ──────────────────────────────────────────────────────────── */
+.tables-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.data-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.data-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.data-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.data-title {
+  margin: 0 0 2px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.data-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.data-body {
+  min-height: 200px;
+}
+
+.empty-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   LEADERBOARD STYLES
+   ──────────────────────────────────────────────────────────── */
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.leaderboard-item:hover {
+  background: #f3f4f6;
+}
+
+.rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rank-badge.rank-1 {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #92400e;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+}
+
+.rank-badge.rank-2 {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+  color: #374151;
+  box-shadow: 0 2px 8px rgba(192, 192, 192, 0.3);
+}
+
+.rank-badge.rank-3 {
+  background: linear-gradient(135deg, #cd7f32 0%, #e8a164 100%);
+  color: #78350f;
+  box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3);
+}
+
+.mentor-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mentor-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mentor-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mentor-email {
+  font-size: 12px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rating-badge {
+  padding: 4px 10px;
+  background: #fff7ed;
+  color: #ea580c;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* ────────────────────────────────────────────────────────────
+   ACTIVITY LIST STYLES
+   ──────────────────────────────────────────────────────────── */
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.activity-item:hover {
+  background: #f3f4f6;
+}
+
+.activity-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-title {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.activity-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.activity-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.activity-time {
+  font-size: 11px;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* ────────────────────────────────────────────────────────────
+   STATUS BADGES
+   ──────────────────────────────────────────────────────────── */
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.status-pending {
+  background: #fff7ed;
+  color: #f59e0b;
+}
+
+.status-accepted {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-completed {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.status-rejected {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.status-cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ────────────────────────────────────────────────────────────
+   LOADING & ERROR STATES
    ──────────────────────────────────────────────────────────── */
 .loading-state {
   display: flex;
@@ -118,9 +371,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* ────────────────────────────────────────────────────────────
-   ERROR STATE
-   ──────────────────────────────────────────────────────────── */
 .error-state {
   display: flex;
   flex-direction: column;
@@ -156,7 +406,8 @@
    RESPONSIVE
    ──────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-  .charts-section {
+  .charts-section,
+  .tables-section {
     grid-template-columns: 1fr;
   }
 }

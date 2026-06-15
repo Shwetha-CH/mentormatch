@@ -3,6 +3,8 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
 import { AdminStats } from '../../models/admin-stats.model';
+import { AdminUserDetail } from '../../models/admin-user.model';
+import { AdminSession } from '../../models/admin-session.model';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -18,6 +20,8 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   @ViewChild('sessionsBarChart') sessionsBarChartRef!: ElementRef<HTMLCanvasElement>;
   
   stats: AdminStats | null = null;
+  topMentors: AdminUserDetail[] = [];
+  recentSessions: AdminSession[] = [];
   loading: boolean = true;
   error: string | null = null;
 
@@ -27,20 +31,38 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   constructor(private adminService: AdminService) {}
 
   ngOnInit(): void {
-    this.loadStats();
+    this.loadData();
   }
 
   ngAfterViewInit(): void {
-    // Charts will be created after stats are loaded
+    // Charts will be created after data loads
   }
 
-  loadStats(): void {
+  loadData(): void {
     this.loading = true;
     this.error = null;
 
+    // Load all data
     this.adminService.getStats().subscribe({
-      next: (data) => {
-        this.stats = data;
+      next: (statsData) => {
+        this.stats = statsData;
+        
+        // Load top mentors
+        this.adminService.getTop5Mentors().subscribe({
+          next: (mentors) => {
+            this.topMentors = mentors;
+          },
+          error: (err) => console.error('Error loading top mentors:', err)
+        });
+
+        // Load recent sessions
+        this.adminService.getRecentSessions().subscribe({
+          next: (sessions) => {
+            this.recentSessions = sessions;
+          },
+          error: (err) => console.error('Error loading recent sessions:', err)
+        });
+
         this.loading = false;
         setTimeout(() => this.createCharts(), 0);
       },
@@ -54,7 +76,6 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   createCharts(): void {
     if (!this.stats) return;
-
     this.createUsersPieChart();
     this.createSessionsBarChart();
   }
@@ -96,13 +117,8 @@ export class OverviewComponent implements OnInit, AfterViewInit {
           tooltip: {
             backgroundColor: '#1a1a1a',
             padding: 12,
-            titleFont: {
-              size: 14,
-              weight: 'bold'
-            },
-            bodyFont: {
-              size: 13
-            },
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
             cornerRadius: 8,
             displayColors: false
           }
@@ -145,13 +161,8 @@ export class OverviewComponent implements OnInit, AfterViewInit {
           tooltip: {
             backgroundColor: '#1a1a1a',
             padding: 12,
-            titleFont: {
-              size: 14,
-              weight: 'bold'
-            },
-            bodyFont: {
-              size: 13
-            },
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 13 },
             cornerRadius: 8,
             displayColors: false
           }
@@ -159,22 +170,37 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         scales: {
           y: {
             beginAtZero: true,
-            ticks: {
-              font: { size: 12 },
-              color: '#6b7280'
-            },
+            ticks: { font: { size: 12 }, color: '#6b7280' },
             grid: { color: '#f3f4f6' },
             border: { display: false }
           },
           x: {
-            ticks: {
-              font: { size: 13 },
-              color: '#1a1a1a'
-            },
+            ticks: { font: { size: 13 }, color: '#1a1a1a' },
             grid: { display: false }
           }
         }
       }
     });
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getStatusClass(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'PENDING': 'status-pending',
+      'ACCEPTED': 'status-accepted',
+      'COMPLETED': 'status-completed',
+      'REJECTED': 'status-rejected',
+      'CANCELLED': 'status-cancelled'
+    };
+    return statusMap[status] || '';
   }
 }

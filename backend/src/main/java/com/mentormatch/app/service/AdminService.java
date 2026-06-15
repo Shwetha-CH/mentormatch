@@ -3,12 +3,10 @@ package com.mentormatch.app.service;
 import com.mentormatch.app.dto.AdminSessionResponse;
 import com.mentormatch.app.dto.AdminUserDetailResponse;
 import com.mentormatch.app.dto.BroadcastRequest;
-import com.mentormatch.app.entity.User;
-import com.mentormatch.app.entity.Role;
+import com.mentormatch.app.entity.*;
+import com.mentormatch.app.repository.MentorRepository;
 import com.mentormatch.app.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import com.mentormatch.app.entity.Session;
-import com.mentormatch.app.entity.SessionStatus;
 import com.mentormatch.app.repository.SessionRepository;
 
 import java.time.LocalDateTime;
@@ -23,9 +21,15 @@ public class AdminService {
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
 
-    public AdminService(UserRepository userRepository, SessionRepository sessionRepository) {
+    private final MentorRepository mentorRepository;  // ✅ ADD THIS
+
+    // ✅ UPDATE CONSTRUCTOR
+    public AdminService(UserRepository userRepository,
+                        SessionRepository sessionRepository,
+                        MentorRepository mentorRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
+        this.mentorRepository = mentorRepository;  // ✅ ADD THIS
     }
     // 1. Get all users — for user management table
     public List<User> getAllUsers() {
@@ -202,6 +206,41 @@ public class AdminService {
 
         response.setOccurrences(occurrences);
         return response;
+    }
+
+    // Get top 5 mentors by rating
+    public List<AdminUserDetailResponse> getTop5MentorsByRating() {
+        List<MentorProfile> topMentors = mentorRepository.findTop5ByIsAvailableTrueOrderByRatingDesc();
+
+        return topMentors.stream()
+                .map(mentorProfile -> {
+                    User user = mentorProfile.getUser();
+
+                    AdminUserDetailResponse response = new AdminUserDetailResponse(
+                            user.getId(),
+                            user.getFullName(),
+                            user.getEmail(),
+                            user.getRole().name(),
+                            user.getIsActive(),
+                            user.getCreatedAt()
+                    );
+
+                    // Add rating field
+                    response.setRating(mentorProfile.getRating());
+
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // Get last 5 sessions
+    public List<AdminSessionResponse> getRecentSessions() {
+        List<Session> sessions = sessionRepository.findTop5ByOrderByCreatedAtDesc();
+
+        return sessions.stream()
+                .limit(5)  // Ensure only 5
+                .map(this::mapToAdminSessionResponse)
+                .collect(Collectors.toList());
     }
 
 
