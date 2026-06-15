@@ -1,0 +1,98 @@
+<!-- src/app/features/admin/components/overview/overview.component.html -->
+
+<div class="overview-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">Overview</h1>
+    <p class="page-subtitle">Platform statistics and metrics at a glance</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading statistics...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadStats()">Retry</button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="stats && !loading" class="content-wrapper">
+    
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <app-stat-card
+        label="Total Users"
+        [value]="stats.totalUsers"
+        icon="👥"
+        color="blue">
+      </app-stat-card>
+
+      <app-stat-card
+        label="Total Mentors"
+        [value]="stats.totalMentors"
+        icon="👨‍🏫"
+        color="purple">
+      </app-stat-card>
+
+      <app-stat-card
+        label="Total Students"
+        [value]="stats.totalStudents"
+        icon="👨‍🎓"
+        color="green">
+      </app-stat-card>
+
+      <app-stat-card
+        label="Total Sessions"
+        [value]="stats.totalSessions"
+        icon="📅"
+        color="orange">
+      </app-stat-card>
+
+      <app-stat-card
+        label="Completed"
+        [value]="stats.completedSessions"
+        icon="✅"
+        color="green">
+      </app-stat-card>
+
+      <app-stat-card
+        label="Pending"
+        [value]="stats.pendingSessions"
+        icon="⏳"
+        color="orange">
+      </app-stat-card>
+    </div>
+
+    <!-- Charts Section - Side by Side -->
+    <div class="charts-section">
+      
+      <!-- User Distribution Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">User Distribution</h3>
+          <p class="chart-subtitle">Students vs Mentors breakdown</p>
+        </div>
+        <div class="chart-body">
+          <canvas #usersPieChart></canvas>
+        </div>
+      </div>
+
+      <!-- Sessions Overview Chart -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">Sessions Overview</h3>
+          <p class="chart-subtitle">Total, Completed, and Pending sessions</p>
+        </div>
+        <div class="chart-body">
+          <canvas #sessionsBarChart></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,375 @@
+/* src/app/features/admin/components/sessions/sessions.component.css */
+
+.sessions-container {
+  max-width: 1600px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   PAGE HEADER
+   ──────────────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.page-title {
+  margin: 0 0 4px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.status-filter {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.status-filter:hover {
+  border-color: #3b82f6;
+}
+
+.status-filter:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.stat-badge {
+  padding: 6px 12px;
+  background: #fff7ed;
+  color: #f59e0b;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TABLE CONTAINER
+   ──────────────────────────────────────────────────────────── */
+.table-container {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+/* ────────────────────────────────────────────────────────────
+   DATA TABLE
+   ──────────────────────────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.15s ease;
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.data-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: #1a1a1a;
+  vertical-align: middle;
+}
+
+/* ────────────────────────────────────────────────────────────
+   ID CELL
+   ──────────────────────────────────────────────────────────── */
+.id-cell {
+  font-weight: 600;
+  color: #3b82f6;
+  font-size: 13px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   USER CELL
+   ──────────────────────────────────────────────────────────── */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.student-avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.mentor-avatar {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #1a1a1a;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  font-size: 12px;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TOPIC CELL
+   ──────────────────────────────────────────────────────────── */
+.topic-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   PLAN TYPE BADGE
+   ──────────────────────────────────────────────────────────── */
+.plan-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.plan-single {
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.plan-daily {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.plan-weekly {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.plan-monthly {
+  background: #fae8ff;
+  color: #a21caf;
+}
+
+/* ────────────────────────────────────────────────────────────
+   STATUS BADGE
+   ──────────────────────────────────────────────────────────── */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #fff7ed;
+  color: #f59e0b;
+}
+
+.status-accepted {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-completed {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.status-rejected {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.status-cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ────────────────────────────────────────────────────────────
+   DATE CELL
+   ──────────────────────────────────────────────────────────── */
+.date-cell {
+  color: #6b7280;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* ────────────────────────────────────────────────────────────
+   LOADING STATE
+   ──────────────────────────────────────────────────────────── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #6b7280;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ────────────────────────────────────────────────────────────
+   ERROR STATE
+   ──────────────────────────────────────────────────────────── */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #ef4444;
+}
+
+.error-state p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.retry-btn {
+  padding: 8px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.retry-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* ────────────────────────────────────────────────────────────
+   EMPTY STATE
+   ──────────────────────────────────────────────────────────── */
+.empty-state {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}

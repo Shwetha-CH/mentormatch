@@ -1,0 +1,279 @@
+/* src/app/features/admin/components/students/students.component.css */
+
+.students-container {
+  max-width: 1400px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   PAGE HEADER
+   ──────────────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  margin: 0 0 4px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.header-stats {
+  display: flex;
+  gap: 8px;
+}
+
+.stat-badge {
+  padding: 6px 12px;
+  background: #f0f9ff;
+  color: #3b82f6;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TABLE CONTAINER
+   ──────────────────────────────────────────────────────────── */
+.table-container {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ────────────────────────────────────────────────────────────
+   DATA TABLE
+   ──────────────────────────────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table th {
+  padding: 12px 20px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.15s ease;
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.data-table td {
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+/* ────────────────────────────────────────────────────────────
+   USER CELL
+   ──────────────────────────────────────────────────────────── */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+/* ────────────────────────────────────────────────────────────
+   OTHER CELLS
+   ──────────────────────────────────────────────────────────── */
+.email-cell {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.date-cell {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   STATUS BADGE
+   ──────────────────────────────────────────────────────────── */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-active {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.status-inactive {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TOGGLE BUTTON
+   ──────────────────────────────────────────────────────────── */
+.toggle-btn {
+  padding: 6px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-deactivate {
+  background: white;
+  color: #6b7280;
+}
+
+.btn-deactivate:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.btn-activate {
+  background: white;
+  color: #6b7280;
+}
+
+.btn-activate:hover {
+  border-color: #10b981;
+  color: #10b981;
+  background: #ecfdf5;
+}
+
+/* ────────────────────────────────────────────────────────────
+   LOADING STATE
+   ──────────────────────────────────────────────────────────── */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #6b7280;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ────────────────────────────────────────────────────────────
+   ERROR STATE
+   ──────────────────────────────────────────────────────────── */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #ef4444;
+}
+
+.error-state p {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.retry-btn {
+  padding: 8px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.retry-btn:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+/* ────────────────────────────────────────────────────────────
+   EMPTY STATE
+   ──────────────────────────────────────────────────────────── */
+.empty-state {
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
