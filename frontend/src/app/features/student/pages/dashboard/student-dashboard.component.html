@@ -15,9 +15,14 @@
                     <p class="sub">Here's what's happening with your mentorship journey.</p>
                 </div>
             </div>
-            <button class="btn-primary" (click)="navigate('/student/mentors')">
+            <div class="header-actions">
+            <button class="btn-primary"  (click)="navigate('/student/mentors')">
                 + Book a session
             </button>
+            <button class="btn-danger" (click)="logout()">
+                Logout
+            </button>
+            </div>
         </div>
 
         <!-- Stats row -->

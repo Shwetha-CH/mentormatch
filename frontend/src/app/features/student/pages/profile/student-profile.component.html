@@ -10,6 +10,11 @@
                 <h2>{{ profile.fullName }}</h2>
                 <span class="email">{{ profile.email }}</span>
             </div>
+            <button class="btn-danger" style="align-items:end"
+                    type="button"
+                    (click)="deleteProfile()"
+                    [disabled]="deleting"
+            >Delete Profile</button>
         </div>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
@@ -70,6 +75,7 @@
                     </div>
                 </div>
             </div>
+
 
             <div class="banner success" *ngIf="saveSuccess">✓ Profile saved successfully</div>
             <div class="banner error"   *ngIf="errorMsg">{{ errorMsg }}</div>

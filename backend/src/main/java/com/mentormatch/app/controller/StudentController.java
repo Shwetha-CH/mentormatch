@@ -1,5 +1,6 @@
 package com.mentormatch.app.controller;
 
+import com.mentormatch.app.dto.ApiResponse;
 import com.mentormatch.app.dto.StudentProfileResponse;
 import com.mentormatch.app.dto.UpdateStudentRequest;
 import com.mentormatch.app.service.StudentService;
@@ -35,5 +36,11 @@ public class StudentController {
             @RequestBody UpdateStudentRequest req) {
         return ResponseEntity.ok(
                 studentService.updateProfile(userDetails.getUsername(), req));
+    }
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> deleteMyAccount(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        studentService.deleteAccount(userDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.success("Account deleted successfully", null));
     }
 }

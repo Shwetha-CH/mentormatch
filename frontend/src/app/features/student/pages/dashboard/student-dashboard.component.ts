@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StudentService } from '../../services/student.service';
 import { StudentProfile } from '../../models/student-profile.model';
+import {AuthService} from "../../../../core/services/auth.service";
 
 // ─── TODO: Replace with real session API response type when ready ───
 export interface SessionSummary {
@@ -69,7 +70,8 @@ export class StudentDashboardComponent implements OnInit {
 
   constructor(
       private studentService: StudentService,
-      private router: Router
+      private router: Router,
+      private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -128,5 +130,9 @@ export class StudentDashboardComponent implements OnInit {
       day: 'numeric', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }
