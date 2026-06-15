@@ -1,0 +1,91 @@
+/* src/app/shared/notification-bell/notification-bell.component.css */
+
+.bell-wrap { position: relative; display: inline-block; }
+
+.bell-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    position: relative;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background .12s;
+}
+.bell-btn:hover { background: #f3f4f6; }
+
+.badge {
+    position: absolute;
+    top: 2px; right: 2px;
+    min-width: 16px; height: 16px;
+    background: #ef4444; color: #fff;
+    font-size: 9px; font-weight: 700;
+    border-radius: 8px; padding: 0 3px;
+    line-height: 16px; text-align: center;
+}
+
+/* Panel */
+.panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 320px;
+    max-height: 420px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px 8px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.panel-title { font-size: 14px; font-weight: 600; color: #111827; }
+.clear-btn {
+    background: none; border: none;
+    font-size: 12px; color: #2563eb; cursor: pointer;
+}
+.clear-btn:hover { text-decoration: underline; }
+
+.empty-panel {
+    padding: 32px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.notif-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; }
+
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f9fafb;
+    transition: background .12s;
+}
+.notif-item:hover      { background: #f9fafb; }
+.notif-item.unread     { background: #eff6ff; }
+.notif-item.unread:hover { background: #dbeafe; }
+
+.notif-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #2563eb;
+    flex-shrink: 0;
+    margin-top: 5px;
+}
+
+.notif-body { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.notif-title { font-size: 13px; font-weight: 500; color: #111827; }
+.notif-msg   { font-size: 12px; color: #6b7280; line-height: 1.4; }
+.notif-time  { font-size: 11px; color: #9ca3af; }

@@ -13,5 +13,6 @@ import java.util.Optional;
 public interface StudentRepository  extends JpaRepository<StudentProfile,Long> {
     Optional<StudentProfile> findByUser(User user);
     Optional<StudentProfile> findByUserEmail(String email);
+    boolean existsByUser(User user);
     void deleteByUser(User user);
 }

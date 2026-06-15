@@ -1,133 +1,148 @@
 package com.mentormatch.app.service;
 
-import com.mentormatch.app.dto.AcceptSessionRequest;
+import com.mentormatch.app.dto.SessionRequest;
 import com.mentormatch.app.dto.SessionResponse;
-import com.mentormatch.app.entity.*;
-import com.mentormatch.app.repository.SessionOccurrenceRepository;
+import com.mentormatch.app.entity.MentorProfile;
+import com.mentormatch.app.entity.Session;
+import com.mentormatch.app.entity.User;
+import com.mentormatch.app.repository.MentorRepository;
 import com.mentormatch.app.repository.SessionRepository;
-import com.mentormatch.app.repository.StudentRepository;
 import com.mentormatch.app.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SessionService {
 
     private final SessionRepository sessionRepository;
-    private final SessionOccurrenceRepository occurrenceRepository;
     private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
+    private final NotificationService notificationService;
+    private final MentorRepository mentorRepository;
 
-    public SessionService(SessionRepository sessionRepository, 
-                          SessionOccurrenceRepository occurrenceRepository, 
+    public SessionService(SessionRepository sessionRepository,
                           UserRepository userRepository,
-                          StudentRepository studentRepository) {
+                          NotificationService notificationService,
+                          MentorRepository mentorRepository) {
         this.sessionRepository = sessionRepository;
-        this.occurrenceRepository = occurrenceRepository;
         this.userRepository = userRepository;
-        this.studentRepository = studentRepository;
+        this.notificationService = notificationService;
+        this.mentorRepository = mentorRepository;
     }
 
-    public List<SessionResponse> getMySessions(String email) {
-        User mentor = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Mentor user not found."));
+    // POST /api/sessions — Student books a session
+    @Transactional
+    public SessionResponse bookSession(SessionRequest request, String studentEmail) {
+
+        // 1. Get student
+        User student = userRepository.findByEmail(studentEmail)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        // 2. Get mentor — mentorId from frontend is MentorProfile.id not User.id
+        MentorProfile mentorProfile = mentorRepository.findById(request.getMentorId())
+                .orElseThrow(() -> new RuntimeException("Mentor not found"));
+        User mentor = mentorProfile.getUser();
+
+        // 3. Create session
+        Session session = new Session();
+        session.setMentor(mentor);
+        session.setStudent(student);
+        session.setTopic(request.getTopic());
+        session.setMessage(request.getMessage());
+        session.setPlanType(Session.PlanType.valueOf(request.getPlanType()));
+        session.setTotalOccurrences(request.getTotalOccurrences());
+        session.setStatus(Session.SessionStatus.PENDING);
+
+        Session saved = sessionRepository.save(session);
+
+        // 4. Notify mentor
+        notificationService.send(
+                mentor.getId(),
+                "New Session Request!",
+                student.getFullName() + " wants to book a session with you: " + request.getTopic(),
+                "/mentor/sessions/" + saved.getId()
+        );
+
+        return toResponse(saved);
+    }
+
+    // GET /api/sessions/my — Get student's sessions
+    public List<SessionResponse> getMySessions(String studentEmail) {
+        User student = userRepository.findByEmail(studentEmail)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        return sessionRepository.findAllSessionsByStudentId(student.getId())
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    // GET /api/sessions/mentor — Get mentor's sessions
+    public List<SessionResponse> getMentorSessions(String mentorEmail) {
+        User mentor = userRepository.findByEmail(mentorEmail)
+                .orElseThrow(() -> new RuntimeException("Mentor not found"));
 
         return sessionRepository.findAllSessionsByMentorId(mentor.getId())
                 .stream()
-                .map(this::mapToResponse)
-                .toList();
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
+    // PATCH /api/sessions/{id}/accept — Mentor accepts session
     @Transactional
-    public SessionResponse acceptSession(Long sessionId, AcceptSessionRequest request) {
+    public SessionResponse acceptSession(Long sessionId, String mentorEmail, String meetingLink) {
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session request not found."));
+                .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        if (!session.getStatus().equals(SessionStatus.PENDING)) {
-            throw new RuntimeException("Can only accept pending session requests.");
-        }
+        session.setStatus(Session.SessionStatus.ACCEPTED);
+        Session saved = sessionRepository.save(session);
 
-        session.setStatus(SessionStatus.ACCEPTED);
+        // Notify student
+        notificationService.send(
+                session.getStudent().getId(),
+                "Session Accepted!",
+                session.getMentor().getFullName() + " accepted your session: " + session.getTopic(),
+                "/student/sessions/" + sessionId
+        );
 
-        // Cascade acceptance and meeting link out to all individual child occurrences
-        for (SessionOccurrence occurrence : session.getOccurrences()) {
-            occurrence.setStatus(SessionStatus.ACCEPTED);
-            occurrence.setMeetingLink(request.getMeetingLink());
-        }
-
-        // Safely update Student profile total session tracking limits
-        StudentProfile studentProfile = studentRepository.findByUser(session.getStudent())
-                .orElse(null);
-        if (studentProfile != null) {
-            studentProfile.setTotalSessions(studentProfile.getTotalSessions() + session.getTotalOccurrences());
-            studentRepository.save(studentProfile);
-        }
-
-        return mapToResponse(sessionRepository.save(session));
+        return toResponse(saved);
     }
 
+    // PATCH /api/sessions/{id}/reject — Mentor rejects session
     @Transactional
-    public SessionResponse rejectSession(Long sessionId) {
+    public SessionResponse rejectSession(Long sessionId, String mentorEmail) {
         Session session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session request not found."));
+                .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        if (!session.getStatus().equals(SessionStatus.PENDING)) {
-            throw new RuntimeException("Can only reject pending session requests.");
-        }
+        session.setStatus(Session.SessionStatus.REJECTED);
+        Session saved = sessionRepository.save(session);
 
-        session.setStatus(SessionStatus.REJECTED);
-        for (SessionOccurrence occurrence : session.getOccurrences()) {
-            occurrence.setStatus(SessionStatus.REJECTED);
-        }
+        // Notify student
+        notificationService.send(
+                session.getStudent().getId(),
+                "Session Rejected",
+                session.getMentor().getFullName() + " rejected your session: " + session.getTopic(),
+                "/student/sessions/" + sessionId
+        );
 
-        return mapToResponse(sessionRepository.save(session));
+        return toResponse(saved);
     }
 
-    @Transactional
-    public SessionResponse cancelIndividualOccurrence(Long occurrenceId) {
-        SessionOccurrence occurrence = occurrenceRepository.findById(occurrenceId)
-                .orElseThrow(() -> new RuntimeException("Occurrence timeline slot not found."));
-
-        occurrence.setStatus(SessionStatus.CANCELLED);
-        occurrenceRepository.save(occurrence);
-
-        // Optimization check: If every single occurrence inside a plan gets cancelled, mark the parent session cancelled too.
-        Session parentSession = occurrence.getSession();
-        boolean allCancelled = parentSession.getOccurrences().stream()
-                .allMatch(o -> o.getStatus().equals(SessionStatus.CANCELLED));
-        
-        if (allCancelled) {
-            parentSession.setStatus(SessionStatus.CANCELLED);
-            sessionRepository.save(parentSession);
-        }
-
-        return mapToResponse(parentSession);
-    }
-
-    private SessionResponse mapToResponse(Session session) {
+    private SessionResponse toResponse(Session s) {
         SessionResponse res = new SessionResponse();
-        res.setSessionId(session.getId());
-        res.setStudentName(session.getStudent().getFullName());
-        res.setStudentEmail(session.getStudent().getEmail());
-        res.setTopic(session.getTopic());
-        res.setPlanType(session.getPlanType().name());
-        res.setStatus(session.getStatus().name());
-        res.setTotalOccurrences(session.getTotalOccurrences());
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        List<SessionResponse.OccurrenceSummary> list = session.getOccurrences().stream()
-                .map(o -> new SessionResponse.OccurrenceSummary(
-                        o.getId(),
-                        o.getScheduledAt().format(formatter),
-                        o.getDurationMinutes(),
-                        o.getMeetingLink(),
-                        o.getStatus().name()
-                )).toList();
-
-        res.setOccurrences(list);
+        res.setId(s.getId());
+        res.setTopic(s.getTopic());
+        res.setMessage(s.getMessage());
+        res.setStatus(s.getStatus().name());
+        res.setPlanType(s.getPlanType().name());
+        res.setTotalOccurrences(s.getTotalOccurrences());
+        res.setCreatedAt(s.getCreatedAt());
+        res.setMentorId(s.getMentor().getId());
+        res.setMentorName(s.getMentor().getFullName());
+        res.setStudentId(s.getStudent().getId());
+        res.setStudentName(s.getStudent().getFullName());
         return res;
     }
 }

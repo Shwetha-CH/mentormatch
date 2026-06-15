@@ -4,9 +4,11 @@ import com.mentormatch.app.dto.AuthResponse;
 import com.mentormatch.app.dto.LoginRequest;
 import com.mentormatch.app.dto.RefreshTokenRequest;
 import com.mentormatch.app.dto.RegisterRequest;
+import com.mentormatch.app.entity.MentorProfile;
 import com.mentormatch.app.entity.Role;
 import com.mentormatch.app.entity.StudentProfile;
 import com.mentormatch.app.entity.User;
+import com.mentormatch.app.repository.MentorRepository;
 import com.mentormatch.app.repository.StudentRepository;
 import com.mentormatch.app.repository.UserRepository;
 import com.mentormatch.app.security.JwtTokenProvider;
@@ -17,6 +19,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class AuthService {
 
@@ -25,16 +29,20 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final StudentRepository studentRepository;
+    private final MentorRepository mentorRepository;
 
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtTokenProvider jwtTokenProvider,
-                       AuthenticationManager authenticationManager, StudentRepository studentRepository) {
+                       AuthenticationManager authenticationManager, 
+                       StudentRepository studentRepository, 
+                       MentorRepository mentorRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManager = authenticationManager;
         this.studentRepository = studentRepository;
+        this.mentorRepository = mentorRepository;
     }
 
     public void register(RegisterRequest request) {
@@ -61,7 +69,6 @@ public class AuthService {
                 true
         );
 
-//        userRepository.save(user);
         User savedUser = userRepository.save(user);
 
         if (role == Role.STUDENT) {
@@ -69,13 +76,27 @@ public class AuthService {
             studentProfile.setUser(savedUser);
             studentProfile.setTotalSessions(0);
             studentRepository.save(studentProfile);
+        } else if (role == Role.MENTOR) {
+            MentorProfile mentorProfile = new MentorProfile();
+            mentorProfile.setUser(savedUser);
+            mentorProfile.setSkills(new ArrayList<>());
+            mentorProfile.setIsAvailable(true);
+            mentorProfile.setRating(0.0);
+            mentorRepository.save(mentorProfile);
         }
     }
 
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        System.out.println("Login attempt for email: " + request.getEmail());
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+            System.out.println("Authentication successful for: " + request.getEmail());
+        } catch (Exception e) {
+            System.out.println("Authentication failed for: " + request.getEmail() + " Error: " + e.getMessage());
+            throw e;
+        }
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -83,6 +104,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), user.getRole().name());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
+        System.out.println("Tokens generated for: " + request.getEmail());
         return new AuthResponse(
                 accessToken,
                 refreshToken,

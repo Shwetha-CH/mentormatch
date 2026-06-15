@@ -1,6 +1,7 @@
 package com.mentormatch.app.repository;
 
 import com.mentormatch.app.entity.MentorProfile;
+import com.mentormatch.app.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,8 @@ public interface MentorRepository extends JpaRepository<MentorProfile, Long> {
 
     // 1. Find a profile by the associated User's ID
     Optional<MentorProfile> findByUserId(Long userId);
+    
+    boolean existsByUser(User user);
 
     // 2. Custom query to handle the "Browse + Filters" feature dynamically
     // The LEFT JOIN is used to search within the 'skills' collection array we defined in the entity

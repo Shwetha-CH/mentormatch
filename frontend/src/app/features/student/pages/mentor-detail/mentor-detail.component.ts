@@ -1,7 +1,11 @@
+// src/app/features/student/pages/mentor-detail/mentor-detail.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MentorProfile } from '../../models/mentor.model';
 import { MentorService } from '../../services/mentor.service';
+import { SessionService } from '../../services/session.service';
 
 @Component({
   selector: 'app-mentor-detail',
@@ -14,10 +18,21 @@ export class MentorDetailComponent implements OnInit {
   loading = true;
   errorMsg = '';
 
+  // Booking form
+  showBookingForm = false;
+  bookingForm!: FormGroup;
+  booking = false;
+  bookingSuccess = '';
+  bookingError = '';
+
+  planTypes = ['SINGLE', 'WEEKLY', 'MONTHLY'];
+
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private mentorService: MentorService
+      private route: ActivatedRoute,
+      private router: Router,
+      private fb: FormBuilder,
+      private mentorService: MentorService,
+      private sessionService: SessionService
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +53,45 @@ export class MentorDetailComponent implements OnInit {
         this.loading = false;
       }
     });
+
+    this.bookingForm = this.fb.group({
+      topic:            ['', [Validators.required, Validators.maxLength(200)]],
+      message:          [''],
+      planType:         ['SINGLE', Validators.required],
+      totalOccurrences: [1, [Validators.required, Validators.min(1), Validators.max(30)]]
+    });
+  }
+
+  toggleBookingForm(): void {
+    this.showBookingForm = !this.showBookingForm;
+    this.bookingSuccess = '';
+    this.bookingError   = '';
+  }
+
+  onBook(): void {
+    if (this.bookingForm.invalid || !this.mentor) return;
+
+    this.booking = true;
+    this.bookingError = '';
+
+    this.sessionService.bookSession({
+      mentorId:         this.mentor.id,
+      topic:            this.bookingForm.value.topic,
+      message:          this.bookingForm.value.message,
+      planType:         this.bookingForm.value.planType,
+      totalOccurrences: this.bookingForm.value.totalOccurrences
+    }).subscribe({
+      next: () => {
+        this.booking        = false;
+        this.bookingSuccess = 'Session request sent! The mentor will respond soon.';
+        this.showBookingForm = false;
+        this.bookingForm.reset({ planType: 'SINGLE', totalOccurrences: 1 });
+      },
+      error: (err) => {
+        this.booking      = false;
+        this.bookingError = err.error?.message || 'Failed to book session. Please try again.';
+      }
+    });
   }
 
   goBack(): void {
@@ -46,11 +100,7 @@ export class MentorDetailComponent implements OnInit {
 
   get initials(): string {
     return (this.mentor?.user.fullName ?? 'M')
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
+        .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }
 
   getRatingStars(rating: number): string {

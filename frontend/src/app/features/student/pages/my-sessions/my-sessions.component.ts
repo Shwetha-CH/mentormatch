@@ -1,9 +1,10 @@
+// src/app/features/student/pages/my-sessions/my-sessions.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SessionService } from '../../services/session.service';
-import { Session, SessionStatus } from '../../models/session.mode';
+import { SessionService, SessionResponse } from '../../services/session.service';
 
-type TabStatus = 'ALL' | SessionStatus;
+type TabStatus = 'ALL' | 'PENDING' | 'ACCEPTED' | 'COMPLETED' | 'REJECTED' | 'CANCELLED';
 
 interface Tab {
   label: string;
@@ -18,9 +19,9 @@ interface Tab {
 })
 export class MySessionsComponent implements OnInit {
 
-  allSessions: Session[]      = [];
-  filteredSessions: Session[] = [];
-  activeTab: TabStatus        = 'ALL';
+  allSessions: SessionResponse[]      = [];
+  filteredSessions: SessionResponse[] = [];
+  activeTab: TabStatus                = 'ALL';
   loading  = true;
   errorMsg = '';
 
@@ -39,8 +40,6 @@ export class MySessionsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // TODO: When real API is ready, sessionService.getMySessions()
-    // will call GET /api/students/me/sessions automatically
     this.sessionService.getMySessions().subscribe({
       next: (sessions) => {
         this.allSessions = sessions;
@@ -80,10 +79,11 @@ export class MySessionsComponent implements OnInit {
   }
 
   getInitials(name: string): string {
-    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    return (name ?? 'M').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }
 
   formatDate(dateStr: string): string {
+    if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('en-IN', {
       day: 'numeric', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
@@ -103,7 +103,7 @@ export class MySessionsComponent implements OnInit {
 
   getPlanIcon(plan: string): string {
     const map: Record<string, string> = {
-      SINGLE: '1️⃣', DAILY: '📆', WEEKLY: '📅', MONTHLY: '🗓️'
+      SINGLE: '1️⃣', WEEKLY: '📅', MONTHLY: '🗓️'
     };
     return map[plan] ?? '📅';
   }

@@ -1,0 +1,38 @@
+<!-- src/app/shared/notification-bell/notification-bell.component.html -->
+
+<div class="bell-wrap">
+
+    <button class="bell-btn" (click)="togglePanel()" title="Notifications">
+        🔔
+        <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
+    </button>
+
+    <div class="panel" *ngIf="panelOpen">
+
+        <div class="panel-head">
+            <span class="panel-title">Notifications</span>
+            <button class="clear-btn" *ngIf="unreadCount > 0" (click)="markAllRead()">
+                Mark all read
+            </button>
+        </div>
+
+        <div *ngIf="notifications.length === 0" class="empty-panel">
+            No notifications yet.
+        </div>
+
+        <ul class="notif-list">
+            <li *ngFor="let n of notifications"
+                class="notif-item"
+                [class.unread]="!n.isRead"
+                (click)="onClickNotification(n)">
+                <div class="notif-dot" *ngIf="!n.isRead"></div>
+                <div class="notif-body">
+                    <span class="notif-title">{{ n.title }}</span>
+                    <span class="notif-msg">{{ n.message }}</span>
+                    <span class="notif-time">{{ timeAgo(n.createdAt) }}</span>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</div>

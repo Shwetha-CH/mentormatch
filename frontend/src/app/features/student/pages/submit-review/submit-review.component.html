@@ -1,0 +1,38 @@
+<!-- src/app/features/student/submit-review/submit-review.component.html -->
+
+<div class="review-card">
+
+    <p class="card-label">Leave a review</p>
+
+    <div *ngIf="successMsg" class="banner success">✓ {{ successMsg }}</div>
+    <div *ngIf="errorMsg"   class="banner error">{{ errorMsg }}</div>
+
+    <ng-container *ngIf="!successMsg">
+
+        <div class="star-row" (mouseleave)="hoveredRating = 0">
+      <span
+              *ngFor="let star of stars"
+              [class]="getStarClass(star)"
+              (mouseenter)="hoveredRating = star"
+              (click)="setRating(star)">
+        ★
+      </span>
+        </div>
+        <p class="rating-hint" *ngIf="selectedRating > 0">{{ selectedRating }} / 5</p>
+
+        <div class="field">
+            <label>Comment (optional)</label>
+            <textarea
+                    [(ngModel)]="comment"
+                    rows="3"
+                    placeholder="Share your experience...">
+      </textarea>
+        </div>
+
+        <button class="btn-primary" (click)="onSubmit()" [disabled]="submitting">
+            {{ submitting ? 'Submitting…' : 'Submit Review' }}
+        </button>
+
+    </ng-container>
+
+</div>

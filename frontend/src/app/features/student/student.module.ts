@@ -9,13 +9,22 @@ import { BrowseMentorsComponent } from './pages/browse-mentors/browse-mentors.co
 import { MentorDetailComponent } from './pages/mentor-detail/mentor-detail.component';
 import { MySessionsComponent } from './pages/my-sessions/my-sessions.component';
 
+import { SubmitReviewComponent } from './pages/submit-review/submit-review.component';
+import { MentorReviewsComponent } from './pages/mentor-reviews/mentor-reviews.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { NotificationBellComponent } from './components/notification-bell/notification-bell.component';
+
 @NgModule({
   declarations: [
     StudentDashboardComponent,
     StudentProfileComponent,
     BrowseMentorsComponent,
     MentorDetailComponent,
-    MySessionsComponent
+    MySessionsComponent,
+    SubmitReviewComponent,
+    MentorReviewsComponent,
+    NotificationsComponent,
+    NotificationBellComponent,
   ],
   imports: [
     CommonModule,

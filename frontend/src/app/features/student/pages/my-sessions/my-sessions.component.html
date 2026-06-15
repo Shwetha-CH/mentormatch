@@ -40,7 +40,7 @@
                  (click)="viewSession(session.id)">
 
                 <div class="mentor-avatar">
-                    <span>{{ getInitials(session.mentor.fullName) }}</span>
+                    <span>{{ getInitials(session.mentorName) }}</span>
                 </div>
 
                 <div class="session-info">
@@ -52,7 +52,7 @@
                     </div>
 
                     <p class="mentor-name">
-                        with <strong>{{ session.mentor.fullName }}</strong>
+                        with <strong>{{ session.mentorName }}</strong>
                     </p>
 
                     <div class="session-meta">
@@ -61,11 +61,11 @@
                             <span *ngIf="session.totalOccurrences > 1"> - {{ session.totalOccurrences }} sessions</span>
                         </span>
                         <span class="meta-dot">-</span>
-                        <span class="meta-item">{{ formatDate(session.scheduledAt) }}</span>
+                        <span class="meta-item">{{ formatDate(session.createdAt) }}</span>
                     </div>
 
-                    <div class="rejection-note" *ngIf="session.status === 'REJECTED' && session.rejectionReason">
-                        <span class="rej-label">Reason:</span> {{ session.rejectionReason }}
+                    <div class="rejection-note" *ngIf="session.status === 'REJECTED'">
+                        <span class="rej-label">Reason:</span> Session was rejected.
                     </div>
                 </div>
 

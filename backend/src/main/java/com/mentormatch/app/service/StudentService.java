@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StudentService {
 
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(StudentService.class);
     private final StudentRepository studentRepo;
     private final UserRepository userRepo;
 
@@ -22,10 +23,23 @@ public class StudentService {
     }
 
     public StudentProfileResponse getMyProfile(String email) {
+        logger.info("Service: Fetching profile for email: {}", email);
         User user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> {
+                    logger.error("Service: User not found in database for email: {}", email);
+                    return new RuntimeException("User not found: " + email);
+                });
+        
         StudentProfile profile = studentRepo.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+                .orElseGet(() -> {
+                    logger.info("Service: No profile found for {}, creating temporary blank profile", email);
+                    // Return a blank profile object if none exists yet
+                    StudentProfile p = new StudentProfile();
+                    p.setUser(user);
+                    p.setTotalSessions(0);
+                    return p;
+                });
+        
         return mapToResponse(profile);
     }
 

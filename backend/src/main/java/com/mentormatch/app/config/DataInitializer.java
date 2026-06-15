@@ -1,39 +1,106 @@
 package com.mentormatch.app.config;
 
+import com.mentormatch.app.entity.MentorProfile;
 import com.mentormatch.app.entity.Role;
+import com.mentormatch.app.entity.StudentProfile;
 import com.mentormatch.app.entity.User;
-import com.mentormatch.app.repository.UserRepository;
+import com.mentormatch.app.repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final MentorRepository mentorRepository;
+    private final ReviewRepository reviewRepository;
+    private final NotificationRepository notificationRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JdbcTemplate jdbcTemplate;
 
-    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(UserRepository userRepository, 
+                           StudentRepository studentRepository,
+                           MentorRepository mentorRepository,
+                           ReviewRepository reviewRepository,
+                           NotificationRepository notificationRepository,
+                           PasswordEncoder passwordEncoder,
+                           JdbcTemplate jdbcTemplate) {
         this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+        this.mentorRepository = mentorRepository;
+        this.reviewRepository = reviewRepository;
+        this.notificationRepository = notificationRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void run(String... args) {
-        String adminEmail = "admin@mentormatch.com";
+        seedAdmin();
+        seedStudent();
+        seedMentor();
+    }
 
-        if (!userRepository.existsByEmail(adminEmail)) {
-            User admin = new User(
-                    "Admin",
-                    adminEmail,
-                    passwordEncoder.encode("Admin@1234"),
-                    Role.ADMIN,
-                    true
-            );
+    private void seedAdmin() {
+        String adminEmail = "admin@mentormatch.com";
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
+            User admin = new User();
+            admin.setFullName("Admin User");
+            admin.setEmail(adminEmail);
+            admin.setPassword(passwordEncoder.encode("Admin@1234"));
+            admin.setRole(Role.ADMIN);
+            admin.setIsActive(true);
             userRepository.save(admin);
-            System.out.println("Admin user seeded successfully.");
-        } else {
-            System.out.println("Admin user already exists. Skipping seed.");
+            System.out.println("Admin user seeded.");
+        }
+    }
+
+    private void seedStudent() {
+        String studentEmail = "student@mentormatch.com";
+        if (userRepository.findByEmail(studentEmail).isEmpty()) {
+            User student = new User();
+            student.setFullName("Default Student");
+            student.setEmail(studentEmail);
+            student.setPassword(passwordEncoder.encode("Student@1234"));
+            student.setRole(Role.STUDENT);
+            student.setIsActive(true);
+            User savedUser = userRepository.save(student);
+
+            StudentProfile profile = new StudentProfile();
+            profile.setUser(savedUser);
+            profile.setHeadline("Eager Learner");
+            profile.setTotalSessions(0);
+            studentRepository.save(profile);
+            System.out.println("Student user seeded.");
+        }
+    }
+
+    private void seedMentor() {
+        String mentorEmail = "mentor@mentormatch.com";
+        if (userRepository.findByEmail(mentorEmail).isEmpty()) {
+            User mentor = new User();
+            mentor.setFullName("Default Mentor");
+            mentor.setEmail(mentorEmail);
+            mentor.setPassword(passwordEncoder.encode("Mentor@1234"));
+            mentor.setRole(Role.MENTOR);
+            mentor.setIsActive(true);
+            User savedUser = userRepository.save(mentor);
+
+            MentorProfile profile = new MentorProfile();
+            profile.setUser(savedUser);
+            profile.setIndustry("Technology");
+            profile.setBio("Experienced software engineer");
+            profile.setHourlyRate(50);
+            profile.setSkills(new ArrayList<>());
+            profile.setRating(5.0);
+            profile.setIsAvailable(true);
+            mentorRepository.save(profile);
+            System.out.println("Mentor user seeded.");
         }
     }
 }
