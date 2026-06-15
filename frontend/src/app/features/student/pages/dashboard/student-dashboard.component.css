@@ -34,7 +34,13 @@
   font-size: 14px; font-weight: 500; cursor: pointer;
   white-space: nowrap;
 }
-.btn-primary:hover { background: #1d4ed8; }
+.btn-danger {
+  padding: 9px 18px; border-radius: 8px; border: none;
+  background: #ec2241; color: #fff;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primary:hover { background: #d81d1d; }
 
 /* Stats */
 .stats-row {
