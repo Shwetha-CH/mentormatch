@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { MentorProfile } from './models/mentor-profile.model';
 import { MentorProfileService } from './services/mentor-profile.service';
+import { SessionManagementService } from './services/session.service';
+import { SessionResponse } from './models/session.model';
 
 @Component({
   selector: 'app-mentor-dashboard',
@@ -10,12 +12,14 @@ import { MentorProfileService } from './services/mentor-profile.service';
   styleUrls: ['./mentor-dashboard.component.css']
 })
 export class MentorDashboardComponent implements OnInit {
+  // Navigation View State Tracker
+  activeTab: 'profile' | 'sessions' = 'profile';
 
+  // Profile management parameters (Teammate's logic)
   form!: FormGroup;
   profile: MentorProfile | null = null;
   skillTags: string[] = [];
   skillInputValue = '';
-
   loading = true;
   saving = false;
   availabilitySaving = false;
@@ -24,10 +28,21 @@ export class MentorDashboardComponent implements OnInit {
   saveSuccess = false;
   errorMsg = '';
 
+  // Session Management features (Your logic fields)
+  sessionsList: SessionResponse[] = [];
+  sessionsLoading = false;
+  sessionActionRunning = false;
+
+  // Modal Interactive States
+  showAcceptModal = false;
+  selectedSessionId: number | null = null;
+  inputMeetingLink = '';
+
   constructor(
     private fb: FormBuilder,
     private mentorService: MentorProfileService,
-    private authService: AuthService
+    private authService: AuthService,
+    private sessionService: SessionManagementService // Injected your Service handler
   ) {}
 
   ngOnInit(): void {
@@ -40,10 +55,120 @@ export class MentorDashboardComponent implements OnInit {
     this.loadProfile();
   }
 
+  switchTab(tabName: 'profile' | 'sessions'): void {
+    this.activeTab = tabName;
+    if (tabName === 'sessions') {
+      this.loadSessionRequests();
+    }
+  }
+
+  loadSessionRequests(): void {
+    this.sessionsLoading = true;
+    this.errorMsg = '';
+    this.sessionService.getMySessions().subscribe({
+      next: (res) => {
+        this.sessionsList = res.data || [];
+        this.sessionsLoading = false;
+      },
+      error: () => {
+        this.errorMsg = 'Failed to download student sessions. Please refresh.';
+        this.sessionsLoading = false;
+      }
+    });
+  }
+
+//   loadSessionRequests(): void {
+//     this.sessionsLoading = true;
+//     this.errorMsg = '';
+//
+//     // --- TEMPORARY MOCK DATA FOR TESTING ---
+//     setTimeout(() => {
+//       this.sessionsLoading = false;
+//       this.sessionsList = [
+//         {
+//           sessionId: 5001,
+//           studentName: 'Jane Doe',
+//           studentEmail: 'jane@student.com',
+//           topic: 'React Architecture & State',
+//           planType: 'WEEKLY',
+//           status: 'PENDING',
+//           totalOccurrences: 3,
+//           occurrences: [
+//             { id: 901, scheduledAt: '2026-06-22 14:00', durationMinutes: 60, meetingLink: null, status: 'PENDING' },
+//             { id: 902, scheduledAt: '2026-06-29 14:00', durationMinutes: 60, meetingLink: null, status: 'PENDING' },
+//             { id: 903, scheduledAt: '2026-07-06 14:00', durationMinutes: 60, meetingLink: null, status: 'PENDING' }
+//           ]
+//         }
+//       ];
+//     }, 500); // Mimics a quick network delay
+//   }
+
+  openAcceptWindow(id: number): void {
+    this.selectedSessionId = id;
+    this.inputMeetingLink = '';
+    this.showAcceptModal = true;
+  }
+
+  closeAcceptWindow(): void {
+    this.showAcceptModal = false;
+    this.selectedSessionId = null;
+  }
+
+  confirmAcceptance(): void {
+    if (!this.inputMeetingLink.trim() || !this.selectedSessionId) return;
+
+    this.sessionActionRunning = true;
+    this.sessionService.acceptSession(this.selectedSessionId, this.inputMeetingLink.trim()).subscribe({
+      next: () => {
+        this.sessionActionRunning = false;
+        this.closeAcceptWindow();
+        this.loadSessionRequests(); // Refresh layout views
+      },
+      error: (err) => {
+        this.sessionActionRunning = false;
+        alert('Could not update state. Verify network links.');
+      }
+    });
+  }
+
+  executeRejection(id: number): void {
+    if (!confirm('Are you sure you want to decline this student request?')) return;
+
+    this.sessionActionRunning = true;
+    this.sessionService.rejectSession(id).subscribe({
+      next: () => {
+        this.sessionActionRunning = false;
+        this.loadSessionRequests();
+      },
+      error: () => {
+        this.sessionActionRunning = false;
+        alert('Could not reject request.');
+      }
+    });
+  }
+
+  executeOccurrenceCancel(occurrenceId: number): void {
+    if (!confirm('Cancel this specific timeline occurrence slot? Student will be updated.')) return;
+
+    this.sessionActionRunning = true;
+    this.sessionService.cancelOccurrence(occurrenceId).subscribe({
+      next: () => {
+        this.sessionActionRunning = false;
+        this.loadSessionRequests();
+      },
+      error: () => {
+        this.sessionActionRunning = false;
+        alert('Failed to drop individual date.');
+      }
+    });
+  }
+
+  // ==========================================
+  // Profile Logic Handlers (Teammate's Methods Preserved)
+  // ==========================================
   loadProfile(): void {
     this.loading = true;
     this.errorMsg = '';
-
     this.mentorService.getMyProfile().subscribe({
       next: (profile) => {
         this.applyProfile(profile);
@@ -73,16 +198,12 @@ export class MentorDashboardComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-
     this.saving = true;
     this.saveSuccess = false;
     this.errorMsg = '';
-
     this.mentorService.updateMyProfile({
       industry: this.form.value.industry,
-      hourlyRate: this.form.value.hourlyRate === null || this.form.value.hourlyRate === ''
-        ? null
-        : Number(this.form.value.hourlyRate),
+      hourlyRate: this.form.value.hourlyRate === null || this.form.value.hourlyRate === '' ? null : Number(this.form.value.hourlyRate),
       bio: this.form.value.bio,
       skills: this.skillTags
     }).subscribe({
@@ -100,14 +221,10 @@ export class MentorDashboardComponent implements OnInit {
   }
 
   toggleAvailability(): void {
-    if (!this.profile || this.availabilitySaving) {
-      return;
-    }
-
+    if (!this.profile || this.availabilitySaving) return;
     const nextValue = !this.profile.isAvailable;
     this.availabilitySaving = true;
     this.errorMsg = '';
-
     this.mentorService.updateAvailability(nextValue).subscribe({
       next: () => {
         this.profile = { ...this.profile!, isAvailable: nextValue };
@@ -121,26 +238,18 @@ export class MentorDashboardComponent implements OnInit {
   }
 
   requestDeleteProfile(): void {
-    if (!this.profile || this.deleting) {
-      return;
-    }
+    if (!this.profile || this.deleting) return;
     this.confirmDelete = true;
     this.saveSuccess = false;
     this.errorMsg = '';
   }
 
-  cancelDeleteProfile(): void {
-    this.confirmDelete = false;
-  }
+  cancelDeleteProfile(): void { this.confirmDelete = false; }
 
   deleteProfile(): void {
-    if (!this.profile || this.deleting) {
-      return;
-    }
-
+    if (!this.profile || this.deleting) return;
     this.deleting = true;
     this.errorMsg = '';
-
     this.mentorService.deleteMyProfile().subscribe({
       next: () => {
         this.profile = null;
@@ -164,7 +273,6 @@ export class MentorDashboardComponent implements OnInit {
       event.preventDefault();
       this.commitSkill();
     }
-
     if (event.key === 'Backspace' && !this.skillInputValue && this.skillTags.length) {
       this.skillTags.pop();
     }
@@ -178,46 +286,14 @@ export class MentorDashboardComponent implements OnInit {
     this.skillInputValue = '';
   }
 
-  removeSkill(skill: string): void {
-    this.skillTags = this.skillTags.filter(item => item !== skill);
-  }
-
-  get initials(): string {
-    return this.displayName
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
-  }
-
-  get displayName(): string {
-    return this.profile?.user?.fullName || this.authService.getFullName() || 'Mentor';
-  }
-
-  get email(): string {
-    return this.profile?.user?.email || this.authService.getUserData()?.email || '';
-  }
-
-  get bioLength(): number {
-    return (this.form.get('bio')?.value ?? '').length;
-  }
-
+  removeSkill(skill: string): void { this.skillTags = this.skillTags.filter(item => item !== skill); }
+  get initials(): string { return this.displayName.split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase(); }
+  get displayName(): string { return this.profile?.user?.fullName || this.authService.getFullName() || 'Mentor'; }
+  get email(): string { return this.profile?.user?.email || this.authService.getUserData()?.email || ''; }
+  get bioLength(): number { return (this.form.get('bio')?.value ?? '').length; }
   get profileCompletion(): number {
-    const fields = [
-      this.form.get('industry')?.value,
-      this.form.get('hourlyRate')?.value !== null && this.form.get('hourlyRate')?.value !== '',
-      this.form.get('bio')?.value,
-      this.skillTags.length > 0
-    ];
+    const fields = [this.form.get('industry')?.value, this.form.get('hourlyRate')?.value !== null && this.form.get('hourlyRate')?.value !== '', this.form.get('bio')?.value, this.skillTags.length > 0];
     return Math.round((fields.filter(Boolean).length / fields.length) * 100);
   }
-
-  private resetForm(): void {
-    this.form.reset({
-      industry: '',
-      hourlyRate: null,
-      bio: ''
-    });
-  }
+  private resetForm(): void { this.form.reset({ industry: '', hourlyRate: null, bio: '' }); }
 }
