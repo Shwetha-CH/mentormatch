@@ -19,4 +19,5 @@ export interface AdminUserDetail extends AdminUser {
   // For students
   currentRole?: string;
   goals?: string;
+  rating?: number; 
 }

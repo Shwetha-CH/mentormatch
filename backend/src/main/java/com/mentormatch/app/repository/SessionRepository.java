@@ -27,4 +27,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     // Get sessions filtered by status
     List<Session> findByStatusOrderByCreatedAtDesc(SessionStatus status);
+    // Get last 5 sessions
+    @Query("SELECT s FROM Session s ORDER BY s.createdAt DESC")
+    List<Session> findTop5ByOrderByCreatedAtDesc();
 }
