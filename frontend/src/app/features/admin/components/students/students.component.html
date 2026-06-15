@@ -1,0 +1,77 @@
+<!-- src/app/features/admin/components/students/students.component.html -->
+
+<div class="students-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Students</h1>
+      <p class="page-subtitle">Manage student accounts and access</p>
+    </div>
+    <div class="header-stats">
+      <span class="stat-badge">{{ students.length }} Total</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading students...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadStudents()">Retry</button>
+  </div>
+
+  <!-- Students Table -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students">
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">{{ student.fullName.charAt(0).toUpperCase() }}</div>
+              <span class="user-name">{{ student.fullName }}</span>
+            </div>
+          </td>
+          <td class="email-cell">{{ student.email }}</td>
+          <td class="date-cell">{{ formatDate(student.createdAt) }}</td>
+          <td>
+            <span 
+              class="status-badge" 
+              [class.status-active]="student.isActive"
+              [class.status-inactive]="!student.isActive">
+              {{ student.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <button 
+              class="toggle-btn"
+              [class.btn-deactivate]="student.isActive"
+              [class.btn-activate]="!student.isActive"
+              (click)="toggleStatus(student)">
+              {{ student.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="students.length === 0" class="empty-state">
+      <div class="empty-icon">👨‍🎓</div>
+      <h3>No students found</h3>
+      <p>There are currently no registered students.</p>
+    </div>
+  </div>
+</div>

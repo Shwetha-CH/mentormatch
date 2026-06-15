@@ -1,0 +1,77 @@
+<!-- src/app/features/admin/components/mentors/mentors.component.html -->
+
+<div class="mentors-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mentors</h1>
+      <p class="page-subtitle">Manage mentor accounts and availability</p>
+    </div>
+    <div class="header-stats">
+      <span class="stat-badge">{{ mentors.length }} Total</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading mentors...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadMentors()">Retry</button>
+  </div>
+
+  <!-- Mentors Table -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Joined</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let mentor of mentors">
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar">{{ mentor.fullName.charAt(0).toUpperCase() }}</div>
+              <span class="user-name">{{ mentor.fullName }}</span>
+            </div>
+          </td>
+          <td class="email-cell">{{ mentor.email }}</td>
+          <td class="date-cell">{{ formatDate(mentor.createdAt) }}</td>
+          <td>
+            <span 
+              class="status-badge" 
+              [class.status-active]="mentor.isActive"
+              [class.status-inactive]="!mentor.isActive">
+              {{ mentor.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td>
+            <button 
+              class="toggle-btn"
+              [class.btn-deactivate]="mentor.isActive"
+              [class.btn-activate]="!mentor.isActive"
+              (click)="toggleStatus(mentor)">
+              {{ mentor.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="mentors.length === 0" class="empty-state">
+      <div class="empty-icon">👨‍🏫</div>
+      <h3>No mentors found</h3>
+      <p>There are currently no registered mentors.</p>
+    </div>
+  </div>
+</div>

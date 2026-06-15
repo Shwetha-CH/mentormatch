@@ -1,0 +1,77 @@
+/* src/app/features/admin/components/stat-card/stat-card.component.css */
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ────────────────────────────────────────────────────────────
+   ICON AREA
+   ──────────────────────────────────────────────────────────── */
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* Blue variant */
+.stat-card-blue .stat-icon {
+  background: #eff6ff;
+}
+
+/* Green variant */
+.stat-card-green .stat-icon {
+  background: #f0fdf4;
+}
+
+/* Purple variant */
+.stat-card-purple .stat-icon {
+  background: #faf5ff;
+}
+
+/* Orange variant */
+.stat-card-orange .stat-icon {
+  background: #fff7ed;
+}
+
+/* ────────────────────────────────────────────────────────────
+   CONTENT AREA
+   ──────────────────────────────────────────────────────────── */
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
