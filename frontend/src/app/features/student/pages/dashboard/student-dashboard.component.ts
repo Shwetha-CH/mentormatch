@@ -1,18 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StudentService } from '../../services/student.service';
+import { SessionService } from '../../services/session.service';
 import { StudentProfile } from '../../models/student-profile.model';
-import {AuthService} from "../../../../core/services/auth.service";
-
-// ─── TODO: Replace with real session API response type when ready ───
-export interface SessionSummary {
-  id: number;
-  mentorName: string;
-  topic: string;
-  scheduledAt: string;
-  status: 'PENDING' | 'ACCEPTED' | 'COMPLETED' | 'REJECTED' | 'CANCELLED';
-  planType: 'SINGLE' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
-}
+import { Session } from '../../models/session.model';
+import { AuthService } from "../../../../core/services/auth.service";
 
 @Component({
   selector: 'app-student-dashboard',
@@ -25,41 +17,14 @@ export class StudentDashboardComponent implements OnInit {
   loading = true;
   errorMsg = '';
 
-  // ─── DUMMY session stats — replace with GET /api/students/me/sessions ───
   stats = {
-    totalSessions: 8,       // TODO: sessions.length
-    upcoming: 2,            // TODO: filter status === 'ACCEPTED' & future date
-    pending: 1,             // TODO: filter status === 'PENDING'
-    completed: 5            // TODO: filter status === 'COMPLETED'
+    totalSessions: 0,
+    upcoming: 0,
+    pending: 0,
+    completed: 0
   };
 
-  // ─── DUMMY recent sessions — replace with GET /api/students/me/sessions ───
-  recentSessions: SessionSummary[] = [
-    {
-      id: 1,
-      mentorName: 'Arjun Sharma',
-      topic: 'System Design Interview Prep',
-      scheduledAt: '2026-06-15T10:00:00',
-      status: 'ACCEPTED',
-      planType: 'WEEKLY'
-    },
-    {
-      id: 2,
-      mentorName: 'Priya Nair',
-      topic: 'Java Spring Boot Fundamentals',
-      scheduledAt: '2026-06-12T14:00:00',
-      status: 'PENDING',
-      planType: 'SINGLE'
-    },
-    {
-      id: 3,
-      mentorName: 'Rahul Verma',
-      topic: 'DSA Problem Solving',
-      scheduledAt: '2026-06-08T11:00:00',
-      status: 'COMPLETED',
-      planType: 'DAILY'
-    }
-  ];
+  recentSessions: any[] = [];
 
   quickActions = [
     { label: 'Browse Mentors',   icon: '🔍', route: '/student/mentors'  },
@@ -70,6 +35,7 @@ export class StudentDashboardComponent implements OnInit {
 
   constructor(
       private studentService: StudentService,
+      private sessionService: SessionService,
       private router: Router,
       private authService: AuthService,
   ) {}
@@ -78,14 +44,6 @@ export class StudentDashboardComponent implements OnInit {
     this.studentService.getProfile().subscribe({
       next: (p) => {
         this.profile = p;
-        // ─── TODO: When session API is ready, also call:
-        // this.sessionService.getMySessions().subscribe(sessions => {
-        //   this.stats.totalSessions = sessions.length;
-        //   this.stats.upcoming  = sessions.filter(s => s.status === 'ACCEPTED').length;
-        //   this.stats.pending   = sessions.filter(s => s.status === 'PENDING').length;
-        //   this.stats.completed = sessions.filter(s => s.status === 'COMPLETED').length;
-        //   this.recentSessions  = sessions.slice(0, 3);
-        // });
         this.loading = false;
       },
       error: () => {
@@ -126,6 +84,7 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   formatDate(dateStr: string): string {
+    if (!dateStr) return 'TBD';
     return new Date(dateStr).toLocaleDateString('en-IN', {
       day: 'numeric', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit'

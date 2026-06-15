@@ -1,3 +1,5 @@
+// src/app/features/mentor/models/session.model.ts
+
 export interface OccurrenceSummary {
   id: number;
   scheduledAt: string;
@@ -7,6 +9,7 @@ export interface OccurrenceSummary {
 }
 
 export interface SessionResponse {
+  id: number;
   sessionId: number;
   studentName: string;
   studentEmail: string;
@@ -14,5 +17,8 @@ export interface SessionResponse {
   planType: 'SINGLE' | 'WEEKLY' | 'MONTHLY';
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED' | 'COMPLETED';
   totalOccurrences: number;
+  mentorName: string;
+  mentorId: number;
+  studentId: number;
   occurrences: OccurrenceSummary[];
 }

@@ -19,7 +19,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false)
-    private SessionEntity session;
+    private Session session;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id", nullable = false)
@@ -59,8 +59,8 @@ public class Review {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public SessionEntity getSession() { return session; }
-    public void setSession(SessionEntity session) { this.session = session; }
+    public Session getSession() { return session; }
+    public void setSession(Session session) { this.session = session; }
 
     public User getReviewer() { return reviewer; }
     public void setReviewer(User reviewer) { this.reviewer = reviewer; }

@@ -1,200 +1,200 @@
 <div class="mentor-page">
 
-  <div *ngIf="loading" class="state-msg">Loading mentor dashboard...</div>
+    <div *ngIf="loading" class="state-msg">Loading mentor dashboard...</div>
 
-  <ng-container *ngIf="!loading">
+    <ng-container *ngIf="!loading">
 
-    <div class="dash-header">
-      <div class="header-left">
-        <div class="avatar-wrap">
-          <span>{{ initials }}</span>
-        </div>
-        <div>
-          <h1>{{ displayName }}</h1>
-          <p class="sub">{{ profile?.industry || 'Set up your mentor profile' }}</p>
-        </div>
-      </div>
+        <div class="dash-header">
+            <div class="header-left">
+                <div class="avatar-wrap">
+                    <span>{{ initials }}</span>
+                </div>
+                <div>
+                    <h1>{{ displayName }}</h1>
+                    <p class="sub">{{ profile?.industry || 'Set up your mentor profile' }}</p>
+                </div>
+            </div>
 
-      <button
-        type="button"
-        class="availability-btn"
-        [class.available]="profile?.isAvailable"
-        [disabled]="!profile || availabilitySaving"
-        (click)="toggleAvailability()">
-        <span class="dot"></span>
-        {{ profile?.isAvailable ? 'Available' : 'Unavailable' }}
-      </button>
-    </div>
-
-    <div class="nav-tabs">
-      <button class="tab-link" [class.active]="activeTab === 'profile'" (click)="switchTab('profile')">Edit Profile</button>
-      <button class="tab-link" [class.active]="activeTab === 'sessions'" (click)="switchTab('sessions')">
-        Session Requests 
-        <span class="badge" *ngIf="sessionsList.length > 0">{{ sessionsList.length }}</span>
-      </button>
-    </div>
-
-    <div class="banner success" *ngIf="saveSuccess">Profile saved successfully.</div>
-    <div class="banner error" *ngIf="errorMsg">{{ errorMsg }}</div>
-
-    <div class="main-grid" *ngIf="activeTab === 'profile'">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="card edit-card">
-        <div class="card-head">
-          <p class="card-label">Edit profile</p>
-          <button type="submit" class="btn-primary" [disabled]="saving">
-            {{ saving ? 'Saving...' : 'Save profile' }}
-          </button>
+            <button
+                    type="button"
+                    class="availability-btn"
+                    [class.available]="profile?.isAvailable"
+                    [disabled]="!profile || availabilitySaving"
+                    (click)="toggleAvailability()">
+                <span class="dot"></span>
+                {{ profile?.isAvailable ? 'Available' : 'Unavailable' }}
+            </button>
         </div>
 
-        <div class="field">
-          <label for="industry">Industry <span class="req">*</span></label>
-          <input id="industry" type="text" formControlName="industry" placeholder="Software / IT" />
-          <span class="err" *ngIf="form.get('industry')?.invalid && form.get('industry')?.touched">
+        <div class="nav-tabs">
+            <button class="tab-link" [class.active]="activeTab === 'profile'" (click)="switchTab('profile')">Edit Profile</button>
+            <button class="tab-link" [class.active]="activeTab === 'sessions'" (click)="switchTab('sessions')">
+                Session Requests
+                <span class="badge" *ngIf="sessionsList.length > 0">{{ sessionsList.length }}</span>
+            </button>
+        </div>
+
+        <div class="banner success" *ngIf="saveSuccess">Profile saved successfully.</div>
+        <div class="banner error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+        <div class="main-grid" *ngIf="activeTab === 'profile'">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="card edit-card">
+                <div class="card-head">
+                    <p class="card-label">Edit profile</p>
+                    <button type="submit" class="btn-primary" [disabled]="saving">
+                        {{ saving ? 'Saving...' : 'Save profile' }}
+                    </button>
+                </div>
+
+                <div class="field">
+                    <label for="industry">Industry <span class="req">*</span></label>
+                    <input id="industry" type="text" formControlName="industry" placeholder="Software / IT" />
+                    <span class="err" *ngIf="form.get('industry')?.invalid && form.get('industry')?.touched">
             Required, max 100 characters
           </span>
-        </div>
+                </div>
 
-        <div class="field">
-          <label for="hourlyRate">Hourly rate in rupees</label>
-          <input id="hourlyRate" type="number" min="0" max="100000" formControlName="hourlyRate" placeholder="e.g. 500" />
-          <span class="err" *ngIf="form.get('hourlyRate')?.invalid && form.get('hourlyRate')?.touched">
+                <div class="field">
+                    <label for="hourlyRate">Hourly rate in rupees</label>
+                    <input id="hourlyRate" type="number" min="0" max="100000" formControlName="hourlyRate" placeholder="e.g. 500" />
+                    <span class="err" *ngIf="form.get('hourlyRate')?.invalid && form.get('hourlyRate')?.touched">
             Enter a value between 0 and 100000
           </span>
-        </div>
+                </div>
 
-        <div class="field">
-          <label for="bio">Bio <span class="req">*</span></label>
-          <textarea id="bio" rows="6" formControlName="bio" placeholder="Tell students what you can help with."></textarea>
-          <div class="bio-footer">
-            <span class="err" *ngIf="form.get('bio')?.hasError('maxlength')">Max 1000 characters</span>
-            <span class="char" [class.over]="bioLength > 1000">{{ bioLength }} / 1000</span>
-          </div>
-        </div>
+                <div class="field">
+                    <label for="bio">Bio <span class="req">*</span></label>
+                    <textarea id="bio" rows="6" formControlName="bio" placeholder="Tell students what you can help with."></textarea>
+                    <div class="bio-footer">
+                        <span class="err" *ngIf="form.get('bio')?.hasError('maxlength')">Max 1000 characters</span>
+                        <span class="char" [class.over]="bioLength > 1000">{{ bioLength }} / 1000</span>
+                    </div>
+                </div>
 
-        <div class="skills-block">
-          <label>Skills</label>
-          <div class="tags-box" (click)="skillEl.focus()">
+                <div class="skills-block">
+                    <label>Skills</label>
+                    <div class="tags-box" (click)="skillEl.focus()">
             <span class="tag" *ngFor="let skill of skillTags">
               {{ skill }}
-              <button type="button" class="tag-x" (click)="removeSkill(skill)">x</button>
+                <button type="button" class="tag-x" (click)="removeSkill(skill)">x</button>
             </span>
-            <input
-              #skillEl
-              class="tag-input"
-              [(ngModel)]="skillInputValue"
-              [ngModelOptions]="{standalone: true}"
-              placeholder="Add skill..."
-              (keydown)="onSkillKeydown($event)"
-              (blur)="commitSkill()" />
-          </div>
-          <p class="hint">Press Enter or comma to add a skill.</p>
+                        <input
+                            #skillEl
+                            class="tag-input"
+                            [(ngModel)]="skillInputValue"
+                            [ngModelOptions]="{standalone: true}"
+                            placeholder="Add skill..."
+                            (keydown)="onSkillKeydown($event)"
+                            (blur)="commitSkill()" />
+                    </div>
+                    <p class="hint">Press Enter or comma to add a skill.</p>
+                </div>
+            </form>
+
+            <div class="side-col">
+                <div class="card photo-card">
+                    <p class="card-label">Profile avatar</p>
+                    <div class="photo-preview">
+                        <span>{{ initials }}</span>
+                    </div>
+                </div>
+
+                <div class="card account-card">
+                    <p class="card-label">Account</p>
+                    <p class="profile-name">{{ displayName }}</p>
+                    <p class="profile-meta">{{ email }}</p>
+                </div>
+            </div>
         </div>
-      </form>
 
-      <div class="side-col">
-        <div class="card photo-card">
-          <p class="card-label">Profile avatar</p>
-          <div class="photo-preview">
-            <span>{{ initials }}</span>
-          </div>
-        </div>
+        <div class="sessions-workspace" *ngIf="activeTab === 'sessions'">
+            <div *ngIf="sessionsLoading" class="state-msg">Fetching structural booking items...</div>
 
-        <div class="card account-card">
-          <p class="card-label">Account</p>
-          <p class="profile-name">{{ displayName }}</p>
-          <p class="profile-meta">{{ email }}</p>
-        </div>
-      </div>
-    </div>
+            <div *ngIf="!sessionsLoading && sessionsList.length === 0" class="empty-sessions">
+                <p>No student requests found in your queue.</p>
+            </div>
 
-    <div class="sessions-workspace" *ngIf="activeTab === 'sessions'">
-      <div *ngIf="sessionsLoading" class="state-msg">Fetching structural booking items...</div>
-      
-      <div *ngIf="!sessionsLoading && sessionsList.length === 0" class="empty-sessions">
-        <p>No student requests found in your queue.</p>
-      </div>
+            <div class="session-cards-container" *ngIf="!sessionsLoading && sessionsList.length > 0">
+                <div class="session-card-item card" *ngFor="let session of sessionsList">
 
-      <div class="session-cards-container" *ngIf="!sessionsLoading && sessionsList.length > 0">
-        <div class="session-card-item card" *ngFor="let session of sessionsList">
-          
-          <div class="session-card-header">
-            <div>
+                    <div class="session-card-header">
+                        <div>
               <span class="badge-plan" [class.monthly]="session.planType === 'MONTHLY'" [class.weekly]="session.planType === 'WEEKLY'">
                 {{ session.planType }} Package
               </span>
-              <h3>Topic: {{ session.topic }}</h3>
-              <p class="student-info">Requested By: <strong>{{ session.studentName }}</strong> ({{ session.studentEmail }})</p>
-            </div>
-            
-            <div class="action-status-block">
-              <div class="btn-group" *ngIf="session.status === 'PENDING'">
-                <button type="button" class="btn-action accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.sessionId)">Accept</button>
-                <button type="button" class="btn-action reject" [disabled]="sessionActionRunning" (click)="executeRejection(session.sessionId)">Reject</button>
-              </div>
-              <span class="status-indicator-badge" *ngIf="session.status !== 'PENDING'" [attr.data-status]="session.status">
+                            <h3>Topic: {{ session.topic }}</h3>
+                            <p class="student-info">Requested By: <strong>{{ session.studentName }}</strong></p>
+                        </div>
+
+                        <div class="action-status-block">
+                            <div class="btn-group" *ngIf="session.status === 'PENDING'">
+                                <button type="button" class="btn-action accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">Accept</button>
+                                <button type="button" class="btn-action reject" [disabled]="sessionActionRunning" (click)="executeRejection(session.id)">Reject</button>
+                            </div>
+                            <span class="status-indicator-badge" *ngIf="session.status !== 'PENDING'" [attr.data-status]="session.status">
                 {{ session.status }}
               </span>
+                        </div>
+                    </div>
+
+                    <div class="timeline-breakdown">
+                        <h4>Segregated Schedule Timestamps ({{ session.totalOccurrences }} occurrences)</h4>
+                        <table class="timeline-table">
+                            <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Duration</th>
+                                <th>Meeting Reference Link</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let occurrence of session.occurrences">
+                                <td><strong>{{ occurrence.scheduledAt }}</strong></td>
+                                <td>{{ occurrence.durationMinutes }} mins</td>
+                                <td>
+                                    <a *ngIf="occurrence.meetingLink" [href]="occurrence.meetingLink" target="_blank" class="meet-link">Join Class</a>
+                                    <span *ngIf="!occurrence.meetingLink" class="text-muted">Not Generated</span>
+                                </td>
+                                <td>
+                                    <span class="mini-status" [attr.data-status]="occurrence.status">{{ occurrence.status }}</span>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn-mini-cancel"
+                                            *ngIf="occurrence.status === 'ACCEPTED'"
+                                            [disabled]="sessionActionRunning"
+                                            (click)="executeOccurrenceCancel(occurrence.id)">
+                                        Cancel Slot
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </div>
-          </div>
-
-          <div class="timeline-breakdown">
-            <h4>Segregated Schedule Timestamps ({{ session.totalOccurrences }} occurrences)</h4>
-            <table class="timeline-table">
-              <thead>
-                <tr>
-                  <th>Date & Time</th>
-                  <th>Duration</th>
-                  <th>Meeting Reference Link</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let occurrence of session.occurrences">
-                  <td><strong>{{ occurrence.scheduledAt }}</strong></td>
-                  <td>{{ occurrence.durationMinutes }} mins</td>
-                  <td>
-                    <a *ngIf="occurrence.meetingLink" [href]="occurrence.meetingLink" target="_blank" class="meet-link">Join Class</a>
-                    <span *ngIf="!occurrence.meetingLink" class="text-muted">Not Generated</span>
-                  </td>
-                  <td>
-                    <span class="mini-status" [attr.data-status]="occurrence.status">{{ occurrence.status }}</span>
-                  </td>
-                  <td>
-                    <button type="button" 
-                            class="btn-mini-cancel" 
-                            *ngIf="occurrence.status === 'ACCEPTED'" 
-                            [disabled]="sessionActionRunning"
-                            (click)="executeOccurrenceCancel(occurrence.id)">
-                      Cancel Slot
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
         </div>
-      </div>
-    </div>
 
-  </ng-container>
+    </ng-container>
 </div>
 
 <div class="modal-overlay" *ngIf="showAcceptModal">
-  <div class="modal-container card">
-    <h3>Configure Session Meeting Space</h3>
-    <p>Provide your Google Meet, Zoom, or Teams URL room configuration to confirm scheduling:</p>
-    
-    <div class="field">
-      <input type="url" [(ngModel)]="inputMeetingLink" placeholder="https://meet.google.com/abc-defg-hij" class="modal-input" />
-    </div>
+    <div class="modal-container card">
+        <h3>Configure Session Meeting Space</h3>
+        <p>Provide your Google Meet, Zoom, or Teams URL room configuration to confirm scheduling:</p>
 
-    <div class="confirm-row">
-      <button type="button" class="btn-primary" [disabled]="!inputMeetingLink.trim() || sessionActionRunning" (click)="confirmAcceptance()">
-        {{ sessionActionRunning ? 'Saving...' : 'Confirm & Generate Emails' }}
-      </button>
-      <button type="button" class="btn-secondary" (click)="closeAcceptWindow()">Dismiss</button>
+        <div class="field">
+            <input type="url" [(ngModel)]="inputMeetingLink" placeholder="https://meet.google.com/abc-defg-hij" class="modal-input" />
+        </div>
+
+        <div class="confirm-row">
+            <button type="button" class="btn-primary" [disabled]="!inputMeetingLink.trim() || sessionActionRunning" (click)="confirmAcceptance()">
+                {{ sessionActionRunning ? 'Saving...' : 'Confirm & Generate Emails' }}
+            </button>
+            <button type="button" class="btn-secondary" (click)="closeAcceptWindow()">Dismiss</button>
+        </div>
     </div>
-  </div>
 </div>

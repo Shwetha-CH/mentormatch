@@ -40,20 +40,20 @@ public class ReviewService {
     public ReviewResponse submitReview(Long sessionId, ReviewRequest request, String currentUserEmail) {
 
         // 1. Load session
-        SessionEntity session = sessionRepository.findById(sessionId)
-                .orElseThrow(() -> new RuntimeException("Session not found"));
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));  
 
         // 2. Must be COMPLETED
-        if (session.getStatus() != Session.SessionStatus.COMPLETE) {
+        if (session.getStatus() != Session.SessionStatus.COMPLETED) {
             throw new IllegalArgumentException("Reviews can only be submitted for completed sessions.");
         }
 
         // 3. Get current user
         User currentUser = userRepository.findByEmail(currentUserEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));     
 
-        Long studentUserId = session.getStudent().getUser().getId();
-        Long mentorUserId  = session.getMentor().getUser().getId();
+        Long studentUserId = session.getStudent().getId();
+        Long mentorUserId  = session.getMentor().getId();
         Long currentUserId = currentUser.getId();
 
         boolean isStudent = currentUserId.equals(studentUserId);

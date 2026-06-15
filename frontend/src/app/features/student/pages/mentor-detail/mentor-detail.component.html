@@ -1,42 +1,122 @@
+<!-- src/app/features/student/pages/mentor-detail/mentor-detail.component.html -->
+
 <div class="detail-page">
-  <button class="back-btn" type="button" (click)="goBack()">Back to mentors</button>
+    <button class="back-btn" type="button" (click)="goBack()">← Back to mentors</button>
 
-  <div *ngIf="loading" class="state-msg">Loading mentor profile...</div>
-  <div *ngIf="errorMsg" class="banner error">{{ errorMsg }}</div>
+    <div *ngIf="loading" class="state-msg">Loading mentor profile...</div>
+    <div *ngIf="errorMsg" class="banner error">{{ errorMsg }}</div>
 
-  <ng-container *ngIf="!loading && mentor">
-    <div class="profile-head">
-      <div class="avatar">
-        {{ initials }}
-        <span class="avail-dot" [class.online]="mentor.isAvailable"></span>
-      </div>
+    <ng-container *ngIf="!loading && mentor">
 
-      <div class="head-info">
-        <h1>{{ mentor.user.fullName }}</h1>
-        <p class="sub">{{ mentor.industry || 'Industry not set' }}</p>
-        <p class="sub" *ngIf="mentor.hourlyRate && mentor.hourlyRate > 0">₹{{ mentor.hourlyRate }} / hour</p>
-        <div class="rating">
-          <span class="stars">{{ getRatingStars(mentor.rating) }}</span>
-          <span>{{ mentor.rating.toFixed(1) }}</span>
+        <!-- Profile header -->
+        <div class="profile-head">
+            <div class="avatar">
+                {{ initials }}
+                <span class="avail-dot" [class.online]="mentor.isAvailable"></span>
+            </div>
+
+            <div class="head-info">
+                <h1>{{ mentor.user.fullName }}</h1>
+                <p class="sub">{{ mentor.industry || 'Industry not set' }}</p>
+                <div class="rating">
+                    <span class="stars">{{ getRatingStars(mentor.rating) }}</span>
+                    <span>{{ mentor.rating.toFixed(1) }}</span>
+                </div>
+            </div>
+
+            <!-- Book button -->
+            <button
+                    class="btn-book"
+                    (click)="toggleBookingForm()"
+                    *ngIf="mentor.isAvailable">
+                {{ showBookingForm ? 'Cancel' : '📅 Book Session' }}
+            </button>
+            <span class="unavailable-badge" *ngIf="!mentor.isAvailable">
+        Currently unavailable
+      </span>
         </div>
-      </div>
-    </div>
 
-    <div class="grid">
-      <div class="card">
-        <p class="card-label">Bio</p>
-        <p class="bio">{{ mentor.bio || 'This mentor has not added a bio yet.' }}</p>
-      </div>
-
-      <div class="card">
-        <p class="card-label">Skills</p>
-        <div class="skills-row" *ngIf="mentor.skills.length; else noSkills">
-          <span class="skill-tag" *ngFor="let skill of mentor.skills">{{ skill }}</span>
+        <!-- Success banner -->
+        <div class="banner success" *ngIf="bookingSuccess">
+            ✓ {{ bookingSuccess }}
         </div>
-        <ng-template #noSkills>
-          <p class="muted">No skills listed yet.</p>
-        </ng-template>
-      </div>
-    </div>
-  </ng-container>
+
+        <!-- Booking form -->
+        <div class="booking-card" *ngIf="showBookingForm">
+            <p class="card-label">Book a session with {{ mentor.user.fullName }}</p>
+
+            <form [formGroup]="bookingForm" (ngSubmit)="onBook()" novalidate>
+
+                <div class="field">
+                    <label>Topic <span class="req">*</span></label>
+                    <input
+                            type="text"
+                            formControlName="topic"
+                            placeholder="e.g. System Design Interview Prep" />
+                    <span class="err"
+                          *ngIf="bookingForm.get('topic')?.invalid && bookingForm.get('topic')?.touched">
+            Topic is required (max 200 characters)
+          </span>
+                </div>
+
+                <div class="field">
+                    <label>Message to mentor</label>
+                    <textarea
+                            formControlName="message"
+                            rows="3"
+                            placeholder="Introduce yourself and explain what you want to learn...">
+          </textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="field">
+                        <label>Plan type <span class="req">*</span></label>
+                        <select formControlName="planType">
+                            <option *ngFor="let p of planTypes" [value]="p">{{ p }}</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>No. of sessions <span class="req">*</span></label>
+                        <input
+                                type="number"
+                                formControlName="totalOccurrences"
+                                min="1"
+                                max="30" />
+                    </div>
+                </div>
+
+                <div class="banner error" *ngIf="bookingError">{{ bookingError }}</div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-ghost" (click)="toggleBookingForm()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-primary" [disabled]="bookingForm.invalid || booking">
+                        {{ booking ? 'Sending request…' : 'Send Session Request' }}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Profile cards -->
+        <div class="grid">
+            <div class="card">
+                <p class="card-label">Bio</p>
+                <p class="bio">{{ mentor.bio || 'This mentor has not added a bio yet.' }}</p>
+            </div>
+
+            <div class="card">
+                <p class="card-label">Skills</p>
+                <div class="skills-row" *ngIf="mentor.skills?.length; else noSkills">
+                    <span class="skill-tag" *ngFor="let skill of mentor.skills">{{ skill }}</span>
+                </div>
+                <ng-template #noSkills>
+                    <p class="muted">No skills listed yet.</p>
+                </ng-template>
+            </div>
+        </div>
+
+    </ng-container>
 </div>

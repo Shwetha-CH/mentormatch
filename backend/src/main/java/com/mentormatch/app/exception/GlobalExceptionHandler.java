@@ -50,10 +50,13 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntime(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        // Log the full stack trace so we can see it in the console
+        org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class).error("Runtime Exception: ", ex);
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of(
                         "success", false,
-                        "message", ex.getMessage()   // ✅ "Profile not found" is now visible
+                        "message", ex.getMessage()
                 ));
     }
 }

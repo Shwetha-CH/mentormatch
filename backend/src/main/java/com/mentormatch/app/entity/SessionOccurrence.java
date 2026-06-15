@@ -26,7 +26,7 @@ public class SessionOccurrence {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SessionStatus status = SessionStatus.PENDING;
+    private Session.SessionStatus status = Session.SessionStatus.PENDING;
 
     public SessionOccurrence() {}
 
@@ -46,6 +46,6 @@ public class SessionOccurrence {
     public String getMeetingLink() { return meetingLink; }
     public void setMeetingLink(String meetingLink) { this.meetingLink = meetingLink; }
 
-    public SessionStatus getStatus() { return status; }
-    public void setStatus(SessionStatus status) { this.status = status; }
+    public Session.SessionStatus getStatus() { return status; }
+    public void setStatus(Session.SessionStatus status) { this.status = status; }
 }

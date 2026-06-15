@@ -9,6 +9,14 @@ import java.util.List;
 @Table(name = "sessions")
 public class Session {
 
+    public enum SessionStatus {
+        PENDING, ACCEPTED, REJECTED, CANCELLED, COMPLETED
+    }
+
+    public enum PlanType {
+        SINGLE, WEEKLY, MONTHLY
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +31,9 @@ public class Session {
 
     @Column(nullable = false)
     private String topic;
+
+    @Column(columnDefinition = "TEXT")
+    private String message;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,6 +66,9 @@ public class Session {
 
     public String getTopic() { return topic; }
     public void setTopic(String topic) { this.topic = topic; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
 
     public SessionStatus getStatus() { return status; }
     public void setStatus(SessionStatus status) { this.status = status; }
