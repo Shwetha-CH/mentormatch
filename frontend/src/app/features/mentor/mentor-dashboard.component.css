@@ -25,3 +25,64 @@ input,textarea{width:100%;box-sizing:border-box;font-size:14px;color:#111827;bor
 .side-col{display:flex;flex-direction:column;gap:14px}.photo-card{text-align:center}
 .profile-name{font-size:14px;font-weight:600;margin:0 0 4px}.profile-bio{font-size:13px;color:#374151;line-height:1.5;margin:12px 0}.tag-row{display:flex;flex-wrap:wrap;gap:5px}
 @media(max-width:820px){.stats-row,.main-grid{grid-template-columns:1fr}.dash-header{align-items:flex-start;flex-direction:column}}
+
+/* Navigation Sub-Tabs styles */
+.nav-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 1px; }
+.tab-link { background: none; border: none; padding: 10px 16px; font-size: 14px; font-weight: 500; color: #4b5563; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; position: relative; }
+.tab-link.active { color: #2563eb; border-bottom-color: #2563eb; font-weight: 600; }
+.tab-link .badge { background: #dc2626; color: white; font-size: 11px; padding: 1px 6px; border-radius: 10px; margin-left: 4px; vertical-align: middle; }
+
+/* Session Cards Layout */
+.session-cards-container { display: flex; flex-direction: column; gap: 16px; }
+.session-card-item { border-left: 5px solid #6b7280; padding: 24px; transition: box-shadow 0.2s; }
+.session-card-item:hover { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+.session-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 14px; margin-bottom: 14px; }
+.session-card-header h3 { margin: 6px 0; font-size: 18px; color: #111827; }
+.student-info { font-size: 13px; color: #4b5563; margin: 0; }
+
+/* Status Badges */
+.badge-plan { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; }
+.badge-plan.weekly { background: #fef3c7; color: #b45309; }
+.badge-plan.monthly { background: #f3e8ff; color: #6b21a8; }
+
+.status-indicator-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+.status-indicator-badge[data-status="ACCEPTED"] { background: #d1fae5; color: #065f46; }
+.status-indicator-badge[data-status="REJECTED"] { background: #fee2e2; color: #991b1b; }
+.status-indicator-badge[data-status="CANCELLED"] { background: #f3f4f6; color: #374151; }
+
+/* Group Buttons Matrix actions */
+.btn-group { display: flex; gap: 8px; }
+.btn-action { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; }
+.btn-action.accept { background: #10b981; color: white; }
+.btn-action.reject { background: #ef4444; color: white; }
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Segregation Timestamps Data Tables */
+.timeline-breakdown { background: #f9fafb; border-radius: 8px; padding: 16px; border: 1px solid #f3f4f6; }
+.timeline-breakdown h4 { margin: 0 0 12px 0; font-size: 13px; color: #374151; text-transform: uppercase; letter-spacing: 0.03em; }
+.timeline-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+.timeline-table th { color: #6b7280; font-weight: 600; padding: 8px; border-bottom: 2px solid #e5e7eb; }
+.timeline-table td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; color: #111827; }
+
+.meet-link { color: #2563eb; text-decoration: none; font-weight: 500; }
+.meet-link:hover { text-decoration: underline; }
+.text-muted { color: #9ca3af; font-style: italic; }
+
+.mini-status { display: inline-block; font-size: 11px; font-weight: 500; padding: 1px 6px; border-radius: 4px; text-transform: uppercase; }
+.mini-status[data-status="ACCEPTED"] { background: #e6f4ea; color: #137333; }
+.mini-status[data-status="PENDING"] { background: #fef7e0; color: #b06000; }
+.mini-status[data-status="CANCELLED"] { background: #f1f3f4; color: #3c4043; }
+
+.btn-mini-cancel { background: none; border: 1px solid #d1d5db; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 500; }
+.btn-mini-cancel:hover { background: #fef2f2; border-color: #fecaca; }
+
+/* Interactive Modals Overlays */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.modal-container { background: white; max-width: 480px; width: 90%; padding: 24px; animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+.modal-input { width: 100%; margin-top: 8px; font-family: monospace; font-size: 13px !important; }
+.empty-sessions { text-align: center; padding: 40px; color: #6b7280; font-size: 14px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; }
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
