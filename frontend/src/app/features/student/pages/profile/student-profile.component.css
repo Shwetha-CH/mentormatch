@@ -8,6 +8,7 @@
 .state-msg { text-align: center; padding: 48px 0; color: #999; font-size: 14px; }
 
 .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.page-header button{margin-left: auto}
 .avatar {
     width: 52px; height: 52px; border-radius: 50%;
     background: #dbeafe; color: #1d4ed8;
@@ -17,7 +18,13 @@
 }
 .header-text h2 { margin: 0 0 2px; font-size: 18px; font-weight: 600; }
 .header-text .email { font-size: 13px; color: #6b7280; }
-
+.btn-danger {
+    padding: 9px 18px; border-radius: 8px; border: none;
+    background: #ec2241; color: #fff;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    white-space: nowrap;
+}
+.btn-danger:hover { background: #d81d1d; }
 .card {
     background: #fff; border: 1px solid #e5e7eb;
     border-radius: 12px; padding: 20px; margin-bottom: 14px;
