@@ -1,0 +1,9 @@
+<!-- src/app/features/admin/components/stat-card/stat-card.component.html -->
+
+<div class="stat-card" [class]="'stat-card-' + color">
+  <div class="stat-icon">{{ icon }}</div>
+  <div class="stat-content">
+    <p class="stat-label">{{ label }}</p>
+    <h2 class="stat-value">{{ value | number }}</h2>
+  </div>
+</div>

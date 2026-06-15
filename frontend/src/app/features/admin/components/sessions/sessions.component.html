@@ -1,0 +1,102 @@
+<!-- src/app/features/admin/components/sessions/sessions.component.html -->
+
+<div class="sessions-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Sessions</h1>
+      <p class="page-subtitle">Monitor all mentorship sessions across the platform</p>
+    </div>
+    <div class="header-actions">
+      <div class="filter-group">
+        <label for="statusFilter">Filter by Status:</label>
+        <select 
+          id="statusFilter"
+          class="status-filter" 
+          [(ngModel)]="selectedStatus" 
+          (change)="onFilterChange()">
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <span class="stat-badge">{{ filteredSessions.length }} Sessions</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading sessions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadSessions()">Retry</button>
+  </div>
+
+  <!-- Sessions Table -->
+  <div *ngIf="!loading && !error" class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Session ID</th>
+          <th>Student</th>
+          <th>Mentor</th>
+          <th>Topic</th>
+          <th>Plan Type</th>
+          <th>Status</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let session of filteredSessions">
+          <td class="id-cell">#{{ session.sessionId }}</td>
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar student-avatar">
+                {{ session.studentName.charAt(0).toUpperCase() }}
+              </div>
+              <div class="user-info">
+                <span class="user-name">{{ session.studentName }}</span>
+                <span class="user-email">{{ session.studentEmail }}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="user-cell">
+              <div class="user-avatar mentor-avatar">
+                {{ session.mentorName.charAt(0).toUpperCase() }}
+              </div>
+              <div class="user-info">
+                <span class="user-name">{{ session.mentorName }}</span>
+                <span class="user-email">{{ session.mentorEmail }}</span>
+              </div>
+            </div>
+          </td>
+          <td class="topic-cell">{{ session.topic }}</td>
+          <td>
+            <span class="plan-badge" [ngClass]="getPlanTypeClass(session.planType)">
+              {{ session.planType }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(session.status)">
+              {{ session.status }}
+            </span>
+          </td>
+          <td class="date-cell">{{ formatDate(session.createdAt) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredSessions.length === 0" class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3>No sessions found</h3>
+      <p *ngIf="selectedStatus === 'ALL'">There are currently no sessions in the system.</p>
+      <p *ngIf="selectedStatus !== 'ALL'">No sessions with status "{{ selectedStatus }}" found.</p>
+    </div>
+  </div>
+</div>

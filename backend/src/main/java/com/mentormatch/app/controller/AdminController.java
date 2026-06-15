@@ -8,7 +8,8 @@ import com.mentormatch.app.service.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.mentormatch.app.dto.AdminSessionResponse;
+import com.mentormatch.app.entity.SessionStatus;
 import java.util.List;
 
 @RestController
@@ -81,5 +82,32 @@ public class AdminController {
             @PathVariable Long id,
             @Valid @RequestBody AdminUpdateRoleRequest request) {
         return ResponseEntity.ok(adminService.updateUserRole(id, request.getRole()));
+    }
+
+    @GetMapping("/sessions")
+    public ResponseEntity<List<AdminSessionResponse>> getAllSessions(
+            @RequestParam(required = false) SessionStatus status) {
+
+        if (status != null) {
+            return ResponseEntity.ok(adminService.getSessionsByStatus(status));
+        }
+        return ResponseEntity.ok(adminService.getAllSessions());
+    }
+
+    // GET /api/admin/sessions/{id} — get individual session detail
+    @GetMapping("/sessions/{id}")
+    public ResponseEntity<AdminSessionResponse> getSessionById(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getSessionById(id));
+    }
+
+    @GetMapping("/mentors/top5")
+    public ResponseEntity<List<AdminUserDetailResponse>> getTop5Mentors() {
+        return ResponseEntity.ok(adminService.getTop5MentorsByRating());
+    }
+
+    // GET /api/admin/sessions/recent
+    @GetMapping("/sessions/recent")
+    public ResponseEntity<List<AdminSessionResponse>> getRecentSessions() {
+        return ResponseEntity.ok(adminService.getRecentSessions());
     }
 }

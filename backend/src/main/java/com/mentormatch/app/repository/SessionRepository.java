@@ -1,6 +1,7 @@
 package com.mentormatch.app.repository;
 
 import com.mentormatch.app.entity.Session;
+import com.mentormatch.app.entity.SessionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +16,16 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     @Query("SELECT s FROM Session s WHERE s.student.id = :studentId")
     List<Session> findAllSessionsByStudentId(@Param("studentId") Long studentId);
+    @Query("SELECT DISTINCT s FROM Session s LEFT JOIN FETCH s.occurrences " +
+            "ORDER BY s.createdAt DESC")
+    List<Session> findAllSessionsWithOccurrences();
+
+    // Count sessions by status
+    long countByStatus(SessionStatus status);
+
+    // Get sessions filtered by status
+    List<Session> findByStatusOrderByCreatedAtDesc(SessionStatus status);
+    // Get last 5 sessions
+    @Query("SELECT s FROM Session s ORDER BY s.createdAt DESC")
+    List<Session> findTop5ByOrderByCreatedAtDesc();
 }
