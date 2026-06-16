@@ -2,7 +2,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule  } from '@angular/forms';
 import { AdminRoutingModule } from './admin-routing.module';
 
 // Components
@@ -29,7 +29,8 @@ import { StatCardComponent } from './components/stat-card/stat-card.component';
   imports: [
     CommonModule,
     FormsModule,  // For [(ngModel)] in sessions filter
-    AdminRoutingModule
+    AdminRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class AdminModule { }

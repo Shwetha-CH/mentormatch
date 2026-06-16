@@ -6,6 +6,7 @@ import com.mentormatch.app.dto.BroadcastRequest;
 import com.mentormatch.app.entity.*;
 import com.mentormatch.app.entity.Session.SessionStatus;
 import com.mentormatch.app.repository.MentorRepository;
+import com.mentormatch.app.repository.ReviewRepository;
 import com.mentormatch.app.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import com.mentormatch.app.repository.SessionRepository;
@@ -24,14 +25,22 @@ public class AdminService {
 
     private final MentorRepository mentorRepository;  // ✅ ADD THIS
 
+    private final ReviewRepository reviewRepository;  // ✅ ADD THIS
+    private final NotificationService notificationService;  // ✅ ADD THIS
+
     // ✅ UPDATE CONSTRUCTOR
     public AdminService(UserRepository userRepository,
                         SessionRepository sessionRepository,
-                        MentorRepository mentorRepository) {
+                        MentorRepository mentorRepository,
+                        ReviewRepository reviewRepository,
+                        NotificationService notificationService) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
-        this.mentorRepository = mentorRepository;  // ✅ ADD THIS
+        this.mentorRepository = mentorRepository;
+        this.reviewRepository = reviewRepository;  // ✅ ADD THIS
+        this.notificationService = notificationService;  // ✅ ADD THIS
     }
+
     // 1. Get all users — for user management table
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -243,7 +252,99 @@ public class AdminService {
                 .map(this::mapToAdminSessionResponse)
                 .collect(Collectors.toList());
     }
+    public List<AdminReviewResponse> getAllReviews() {
+        return reviewRepository.findAll().stream()
+                .map(this::mapToAdminReviewResponse)
+                .collect(Collectors.toList());
+    }
 
+    // Broadcast notification to users
+    public void broadcast(BroadcastRequest request) {
+        List<User> targets;
+
+        if (request.getTargetAudience() == BroadcastRequest.TargetAudience.STUDENT) {
+            targets = userRepository.findByRole(Role.STUDENT);
+        } else if (request.getTargetAudience() == BroadcastRequest.TargetAudience.MENTOR) {
+            targets = userRepository.findByRole(Role.MENTOR);
+        } else {
+            targets = userRepository.findAll().stream()
+                    .filter(u -> u.getRole() != Role.ADMIN)
+                    .collect(Collectors.toList());
+        }
+
+        for (User user : targets) {
+            notificationService.send(
+                    user.getId(),
+                    request.getTitle(),
+                    request.getMessage(),
+                    null
+            );
+        }
+    }
+
+    // Helper to map Review to AdminReviewResponse
+    private AdminReviewResponse mapToAdminReviewResponse(Review review) {
+        AdminReviewResponse response = new AdminReviewResponse();
+        response.setId(review.getId());
+        response.setSessionId(review.getSession().getId());
+        response.setReviewerName(review.getReviewer().getFullName());
+        response.setReviewerEmail(review.getReviewer().getEmail());
+        response.setRevieweeName(review.getReviewee().getFullName());
+        response.setRevieweeEmail(review.getReviewee().getEmail());
+        response.setRating(review.getRating());
+        response.setComment(review.getComment());
+        response.setReviewerRole(review.getReviewerRole().name());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        response.setCreatedAt(review.getCreatedAt().format(formatter));
+
+        return response;
+    }
+
+    // ✅ ADD THIS INNER CLASS - AdminReviewResponse DTO
+    public static class AdminReviewResponse {
+        private Long id;
+        private Long sessionId;
+        private String reviewerName;
+        private String reviewerEmail;
+        private String revieweeName;
+        private String revieweeEmail;
+        private Integer rating;
+        private String comment;
+        private String reviewerRole;
+        private String createdAt;
+
+        // Getters and Setters
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+
+        public Long getSessionId() { return sessionId; }
+        public void setSessionId(Long sessionId) { this.sessionId = sessionId; }
+
+        public String getReviewerName() { return reviewerName; }
+        public void setReviewerName(String reviewerName) { this.reviewerName = reviewerName; }
+
+        public String getReviewerEmail() { return reviewerEmail; }
+        public void setReviewerEmail(String reviewerEmail) { this.reviewerEmail = reviewerEmail; }
+
+        public String getRevieweeName() { return revieweeName; }
+        public void setRevieweeName(String revieweeName) { this.revieweeName = revieweeName; }
+
+        public String getRevieweeEmail() { return revieweeEmail; }
+        public void setRevieweeEmail(String revieweeEmail) { this.revieweeEmail = revieweeEmail; }
+
+        public Integer getRating() { return rating; }
+        public void setRating(Integer rating) { this.rating = rating; }
+
+        public String getComment() { return comment; }
+        public void setComment(String comment) { this.comment = comment; }
+
+        public String getReviewerRole() { return reviewerRole; }
+        public void setReviewerRole(String reviewerRole) { this.reviewerRole = reviewerRole; }
+
+        public String getCreatedAt() { return createdAt; }
+        public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    }
 
 
 

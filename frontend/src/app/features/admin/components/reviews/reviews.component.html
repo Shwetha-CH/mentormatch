@@ -1,26 +1,95 @@
 <!-- src/app/features/admin/components/reviews/reviews.component.html -->
 
-<div class="placeholder-container">
-  <div class="placeholder-content">
-    <div class="placeholder-icon">⭐</div>
-    <h2 class="placeholder-title">Reviews Management</h2>
-    <p class="placeholder-description">
-      This feature is currently under development. You'll soon be able to view and moderate all student and mentor reviews from this page.
-    </p>
-    <div class="placeholder-features">
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>View all platform reviews</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>Filter by rating and date</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>Moderate inappropriate content</span>
-      </div>
+<div class="reviews-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Reviews</h1>
+      <p class="page-subtitle">All ratings and feedback across the platform</p>
     </div>
-    <div class="status-badge">Coming Soon</div>
+    <div class="header-actions">
+      <div class="filter-group">
+        <label for="ratingFilter">Filter:</label>
+        <select 
+          id="ratingFilter"
+          class="rating-filter" 
+          [(ngModel)]="selectedRating" 
+          (change)="onFilterChange()">
+          <option *ngFor="let option of ratingOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <span class="stat-badge">{{ filteredReviews.length }} Reviews</span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading reviews...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadReviews()">Retry</button>
+  </div>
+
+  <!-- Reviews Grid -->
+  <div *ngIf="!loading && !error" class="reviews-grid">
+    
+    <!-- Review Card -->
+    <div *ngFor="let review of filteredReviews" class="review-card">
+      
+      <!-- Card Header -->
+      <div class="review-header">
+        <div class="reviewer-info">
+          <div class="avatar" [class.avatar-student]="review.reviewerRole === 'STUDENT'" [class.avatar-mentor]="review.reviewerRole === 'MENTOR'">
+            {{ review.reviewerName.charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-details">
+            <span class="user-name">{{ review.reviewerName }}</span>
+            <span class="user-role">{{ review.reviewerRole }}</span>
+          </div>
+        </div>
+        <div class="review-meta">
+          <div class="stars" [ngClass]="getRatingClass(review.rating)">
+            <span *ngFor="let star of getStars(review.rating)" class="star">{{ star }}</span>
+          </div>
+          <span class="review-date">{{ formatDate(review.createdAt) }}</span>
+        </div>
+      </div>
+
+      <!-- Reviewed User -->
+      <div class="reviewed-section">
+        <span class="reviewed-label">Reviewed:</span>
+        <span class="reviewed-name">{{ review.revieweeName }}</span>
+        <span class="reviewed-email">({{ review.revieweeEmail }})</span>
+      </div>
+
+      <!-- Comment -->
+      <div class="review-comment" *ngIf="review.comment">
+        <p>{{ review.comment }}</p>
+      </div>
+      <div class="review-comment empty" *ngIf="!review.comment">
+        <p class="no-comment">No comment provided</p>
+      </div>
+
+      <!-- Session Link -->
+      <div class="review-footer">
+        <span class="session-link">Session #{{ review.sessionId }}</span>
+      </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredReviews.length === 0" class="empty-state">
+      <div class="empty-icon">⭐</div>
+      <h3>No reviews found</h3>
+      <p *ngIf="selectedRating === 'ALL'">No reviews have been submitted yet.</p>
+      <p *ngIf="selectedRating !== 'ALL'">No {{ selectedRating }}-star reviews found.</p>
+    </div>
+
   </div>
 </div>
