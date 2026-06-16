@@ -22,6 +22,7 @@ public interface MentorRepository extends JpaRepository<MentorProfile, Long> {
     // The LEFT JOIN is used to search within the 'skills' collection array we defined in the entity
     @Query("SELECT DISTINCT m FROM MentorProfile m LEFT JOIN m.skills s " +
             "WHERE m.isAvailable = true " +
+            "AND m.user.isActive = true " +
             "AND (:industry IS NULL OR m.industry = :industry) " +
             "AND (:minRating IS NULL OR m.rating >= :minRating) " +
             "AND (:skill IS NULL OR s = :skill)")
@@ -32,5 +33,6 @@ public interface MentorRepository extends JpaRepository<MentorProfile, Long> {
     );
 
     // 3. For the /api/mentors/recommended endpoint (e.g., top-rated available mentors)
+    @Query("SELECT m FROM MentorProfile m WHERE m.isAvailable = true AND m.user.isActive = true ORDER BY m.rating DESC LIMIT 5")
     List<MentorProfile> findTop5ByIsAvailableTrueOrderByRatingDesc();
 }
