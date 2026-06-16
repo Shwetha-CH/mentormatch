@@ -5,6 +5,7 @@ import { MentorProfile } from './models/mentor-profile.model';
 import { MentorProfileService } from './services/mentor-profile.service';
 import { SessionManagementService } from './services/session.service';
 import { SessionResponse } from './models/session.model';
+import { NotificationService } from './services/notification.service';
 
 @Component({
   selector: 'app-mentor-dashboard',
@@ -27,7 +28,8 @@ export class MentorDashboardComponent implements OnInit {
   confirmDelete = false;
   saveSuccess = false;
   errorMsg = '';
-
+// Add this with other properties
+unreadCount = 0;
   // Session Management features (Your logic fields)
   sessionsList: SessionResponse[] = [];
   sessionsLoading = false;
@@ -42,8 +44,9 @@ export class MentorDashboardComponent implements OnInit {
     private fb: FormBuilder,
     private mentorService: MentorProfileService,
     private authService: AuthService,
-    private sessionService: SessionManagementService // Injected your Service handler
-  ) {}
+    private sessionService: SessionManagementService,
+    private notificationService: NotificationService  // ← ADD THIS LINE
+) {}  
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -53,6 +56,7 @@ export class MentorDashboardComponent implements OnInit {
     });
 
     this.loadProfile();
+    this.loadUnreadCount();
   }
 
   switchTab(tabName: 'profile' | 'sessions'): void {
@@ -296,4 +300,10 @@ export class MentorDashboardComponent implements OnInit {
     return Math.round((fields.filter(Boolean).length / fields.length) * 100);
   }
   private resetForm(): void { this.form.reset({ industry: '', hourlyRate: null, bio: '' }); }
+  loadUnreadCount(): void {
+    this.notificationService.getUnreadCount().subscribe({
+      next: (count) => { this.unreadCount = count; },
+      error: () => { this.unreadCount = 0; }
+    });
+}
 }
