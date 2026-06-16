@@ -110,6 +110,7 @@ export class StudentProfileComponent implements OnInit {
         this.saving = false;
         this.saveSuccess = true;
         setTimeout(() => (this.saveSuccess = false), 3000);
+        this.router.navigate(['/student/dashboard']);
       },
       error: () => {
         this.errorMsg = 'Save failed. Please try again.';

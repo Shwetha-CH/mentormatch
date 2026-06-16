@@ -51,11 +51,24 @@ export class StudentDashboardComponent implements OnInit {
         this.loading = false;
       }
     });
+    this.sessionService.getMySessions().subscribe({
+      next: (p) => {
+        const Sessions = p || [];
+        this.recentSessions = Sessions.length>3?
+        Sessions.slice(-3).reverse():Sessions;
+      },
+      error: () => {
+        this.errorMsg = 'Failed to load sessions data ';
+      }
+    })
   }
 
   get initials(): string {
     return (this.profile?.fullName ?? 'S')
         .split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
+  }
+  getInitials(name: string): string {
+    return (name ?? 'M').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }
 
   get greeting(): string {

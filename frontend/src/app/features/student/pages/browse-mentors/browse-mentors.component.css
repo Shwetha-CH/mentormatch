@@ -162,7 +162,17 @@
     font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap;
 }
 .btn-book:hover { background: #1d4ed8; }
-
+.back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #2563eb;
+    padding: 0;
+    margin-bottom: 20px;
+    display: block;
+}
+.back-btn:hover { text-decoration: underline; }
 /* Responsive */
 @media (max-width: 768px) {
     .content-row { flex-direction: column; }

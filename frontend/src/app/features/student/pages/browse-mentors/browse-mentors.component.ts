@@ -98,7 +98,9 @@ export class BrowseMentorsComponent implements OnInit {
   viewMentor(id: number): void {
     this.router.navigate(['/student/mentors', id]);
   }
-
+  goback():void{
+    this.router.navigate(['/student/dashboard']);
+  }
   getInitials(name: string): string {
     return (name ?? 'M').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }

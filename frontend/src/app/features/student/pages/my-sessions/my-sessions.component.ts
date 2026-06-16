@@ -107,4 +107,7 @@ export class MySessionsComponent implements OnInit {
     };
     return map[plan] ?? '📅';
   }
+  goback(): void {
+    this.router.navigate(['/student/dashboard']);
+  }
 }
