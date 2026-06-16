@@ -71,11 +71,17 @@ export class MentorDashboardComponent implements OnInit {
     });
   }
 
+  // UPDATED URL: Now maps directly to the authenticated endpoint /api/reviews/mentor/me
   loadMyReviews(): void {
     this.reviewsLoading = true;
-    this.http.get<any>('http://localhost:8081/api/reviews/my').subscribe({
-      next: (res) => { this.reviewsList = res.data || []; this.reviewsLoading = false; },
-      error: () => { this.reviewsLoading = false; }
+    this.http.get<any>('http://localhost:8081/api/reviews/mentor/me').subscribe({
+      next: (res) => {
+        this.reviewsList = res.data || [];
+        this.reviewsLoading = false;
+      },
+      error: () => {
+        this.reviewsLoading = false;
+      }
     });
   }
 
