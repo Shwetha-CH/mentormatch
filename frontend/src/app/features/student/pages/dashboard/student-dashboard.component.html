@@ -66,7 +66,7 @@
                 <div class="session-list">
                     <div class="session-item" *ngFor="let s of recentSessions"
                          (click)="navigate('/student/sessions/' + s.id)">
-                        <div class="session-avatar">{{ s.mentor?.fullName | slice:0:1 }}</div>
+                        <div class="session-avatar">{{ getInitials(s.mentorName) }}</div>
                         <div class="session-body">
                             <p class="session-topic">{{ s.topic }}</p>
                             <p class="session-meta">{{ s.mentor?.fullName }} · {{ formatDate(s.scheduledAt) }}</p>
