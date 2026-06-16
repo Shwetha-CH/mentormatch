@@ -86,3 +86,45 @@ input,textarea{width:100%;box-sizing:border-box;font-size:14px;color:#111827;bor
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* Notification Bell Button */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notif-bell-btn {
+    position: relative;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    color: #4b5563;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notif-bell-btn:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    color: #2563eb;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #dc2626;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+}

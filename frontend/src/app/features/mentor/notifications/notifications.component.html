@@ -1,0 +1,39 @@
+<!-- src/app/features/student/notifications/notifications.component.html -->
+
+<div class="page">
+
+    <div class="page-header">
+        <div>
+            <h1>Notifications</h1>
+            <p class="sub">All your alerts in one place</p>
+        </div>
+        <button class="btn-primary" *ngIf="notifications.length > 0" (click)="markAllRead()">
+            Mark all as read
+        </button>
+    </div>
+
+    <div *ngIf="loading" class="state-msg">Loading…</div>
+
+    <div *ngIf="!loading && notifications.length === 0" class="state-msg">
+        No notifications yet.
+    </div>
+
+    <div class="notif-list" *ngIf="!loading && notifications.length > 0">
+        <div
+                *ngFor="let n of notifications"
+                class="notif-card"
+                [class.unread]="!n.isRead"
+                (click)="onClickNotification(n)">
+
+            <div class="notif-dot" *ngIf="!n.isRead"></div>
+            <div class="notif-body">
+                <div class="notif-top">
+                    <span class="notif-title">{{ n.title }}</span>
+                    <span class="notif-time">{{ formatDate(n.createdAt) }}</span>
+                </div>
+                <span class="notif-msg">{{ n.message }}</span>
+            </div>
+        </div>
+    </div>
+
+</div>
