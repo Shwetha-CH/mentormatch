@@ -13,7 +13,6 @@ export class SessionManagementService {
 
   constructor(private http: HttpClient) {}
 
-  // Retrieves all sessions for the logged-in mentor
   getMySessions(): Observable<{ success: boolean; message: string; data: SessionResponse[] }> {
     return this.http.get<{ success: boolean; message: string; data: SessionResponse[] }>(`${this.apiUrl}/mentor`);
   }
@@ -24,6 +23,11 @@ export class SessionManagementService {
 
   rejectSession(sessionId: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${sessionId}/reject`, {});
+  }
+
+  // Mark session as COMPLETED — only mentor can do this
+  completeSession(sessionId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${sessionId}/complete`, {});
   }
 
   cancelOccurrence(occurrenceId: number): Observable<any> {
