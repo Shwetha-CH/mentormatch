@@ -4,7 +4,7 @@
     <div *ngIf="loading" class="state-msg">Loading profile…</div>
 
     <ng-container *ngIf="!loading">
-
+        <button class="back-btn" type="button" (click)="goToDashboard()" >← Back to dashboard</button>
         <div class="page-header">
             <div class="avatar">{{ initials }}</div>
             <div class="header-text">

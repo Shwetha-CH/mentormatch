@@ -1,14 +1,12 @@
 package com.mentormatch.app.controller;
 
-import com.mentormatch.app.dto.AdminUpdateRoleRequest;
-import com.mentormatch.app.dto.AdminUserDetailResponse;
+import com.mentormatch.app.dto.*;
 import com.mentormatch.app.entity.Role;
 import com.mentormatch.app.entity.User;
 import com.mentormatch.app.service.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.mentormatch.app.dto.AdminSessionResponse;
 import com.mentormatch.app.entity.Session.SessionStatus;
 import java.util.List;
 
@@ -109,5 +107,19 @@ public class AdminController {
     @GetMapping("/sessions/recent")
     public ResponseEntity<List<AdminSessionResponse>> getRecentSessions() {
         return ResponseEntity.ok(adminService.getRecentSessions());
+    }
+
+    @GetMapping("/reviews")
+    public ResponseEntity<List<AdminService.AdminReviewResponse>> getAllReviews() {
+        return ResponseEntity.ok(adminService.getAllReviews());
+    }
+
+    // POST /api/admin/notifications/broadcast
+    // POST /api/admin/notifications/broadcast
+    @PostMapping("/notifications/broadcast")
+    public ResponseEntity<ApiResponse<String>> broadcast(@Valid @RequestBody BroadcastRequest request) {
+        adminService.broadcast(request);
+        String message = "Broadcast sent successfully to " + request.getTargetAudience() + " users";
+        return ResponseEntity.ok(new ApiResponse<>(true, message, null));  // ✅ Return JSON
     }
 }

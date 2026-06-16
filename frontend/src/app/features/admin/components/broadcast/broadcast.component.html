@@ -1,26 +1,117 @@
 <!-- src/app/features/admin/components/broadcast/broadcast.component.html -->
 
-<div class="placeholder-container">
-  <div class="placeholder-content">
-    <div class="placeholder-icon">📢</div>
-    <h2 class="placeholder-title">Broadcast Notifications</h2>
-    <p class="placeholder-description">
-      This feature is currently under development. You'll soon be able to send platform-wide announcements to all users, students, or mentors.
-    </p>
-    <div class="placeholder-features">
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>Send announcements to all users</span>
+<div class="broadcast-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">Broadcast Notifications</h1>
+    <p class="page-subtitle">Send announcements to users across the platform</p>
+  </div>
+
+  <!-- Broadcast Form Card -->
+  <div class="broadcast-card">
+    
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <span class="alert-icon">❌</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <form [formGroup]="broadcastForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Target Audience -->
+      <div class="form-group">
+        <label class="form-label">Target Audience</label>
+        <div class="audience-options">
+          <label 
+            *ngFor="let option of audienceOptions" 
+            class="audience-card"
+            [class.selected]="targetAudience?.value === option.value">
+            <input 
+              type="radio" 
+              formControlName="targetAudience" 
+              [value]="option.value"
+              class="radio-input">
+            <div class="audience-content">
+              <span class="audience-label">{{ option.label }}</span>
+              <span class="audience-description">{{ option.description }}</span>
+            </div>
+            <span class="check-icon">✓</span>
+          </label>
+        </div>
       </div>
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>Target specific user groups</span>
+
+      <!-- Title -->
+      <div class="form-group">
+        <label class="form-label" for="title">
+          Notification Title
+          <span class="char-count">{{ getCharCount('title') }}/100</span>
+        </label>
+        <input 
+          type="text" 
+          id="title"
+          formControlName="title" 
+          class="form-input"
+          [class.invalid]="title?.invalid && title?.touched"
+          placeholder="e.g., Platform Maintenance Scheduled">
+        <span *ngIf="title?.invalid && title?.touched" class="error-text">
+          Title is required (max 100 characters)
+        </span>
       </div>
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>Schedule notifications</span>
+
+      <!-- Message -->
+      <div class="form-group">
+        <label class="form-label" for="message">
+          Message
+          <span class="char-count">{{ getCharCount('message') }}/500</span>
+        </label>
+        <textarea 
+          id="message"
+          formControlName="message" 
+          class="form-textarea"
+          [class.invalid]="message?.invalid && message?.touched"
+          rows="5"
+          placeholder="Write your announcement here..."></textarea>
+        <span *ngIf="message?.invalid && message?.touched" class="error-text">
+          Message is required (max 500 characters)
+        </span>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="submit-btn"
+          [disabled]="loading || broadcastForm.invalid">
+          <span *ngIf="!loading">📢 Send Broadcast</span>
+          <span *ngIf="loading" class="loading-text">
+            <span class="mini-spinner"></span>
+            Sending...
+          </span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Preview Card -->
+    <div class="preview-card" *ngIf="title?.value || message?.value">
+      <h4 class="preview-title">Preview</h4>
+      <div class="notification-preview">
+        <div class="preview-header">
+          <span class="preview-icon">🔔</span>
+          <div class="preview-content">
+            <p class="preview-notification-title">{{ title?.value || 'Notification Title' }}</p>
+            <p class="preview-notification-message">{{ message?.value || 'Your message will appear here...' }}</p>
+          </div>
+        </div>
+        <span class="preview-time">Just now</span>
       </div>
     </div>
-    <div class="status-badge">Coming Soon</div>
+
   </div>
 </div>

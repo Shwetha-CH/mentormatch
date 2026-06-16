@@ -6,7 +6,18 @@
     color: #111827;
 }
 .state-msg { text-align: center; padding: 48px 0; color: #999; font-size: 14px; }
-
+.btn-book:hover { background: #1d4ed8; }
+.back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: #2563eb;
+    padding: 0;
+    margin-bottom: 20px;
+    display: block;
+}
+.back-btn:hover { text-decoration: underline; }
 .page-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
 .page-header button{margin-left: auto}
 .avatar {
