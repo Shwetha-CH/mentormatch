@@ -1,10 +1,10 @@
-// src/app/features/student/pages/dashboard/student-dashboard.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StudentService } from '../../services/student.service';
 import { SessionService, SessionResponse } from '../../services/session.service';
 import { StudentProfile } from '../../models/student-profile.model';
+import { Session } from '../../models/session.model';
+import { AuthService } from "../../../../core/services/auth.service";
 
 @Component({
   selector: 'app-student-dashboard',
@@ -24,16 +24,17 @@ export class StudentDashboardComponent implements OnInit {
     completed: 0
   };
 
-  recentSessions: SessionResponse[] = [];
+  recentSessions: any[] = [];
+
 
   constructor(
       private studentService: StudentService,
       private sessionService: SessionService,
-      private router: Router
+      private router: Router,
+      private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
-    // Load profile
     this.studentService.getProfile().subscribe({
       next: (p) => {
         this.profile = p;
@@ -44,24 +45,44 @@ export class StudentDashboardComponent implements OnInit {
         this.loading = false;
       }
     });
-
-    // Load real session data
     this.sessionService.getMySessions().subscribe({
-      next: (sessions) => {
-        this.stats.totalSessions = sessions.length;
-        this.stats.upcoming  = sessions.filter(s => s.status === 'ACCEPTED').length;
-        this.stats.pending   = sessions.filter(s => s.status === 'PENDING').length;
-        this.stats.completed = sessions.filter(s => s.status === 'COMPLETED').length;
-        // Most recent 3 sessions
-        this.recentSessions = sessions.slice(0, 3);
+      next: (p) => {
+        const Sessions = p || [];
+        this.recentSessions = Sessions.length>3?
+        Sessions.slice(-3).reverse():Sessions;
       },
-      error: () => {} // Non-critical — fail silently
+      error: () => {
+        this.errorMsg = 'Failed to load sessions data ';
+      }
     });
+    this.sessionService.getMySessions().subscribe({
+      next: (p) => {
+        const session = p || [];
+        for (const s of session) {
+          const st = s.status;
+          this.stats.totalSessions += 1; // always increment
+          if (st === 'PENDING') {
+            this.stats.pending += 1;
+          } else if (st === 'COMPLETED') {
+            this.stats.completed += 1;
+          } else if (st === 'ACCEPTED') {
+            this.stats.upcoming += 1; // example mapping
+          }
+        }
+      },
+      error: () => {
+        this.errorMsg = 'Failed to stats ';
+      }
+    })
+
   }
 
   get initials(): string {
     return (this.profile?.fullName ?? 'S')
         .split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
+  }
+  getInitials(name: string): string {
+    return (name ?? 'M').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   }
 
   get greeting(): string {
@@ -70,7 +91,6 @@ export class StudentDashboardComponent implements OnInit {
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
   }
-
   get firstName(): string {
     return this.profile?.fullName?.split(' ')[0] ?? 'there';
   }
@@ -97,7 +117,9 @@ export class StudentDashboardComponent implements OnInit {
       hour: '2-digit', minute: '2-digit'
     });
   }
-
+  logout() {
+        this.authService.logout();
+    }
   getDurationLabel(mins: number): string {
     return mins === 120 ? '2 hrs' : '1 hr';
   }
