@@ -3,9 +3,11 @@ package com.mentormatch.app.service;
 import com.mentormatch.app.dto.ReviewRequest;
 import com.mentormatch.app.dto.ReviewResponse;
 import com.mentormatch.app.entity.Review;
+import com.mentormatch.app.entity.MentorProfile;
 import com.mentormatch.app.entity.Session;
 import com.mentormatch.app.entity.User;
 import com.mentormatch.app.repository.ReviewRepository;
+import com.mentormatch.app.repository.MentorRepository;
 import com.mentormatch.app.repository.SessionRepository;
 import com.mentormatch.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -21,15 +23,18 @@ public class ReviewService {
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final MentorRepository mentorRepository;
 
     public ReviewService(ReviewRepository reviewRepository,
                          SessionRepository sessionRepository,
                          UserRepository userRepository,
-                         NotificationService notificationService) {
+                         NotificationService notificationService,
+                         MentorRepository mentorRepository) {
         this.reviewRepository = reviewRepository;
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.mentorRepository = mentorRepository;
     }
 
     // POST /api/reviews/sessions/{sessionId} — Student submits a review
@@ -108,10 +113,14 @@ public class ReviewService {
         return result;
     }
 
-    // GET /api/reviews/mentors/{mentorUserId} — public
+    // GET /api/reviews/mentors/{mentorProfileId} — public profile view
+    // Translates the MentorProfile ID into the correct User ID before querying
     @Transactional
-    public List<ReviewResponse> getMentorReviews(Long mentorUserId) {
-        return reviewRepository.findByRevieweeId(mentorUserId)
+    public List<ReviewResponse> getMentorReviews(Long mentorProfileId) {
+        MentorProfile mentorProfile = mentorRepository.findById(mentorProfileId)
+                .orElseThrow(() -> new RuntimeException("Mentor profile not found for ID: " + mentorProfileId));
+
+        return reviewRepository.findByRevieweeId(mentorProfile.getUser().getId())
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
