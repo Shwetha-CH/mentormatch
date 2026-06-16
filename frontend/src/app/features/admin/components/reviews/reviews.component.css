@@ -34,25 +34,55 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.filter-group {
+/* ────────────────────────────────────────────────────────────
+   SEARCH BOX
+   ──────────────────────────────────────────────────────────── */
+.search-box {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-.filter-group label {
+.search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 16px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.search-input {
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   font-size: 13px;
-  font-weight: 500;
-  color: #6b7280;
+  color: #1a1a1a;
+  background: white;
+  width: 280px;
+  transition: all 0.15s ease;
 }
 
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+/* ────────────────────────────────────────────────────────────
+   FILTER
+   ──────────────────────────────────────────────────────────── */
 .rating-filter {
   padding: 8px 12px;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
   color: #1a1a1a;
@@ -78,6 +108,7 @@
   font-size: 13px;
   font-weight: 600;
   border-radius: 6px;
+  white-space: nowrap;
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -93,6 +124,7 @@
    REVIEW CARD
    ──────────────────────────────────────────────────────────── */
 .review-card {
+  position: relative;
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -108,6 +140,38 @@
   transform: translateY(-2px);
 }
 
+.review-card:hover .delete-btn {
+  opacity: 1;
+}
+
+/* ────────────────────────────────────────────────────────────
+   DELETE BUTTON
+   ──────────────────────────────────────────────────────────── */
+.delete-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #fef2f2;
+  color: #ef4444;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
+}
+
 /* ────────────────────────────────────────────────────────────
    REVIEW HEADER
    ──────────────────────────────────────────────────────────── */
@@ -115,6 +179,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  padding-right: 40px;
 }
 
 .reviewer-info {
@@ -185,6 +250,7 @@
 
 .rating-high .star {
   color: #f59e0b;
+  text-shadow: 0 0 4px rgba(245, 158, 11, 0.3);
 }
 
 .rating-medium .star {
@@ -273,7 +339,7 @@
 }
 
 /* ────────────────────────────────────────────────────────────
-   LOADING & ERROR STATES
+   STATES
    ──────────────────────────────────────────────────────────── */
 .loading-state {
   display: flex;
@@ -329,9 +395,6 @@
   transform: translateY(-1px);
 }
 
-/* ────────────────────────────────────────────────────────────
-   EMPTY STATE
-   ──────────────────────────────────────────────────────────── */
 .empty-state {
   padding: 80px 20px;
   text-align: center;
@@ -357,11 +420,18 @@
   color: #6b7280;
 }
 
-/* ────────────────────────────────────────────────────────────
-   RESPONSIVE
-   ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .reviews-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-input {
+    width: 100%;
   }
 }

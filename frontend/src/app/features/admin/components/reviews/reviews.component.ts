@@ -16,6 +16,7 @@ export class ReviewsComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
   selectedRating: string = 'ALL';
+  searchQuery: string = '';
 
   ratingOptions = [
     { value: 'ALL', label: 'All Ratings' },
@@ -39,7 +40,7 @@ export class ReviewsComponent implements OnInit {
     this.adminService.getAllReviews().subscribe({
       next: (data) => {
         this.reviews = data;
-        this.filteredReviews = data;
+        this.applyFilters();
         this.loading = false;
       },
       error: (err) => {
@@ -51,12 +52,54 @@ export class ReviewsComponent implements OnInit {
   }
 
   onFilterChange(): void {
-    if (this.selectedRating === 'ALL') {
-      this.filteredReviews = this.reviews;
-    } else {
+    this.applyFilters();
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = this.reviews;
+
+    // Filter by rating
+    if (this.selectedRating !== 'ALL') {
       const rating = parseInt(this.selectedRating);
-      this.filteredReviews = this.reviews.filter(review => review.rating === rating);
+      filtered = filtered.filter(review => review.rating === rating);
     }
+
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(review => 
+        review.reviewerName.toLowerCase().includes(query) ||
+        review.revieweeName.toLowerCase().includes(query) ||
+        review.reviewerEmail.toLowerCase().includes(query) ||
+        review.revieweeEmail.toLowerCase().includes(query) ||
+        (review.comment && review.comment.toLowerCase().includes(query))
+      );
+    }
+
+    this.filteredReviews = filtered;
+  }
+
+  deleteReview(review: AdminReview): void {
+    if (!confirm(`Are you sure you want to delete this review by ${review.reviewerName}?`)) {
+      return;
+    }
+
+    this.adminService.deleteReview(review.id).subscribe({
+      next: () => {
+        // Remove from local array
+        this.reviews = this.reviews.filter(r => r.id !== review.id);
+        this.applyFilters();
+        alert('Review deleted successfully! ✅');
+      },
+      error: (err) => {
+        console.error('Error deleting review:', err);
+        alert('Failed to delete review. Please try again.');
+      }
+    });
   }
 
   getStars(rating: number): string[] {

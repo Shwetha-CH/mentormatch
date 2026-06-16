@@ -34,25 +34,55 @@
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.filter-group {
+/* ────────────────────────────────────────────────────────────
+   SEARCH BOX
+   ──────────────────────────────────────────────────────────── */
+.search-box {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-.filter-group label {
+.search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 16px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.search-input {
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   font-size: 13px;
-  font-weight: 500;
-  color: #6b7280;
+  color: #1a1a1a;
+  background: white;
+  width: 280px;
+  transition: all 0.15s ease;
 }
 
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+/* ────────────────────────────────────────────────────────────
+   FILTER
+   ──────────────────────────────────────────────────────────── */
 .status-filter {
   padding: 8px 12px;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
   color: #1a1a1a;
@@ -78,10 +108,11 @@
   font-size: 13px;
   font-weight: 600;
   border-radius: 6px;
+  white-space: nowrap;
 }
 
 /* ────────────────────────────────────────────────────────────
-   TABLE CONTAINER
+   TABLE
    ──────────────────────────────────────────────────────────── */
 .table-container {
   background: #ffffff;
@@ -91,12 +122,9 @@
   overflow-x: auto;
 }
 
-/* ────────────────────────────────────────────────────────────
-   DATA TABLE
-   ──────────────────────────────────────────────────────────── */
 .data-table {
   width: 100%;
-  min-width: 1000px;
+  min-width: 1200px;
   border-collapse: collapse;
 }
 
@@ -137,7 +165,7 @@
 }
 
 /* ────────────────────────────────────────────────────────────
-   ID CELL
+   CELLS
    ──────────────────────────────────────────────────────────── */
 .id-cell {
   font-weight: 600;
@@ -145,9 +173,6 @@
   font-size: 13px;
 }
 
-/* ────────────────────────────────────────────────────────────
-   USER CELL
-   ──────────────────────────────────────────────────────────── */
 .user-cell {
   display: flex;
   align-items: center;
@@ -199,9 +224,6 @@
   text-overflow: ellipsis;
 }
 
-/* ────────────────────────────────────────────────────────────
-   TOPIC CELL
-   ──────────────────────────────────────────────────────────── */
 .topic-cell {
   max-width: 200px;
   white-space: nowrap;
@@ -210,8 +232,14 @@
   font-size: 13px;
 }
 
+.date-cell {
+  color: #6b7280;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 /* ────────────────────────────────────────────────────────────
-   PLAN TYPE BADGE
+   BADGES
    ──────────────────────────────────────────────────────────── */
 .plan-badge {
   display: inline-block;
@@ -228,11 +256,6 @@
   color: #0284c7;
 }
 
-.plan-daily {
-  background: #ecfdf5;
-  color: #059669;
-}
-
 .plan-weekly {
   background: #fef3c7;
   color: #d97706;
@@ -243,9 +266,6 @@
   color: #a21caf;
 }
 
-/* ────────────────────────────────────────────────────────────
-   STATUS BADGE
-   ──────────────────────────────────────────────────────────── */
 .status-badge {
   display: inline-block;
   padding: 4px 10px;
@@ -280,16 +300,67 @@
 }
 
 /* ────────────────────────────────────────────────────────────
-   DATE CELL
+   ACTION BUTTONS
    ──────────────────────────────────────────────────────────── */
-.date-cell {
-  color: #6b7280;
-  font-size: 13px;
-  white-space: nowrap;
+.actions-cell {
+  width: 140px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-cancel {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.btn-cancel:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-complete {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.btn-complete:hover {
+  background: #10b981;
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-delete {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.btn-delete:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
 }
 
 /* ────────────────────────────────────────────────────────────
-   LOADING STATE
+   STATES
    ──────────────────────────────────────────────────────────── */
 .loading-state {
   display: flex;
@@ -314,9 +385,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* ────────────────────────────────────────────────────────────
-   ERROR STATE
-   ──────────────────────────────────────────────────────────── */
 .error-state {
   display: flex;
   flex-direction: column;
@@ -348,9 +416,6 @@
   transform: translateY(-1px);
 }
 
-/* ────────────────────────────────────────────────────────────
-   EMPTY STATE
-   ──────────────────────────────────────────────────────────── */
 .empty-state {
   padding: 80px 20px;
   text-align: center;
@@ -372,4 +437,19 @@
   margin: 0;
   font-size: 14px;
   color: #6b7280;
+}
+
+/* ────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-input {
+    width: 100%;
+  }
 }

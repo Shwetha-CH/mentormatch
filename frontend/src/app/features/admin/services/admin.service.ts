@@ -8,6 +8,7 @@ import { AdminUser, AdminUserDetail } from '../models/admin-user.model';
 import { AdminSession } from '../models/admin-session.model';
 import { AdminReview } from '../models/admin-review.model';
 import { BroadcastRequest } from '../models/broadcast-request.model';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -64,12 +65,34 @@ export class AdminService {
   getRecentSessions(): Observable<AdminSession[]> {
     return this.http.get<AdminSession[]>(`${this.apiUrl}/sessions/recent`);
   }
+
+  cancelSession(sessionId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/sessions/${sessionId}/cancel`, {});
+  }
+
+  forceCompleteSession(sessionId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/sessions/${sessionId}/force-complete`, {});
+  }
+
+  deleteSession(sessionId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/sessions/${sessionId}`);
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // Reviews
+  // ────────────────────────────────────────────────────────────
   getAllReviews(): Observable<AdminReview[]> {
     return this.http.get<AdminReview[]>(`${this.apiUrl}/reviews`);
   }
 
-  // ✅ NEW - Broadcast
-  sendBroadcast(request: BroadcastRequest): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/notifications/broadcast`, request);
+  deleteReview(reviewId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/reviews/${reviewId}`);
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // Broadcast
+  // ────────────────────────────────────────────────────────────
+  sendBroadcast(request: BroadcastRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/notifications/broadcast`, request);
   }
 }

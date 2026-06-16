@@ -344,8 +344,70 @@ public class AdminService {
 
         public String getCreatedAt() { return createdAt; }
         public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
+    }
+    // ✅ ADD THESE METHODS TO AdminService.java
+
+// ── REVIEW ACTIONS ────────────────────────────────────────
+
+    public void deleteReview(Long reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        // Recalculate mentor rating after deleting review
+        Long mentorUserId = review.getReviewee().getId();
+        reviewRepository.delete(review);
+
+        // If it was a student review, recalculate mentor's rating
+        if (review.getReviewerRole() == Review.ReviewerRole.STUDENT) {
+            mentorRepository.findByUserId(mentorUserId).ifPresent(mentor -> {
+                Double avg = reviewRepository.calculateAvgRatingForMentor(mentorUserId);
+                mentor.setRating(avg != null ? avg : 0.0);
+                mentorRepository.save(mentor);
+            });
+        }
     }
 
+// ── SESSION ACTIONS ───────────────────────────────────────
+
+    public AdminSessionResponse cancelSession(Long sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        if (session.getStatus() == SessionStatus.COMPLETED) {
+            throw new RuntimeException("Cannot cancel a completed session");
+        }
+
+        session.setStatus(SessionStatus.CANCELLED);
+
+        // Cancel all occurrences
+        for (var occurrence : session.getOccurrences()) {
+            occurrence.setStatus(SessionStatus.CANCELLED);
+        }
+
+        return mapToAdminSessionResponse(sessionRepository.save(session));
+    }
+
+    public AdminSessionResponse forceCompleteSession(Long sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        session.setStatus(SessionStatus.COMPLETED);
+
+        // Mark all occurrences as completed
+        for (var occurrence : session.getOccurrences()) {
+            occurrence.setStatus(SessionStatus.COMPLETED);
+        }
+
+        return mapToAdminSessionResponse(sessionRepository.save(session));
+    }
+
+    public void deleteSession(Long sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        sessionRepository.delete(session);
+    }
 
 
 }

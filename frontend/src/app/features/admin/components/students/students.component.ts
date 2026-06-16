@@ -12,8 +12,10 @@ import { AdminUser } from '../../models/admin-user.model';
 export class StudentsComponent implements OnInit {
   
   students: AdminUser[] = [];
+  filteredStudents: AdminUser[] = [];  // ✅ ADDED
   loading: boolean = true;
   error: string | null = null;
+  searchQuery: string = '';  // ✅ ADDED
 
   constructor(private adminService: AdminService) {}
 
@@ -28,6 +30,7 @@ export class StudentsComponent implements OnInit {
     this.adminService.getUsersByRole('STUDENT').subscribe({
       next: (data) => {
         this.students = data;
+        this.filteredStudents = data;  // ✅ CHANGED
         this.loading = false;
       },
       error: (err) => {
@@ -38,10 +41,23 @@ export class StudentsComponent implements OnInit {
     });
   }
 
+  // ✅ ADDED
+  onSearchChange(): void {
+    if (!this.searchQuery.trim()) {
+      this.filteredStudents = this.students;
+      return;
+    }
+
+    const query = this.searchQuery.toLowerCase();
+    this.filteredStudents = this.students.filter(student => 
+      student.fullName.toLowerCase().includes(query) ||
+      student.email.toLowerCase().includes(query)
+    );
+  }
+
   toggleStatus(student: AdminUser): void {
     this.adminService.toggleUserStatus(student.id).subscribe({
       next: (updatedUser) => {
-        // Update the local student object
         student.isActive = updatedUser.isActive;
       },
       error: (err) => {
