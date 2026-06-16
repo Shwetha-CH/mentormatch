@@ -5,7 +5,7 @@ import { MentorProfile } from './models/mentor-profile.model';
 import { MentorProfileService } from './services/mentor-profile.service';
 import { SessionManagementService } from './services/session.service';
 import { SessionResponse } from './models/session.model';
-
+import { NotificationService } from './services/notification.service';
 @Component({
   selector: 'app-mentor-dashboard',
   templateUrl: './mentor-dashboard.component.html',
@@ -25,7 +25,7 @@ export class MentorDashboardComponent implements OnInit {
   confirmDelete = false;
   saveSuccess = false;
   errorMsg = '';
-
+  unreadCount = 0;
   sessionsList: SessionResponse[] = [];
   sessionsLoading = false;
   sessionActionRunning = false;
@@ -38,7 +38,8 @@ export class MentorDashboardComponent implements OnInit {
       private fb: FormBuilder,
       private mentorService: MentorProfileService,
       private authService: AuthService,
-      private sessionService: SessionManagementService
+      private sessionService: SessionManagementService,
+      private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +50,7 @@ export class MentorDashboardComponent implements OnInit {
     });
 
     this.loadProfile();
+    this.loadUnreadCount();
   }
 
   switchTab(tabName: 'profile' | 'sessions'): void {
@@ -270,6 +272,13 @@ export class MentorDashboardComponent implements OnInit {
   logout(): void {
     this.authService.logout();
   }
+
+  loadUnreadCount(): void {
+    this.notificationService.getUnreadCount().subscribe({
+      next: (count) => { this.unreadCount = count; },
+      error: () => { this.unreadCount = 0; }
+    });
+}
 
   private resetForm(): void { this.form.reset({ industry: '', hourlyRate: null, bio: '' }); }
 }
