@@ -17,6 +17,8 @@ export interface SessionRequest {
     message?: string;
     planType: string;
     totalOccurrences: number;
+    scheduledAt: string;      // ISO format: "2026-06-20T10:00:00"
+    durationMinutes: number;  // 60 or 120
 }
 
 export interface SessionResponse {
@@ -27,6 +29,9 @@ export interface SessionResponse {
     planType: string;
     totalOccurrences: number;
     createdAt: string;
+    scheduledAt: string;
+    durationMinutes: number;
+    meetingLink: string | null;
     mentorId: number;
     mentorName: string;
     studentId: number;
@@ -58,6 +63,13 @@ export class SessionService {
     getMentorSessions(): Observable<SessionResponse[]> {
         return this.http
             .get<ApiResponse<SessionResponse[]>>(`${this.API}/mentor`)
+            .pipe(map(res => res.data));
+    }
+
+    // PATCH cancel
+    cancelSession(id: number): Observable<SessionResponse> {
+        return this.http
+            .patch<ApiResponse<SessionResponse>>(`${this.API}/${id}/cancel`, {})
             .pipe(map(res => res.data));
     }
 }

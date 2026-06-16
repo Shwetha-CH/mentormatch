@@ -46,6 +46,18 @@ public class Session {
     @Column(name = "total_occurrences", nullable = false)
     private Integer totalOccurrences;
 
+    // When the student wants the session scheduled
+    @Column(name = "scheduled_at")
+    private LocalDateTime scheduledAt;
+
+    // Duration in minutes — 60 or 120
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes = 60;
+
+    // Meeting link added by mentor when accepting
+    @Column(name = "meeting_link", length = 500)
+    private String meetingLink;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -78,6 +90,15 @@ public class Session {
 
     public Integer getTotalOccurrences() { return totalOccurrences; }
     public void setTotalOccurrences(Integer totalOccurrences) { this.totalOccurrences = totalOccurrences; }
+
+    public LocalDateTime getScheduledAt() { return scheduledAt; }
+    public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
+
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
+
+    public String getMeetingLink() { return meetingLink; }
+    public void setMeetingLink(String meetingLink) { this.meetingLink = meetingLink; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

@@ -11,6 +11,9 @@ public class SessionResponse {
     private String planType;
     private Integer totalOccurrences;
     private LocalDateTime createdAt;
+    private LocalDateTime scheduledAt;
+    private Integer durationMinutes;
+    private String meetingLink;
 
     // Mentor info
     private Long mentorId;
@@ -44,6 +47,15 @@ public class SessionResponse {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
+    public LocalDateTime getScheduledAt() { return scheduledAt; }
+    public void setScheduledAt(LocalDateTime scheduledAt) { this.scheduledAt = scheduledAt; }
+
+    public Integer getDurationMinutes() { return durationMinutes; }
+    public void setDurationMinutes(Integer durationMinutes) { this.durationMinutes = durationMinutes; }
+
+    public String getMeetingLink() { return meetingLink; }
+    public void setMeetingLink(String meetingLink) { this.meetingLink = meetingLink; }
+
     public Long getMentorId() { return mentorId; }
     public void setMentorId(Long mentorId) { this.mentorId = mentorId; }
 
@@ -56,3 +68,4 @@ public class SessionResponse {
     public String getStudentName() { return studentName; }
     public void setStudentName(String studentName) { this.studentName = studentName; }
 }
+

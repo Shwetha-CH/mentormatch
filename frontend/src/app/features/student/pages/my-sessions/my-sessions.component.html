@@ -1,3 +1,4 @@
+<app-student-navbar></app-student-navbar>
 <div class="page">
     <button class="back-btn" type="button" (click)="goback()" >← Back to dashboard</button>
     <div class="page-header">
@@ -36,8 +37,7 @@
 
         <div class="session-list">
             <div class="session-card"
-                 *ngFor="let session of filteredSessions"
-                 (click)="viewSession(session.id)">
+                 *ngFor="let session of filteredSessions">
 
                 <div class="mentor-avatar">
                     <span>{{ getInitials(session.mentorName) }}</span>
@@ -60,12 +60,43 @@
                             {{ getPlanIcon(session.planType) }} {{ session.planType }}
                             <span *ngIf="session.totalOccurrences > 1"> - {{ session.totalOccurrences }} sessions</span>
                         </span>
-                        <span class="meta-dot">-</span>
-                        <span class="meta-item">{{ formatDate(session.createdAt) }}</span>
+                        <span class="meta-dot">·</span>
+                        <span class="meta-item">Booked: {{ formatDate(session.createdAt) }}</span>
                     </div>
 
+                    <!-- Scheduled date and time -->
+                    <div class="session-schedule" *ngIf="session.scheduledAt">
+                        📅 <strong>{{ formatDate(session.scheduledAt) }}</strong>
+                        <span *ngIf="session.durationMinutes"> · {{ session.durationMinutes }} mins</span>
+                    </div>
+
+                    <!-- Meeting link — shown when ACCEPTED -->
+                    <div class="meeting-link-box" *ngIf="session.status === 'ACCEPTED' && session.meetingLink">
+                        🎥 <strong>Meeting Ready!</strong>
+                        <a [href]="session.meetingLink" target="_blank" class="join-btn"
+                           (click)="$event.stopPropagation()">
+                            Join Meeting
+                        </a>
+                    </div>
+
+                    <!-- Waiting message — shown when PENDING -->
+                    <div class="pending-msg" *ngIf="session.status === 'PENDING'">
+                        ⏳ Waiting for mentor to accept and share meeting link
+                    </div>
+
+                    <!-- Rejection note -->
                     <div class="rejection-note" *ngIf="session.status === 'REJECTED'">
-                        <span class="rej-label">Reason:</span> Session was rejected.
+                        <span class="rej-label">Status:</span> Session was rejected by mentor.
+                    </div>
+
+                    <!-- Cancelled note -->
+                    <div class="rejection-note" *ngIf="session.status === 'CANCELLED'">
+                        <span class="rej-label">Status:</span> Session was cancelled.
+                    </div>
+
+                    <!-- Completed note -->
+                    <div class="completed-note" *ngIf="session.status === 'COMPLETED'">
+                        ✅ Session completed! Don't forget to leave a review.
                     </div>
                 </div>
 

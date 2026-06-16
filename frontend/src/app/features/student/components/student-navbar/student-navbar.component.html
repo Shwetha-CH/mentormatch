@@ -1,0 +1,41 @@
+<!-- src/app/features/student/components/student-navbar/student-navbar.component.html -->
+
+<nav class="navbar">
+    <div class="navbar-inner">
+
+        <!-- Brand -->
+        <div class="brand" (click)="navigate('/student/dashboard')">
+            <span class="brand-icon">🎓</span>
+            <span class="brand-name">MentorMatch</span>
+        </div>
+
+        <!-- Nav links -->
+        <ul class="nav-links">
+            <li *ngFor="let item of navItems">
+                <button
+                        class="nav-btn"
+                        [class.active]="isActive(item.route)"
+                        (click)="navigate(item.route)">
+                    <span class="nav-icon">{{ item.icon }}</span>
+                    <span class="nav-label">{{ item.label }}</span>
+                    <!-- Unread badge on notifications -->
+                    <span class="notif-badge" *ngIf="item.label === 'Notifications' && unreadCount > 0">
+            {{ unreadCount > 9 ? '9+' : unreadCount }}
+          </span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Right — user + logout -->
+        <div class="nav-right">
+            <div class="user-pill">
+                <div class="user-avatar">{{ initials }}</div>
+                <span class="user-name">{{ fullName }}</span>
+            </div>
+            <button class="logout-btn" (click)="logout()" title="Logout">
+                ⏻ Logout
+            </button>
+        </div>
+
+    </div>
+</nav>

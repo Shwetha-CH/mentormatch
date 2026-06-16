@@ -1,28 +1,24 @@
+<!-- src/app/features/student/pages/dashboard/student-dashboard.component.html -->
+<app-student-navbar></app-student-navbar>
 <div class="dashboard">
 
-    <!-- Loading -->
     <div *ngIf="loading" class="state-msg">Loading dashboard…</div>
     <div *ngIf="errorMsg" class="banner error">{{ errorMsg }}</div>
 
     <ng-container *ngIf="!loading && !errorMsg">
 
-        <!-- Header -->
-        <div class="dash-header">
-            <div class="header-left">
+        <!-- Welcome header -->
+        <div class="welcome-banner">
+            <div class="welcome-left">
                 <div class="avatar">{{ initials }}</div>
                 <div>
-                    <h1>{{ greeting }}, {{ firstName }}!</h1>
-                    <p class="sub">Here's what's happening with your mentorship journey.</p>
+                    <h1>{{ greeting }}, {{ firstName }}! 👋</h1>
+                    <p class="sub">Here's your mentorship journey at a glance.</p>
                 </div>
             </div>
-            <div class="header-actions">
-            <button class="btn-primary"  (click)="navigate('/student/mentors')">
+            <button class="btn-primary" (click)="navigate('/student/mentors')">
                 + Book a session
             </button>
-            <button class="btn-danger" (click)="logout()">
-                Logout
-            </button>
-            </div>
         </div>
 
         <!-- Stats row -->
@@ -30,7 +26,7 @@
             <div class="stat-card">
                 <span class="stat-icon">📚</span>
                 <span class="stat-val">{{ stats.totalSessions }}</span>
-                <span class="stat-lbl">Total sessions</span>
+                <span class="stat-lbl">Total Sessions</span>
             </div>
             <div class="stat-card accent-green">
                 <span class="stat-icon">📅</span>
@@ -40,7 +36,7 @@
             <div class="stat-card accent-amber">
                 <span class="stat-icon">⏳</span>
                 <span class="stat-val">{{ stats.pending }}</span>
-                <span class="stat-lbl">Pending requests</span>
+                <span class="stat-lbl">Pending Requests</span>
             </div>
             <div class="stat-card accent-blue">
                 <span class="stat-icon">✅</span>
@@ -49,32 +45,43 @@
             </div>
         </div>
 
-        <!-- Main grid -->
+        <!-- Main content -->
         <div class="main-grid">
 
             <!-- Recent sessions -->
-            <div class="card sessions-card">
+            <div class="card">
                 <div class="card-head">
-                    <p class="card-label">Recent sessions</p>
+                    <p class="card-label">Recent Sessions</p>
                     <button class="link-btn" (click)="navigate('/student/sessions')">View all →</button>
                 </div>
 
                 <div *ngIf="recentSessions.length === 0" class="empty-msg">
-                    No sessions yet. <span class="link-btn" (click)="navigate('/student/mentors')">Browse mentors</span> to book one.
+                    No sessions yet.
+                    <button class="link-btn" (click)="navigate('/student/mentors')">Browse mentors</button>
                 </div>
 
                 <div class="session-list">
                     <div class="session-item" *ngFor="let s of recentSessions"
-                         (click)="navigate('/student/sessions/' + s.id)">
-                        <div class="session-avatar">{{ getInitials(s.mentorName) }}</div>
+                         (click)="navigate('/student/sessions')">
+                        <div class="session-avatar">{{ s.mentorName | slice:0:1 }}</div>
                         <div class="session-body">
                             <p class="session-topic">{{ s.topic }}</p>
-                            <p class="session-meta">{{ s.mentor?.fullName }} · {{ formatDate(s.scheduledAt) }}</p>
+                            <p class="session-meta">
+                                {{ s.mentorName }}
+                                <span *ngIf="s.scheduledAt"> · {{ formatDate(s.scheduledAt) }}</span>
+                                <span *ngIf="s.durationMinutes"> · {{ getDurationLabel(s.durationMinutes) }}</span>
+                            </p>
                             <span class="plan-badge">{{ s.planType }}</span>
+                            <!-- Show meeting link if session is accepted -->
+                            <a *ngIf="s.status === 'ACCEPTED' && s.meetingLink"
+                               [href]="s.meetingLink"
+                               target="_blank"
+                               class="meet-link"
+                               (click)="$event.stopPropagation()">
+                                🎥 Join Meeting
+                            </a>
                         </div>
-                        <span class="status-badge" [ngClass]="getStatusClass(s.status)">
-              {{ s.status }}
-            </span>
+                        <span class="status-badge" [ngClass]="getStatusClass(s.status)">{{ s.status }}</span>
                     </div>
                 </div>
             </div>
@@ -82,9 +89,9 @@
             <!-- Right column -->
             <div class="right-col">
 
-                <!-- Profile completion -->
+                <!-- Profile card -->
                 <div class="card profile-card">
-                    <p class="card-label">Your profile</p>
+                    <p class="card-label">Your Profile</p>
                     <div class="profile-row">
                         <div class="avatar-sm">{{ initials }}</div>
                         <div>
@@ -98,22 +105,7 @@
               {{ tag.trim() }}
             </span>
                     </div>
-                    <button class="btn-outline" (click)="navigate('/student/profile')">
-                        Edit profile
-                    </button>
-                </div>
-
-                <!-- Quick actions -->
-                <div class="card actions-card">
-                    <p class="card-label">Quick actions</p>
-                    <div class="actions-grid">
-                        <button class="action-btn"
-                                *ngFor="let a of quickActions"
-                                (click)="navigate(a.route)">
-                            <span class="action-icon">{{ a.icon }}</span>
-                            <span>{{ a.label }}</span>
-                        </button>
-                    </div>
+                    <button class="btn-outline" (click)="navigate('/student/profile')">Edit profile</button>
                 </div>
 
             </div>
