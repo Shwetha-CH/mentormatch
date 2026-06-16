@@ -1,5 +1,5 @@
 <!-- src/app/features/student/pages/mentor-detail/mentor-detail.component.html -->
-
+<app-student-navbar></app-student-navbar>
 <div class="detail-page">
     <button class="back-btn" type="button" (click)="goBack()">← Back to mentors</button>
 
@@ -10,30 +10,34 @@
 
         <!-- Profile header -->
         <div class="profile-head">
-            <div class="avatar">
-                {{ initials }}
+            <div class="avatar-wrap">
+                <div class="avatar">{{ initials }}</div>
                 <span class="avail-dot" [class.online]="mentor.isAvailable"></span>
             </div>
 
             <div class="head-info">
                 <h1>{{ mentor.user.fullName }}</h1>
-                <p class="sub">{{ mentor.industry || 'Industry not set' }}</p>
-                <div class="rating">
+                <p class="sub-industry">{{ mentor.industry || 'Industry not set' }}</p>
+                <div class="rating-row">
                     <span class="stars">{{ getRatingStars(mentor.rating) }}</span>
-                    <span>{{ mentor.rating.toFixed(1) }}</span>
+                    <span class="rating-num">{{ mentor.rating.toFixed(1) }}</span>
                 </div>
+                <p class="hourly-rate" *ngIf="mentor.hourlyRate && mentor.hourlyRate > 0">
+                    ₹{{ mentor.hourlyRate }} / hour
+                </p>
             </div>
 
-            <!-- Book button -->
-            <button
-                    class="btn-book"
-                    (click)="toggleBookingForm()"
-                    *ngIf="mentor.isAvailable">
-                {{ showBookingForm ? 'Cancel' : '📅 Book Session' }}
-            </button>
-            <span class="unavailable-badge" *ngIf="!mentor.isAvailable">
-        Currently unavailable
-      </span>
+            <div class="head-actions">
+                <button
+                        class="btn-book"
+                        (click)="toggleBookingForm()"
+                        *ngIf="mentor.isAvailable">
+                    {{ showBookingForm ? '✕ Cancel' : '📅 Book Session' }}
+                </button>
+                <span class="unavailable-badge" *ngIf="!mentor.isAvailable">
+          Currently unavailable
+        </span>
+            </div>
         </div>
 
         <!-- Success banner -->
@@ -47,53 +51,73 @@
 
             <form [formGroup]="bookingForm" (ngSubmit)="onBook()" novalidate>
 
+                <!-- Topic -->
                 <div class="field">
-                    <label>Topic <span class="req">*</span></label>
-                    <input
-                            type="text"
-                            formControlName="topic"
-                            placeholder="e.g. System Design Interview Prep" />
-                    <span class="err"
-                          *ngIf="bookingForm.get('topic')?.invalid && bookingForm.get('topic')?.touched">
-            Topic is required (max 200 characters)
+                    <label>Session Topic <span class="req">*</span></label>
+                    <input type="text" formControlName="topic"
+                           placeholder="e.g. Spring Boot REST API development" />
+                    <span class="err" *ngIf="bookingForm.get('topic')?.invalid && bookingForm.get('topic')?.touched">
+            Topic is required
           </span>
                 </div>
 
-                <div class="field">
-                    <label>Message to mentor</label>
-                    <textarea
-                            formControlName="message"
-                            rows="3"
-                            placeholder="Introduce yourself and explain what you want to learn...">
-          </textarea>
-                </div>
-
+                <!-- Date and Time row -->
                 <div class="form-row">
                     <div class="field">
-                        <label>Plan type <span class="req">*</span></label>
-                        <select formControlName="planType">
-                            <option *ngFor="let p of planTypes" [value]="p">{{ p }}</option>
+                        <label>Preferred Date <span class="req">*</span></label>
+                        <input type="date" formControlName="sessionDate" [min]="minDate" />
+                        <span class="err" *ngIf="bookingForm.get('sessionDate')?.invalid && bookingForm.get('sessionDate')?.touched">
+              Please select a date
+            </span>
+                    </div>
+
+                    <div class="field">
+                        <label>Preferred Time <span class="req">*</span></label>
+                        <input type="time" formControlName="sessionTime" />
+                        <span class="err" *ngIf="bookingForm.get('sessionTime')?.invalid && bookingForm.get('sessionTime')?.touched">
+              Please select a time
+            </span>
+                    </div>
+                </div>
+
+                <!-- Duration and Plan row -->
+                <div class="form-row">
+                    <div class="field">
+                        <label>Duration <span class="req">*</span></label>
+                        <select formControlName="durationMinutes">
+                            <option *ngFor="let d of durations" [value]="d.value">{{ d.label }}</option>
                         </select>
                     </div>
 
                     <div class="field">
-                        <label>No. of sessions <span class="req">*</span></label>
-                        <input
-                                type="number"
-                                formControlName="totalOccurrences"
-                                min="1"
-                                max="30" />
+                        <label>Plan Type <span class="req">*</span></label>
+                        <select formControlName="planType">
+                            <option *ngFor="let p of planTypes" [value]="p.value">{{ p.label }}</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="banner error" *ngIf="bookingError">{{ bookingError }}</div>
+                <!-- No. of sessions (only for recurring) -->
+                <div class="field" *ngIf="bookingForm.value.planType !== 'SINGLE'">
+                    <label>Number of sessions <span class="req">*</span></label>
+                    <input type="number" formControlName="totalOccurrences" min="1" max="30"
+                           placeholder="e.g. 4 for 4 weeks" />
+                </div>
+
+                <!-- Message -->
+                <div class="field">
+                    <label>Message to mentor</label>
+                    <textarea formControlName="message" rows="3"
+                              placeholder="Introduce yourself and describe what you want to learn...">
+          </textarea>
+                </div>
+
+                <div class="banner error small" *ngIf="bookingError">{{ bookingError }}</div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn-ghost" (click)="toggleBookingForm()">
-                        Cancel
-                    </button>
+                    <button type="button" class="btn-ghost" (click)="toggleBookingForm()">Cancel</button>
                     <button type="submit" class="btn-primary" [disabled]="bookingForm.invalid || booking">
-                        {{ booking ? 'Sending request…' : 'Send Session Request' }}
+                        {{ booking ? 'Sending…' : '📤 Send Session Request' }}
                     </button>
                 </div>
 
@@ -101,10 +125,11 @@
         </div>
 
         <!-- Profile cards -->
-        <div class="grid">
+        <div class="cards-grid">
+
             <div class="card">
-                <p class="card-label">Bio</p>
-                <p class="bio">{{ mentor.bio || 'This mentor has not added a bio yet.' }}</p>
+                <p class="card-label">About</p>
+                <p class="bio-text">{{ mentor.bio || 'This mentor has not added a bio yet.' }}</p>
             </div>
 
             <div class="card">
@@ -116,6 +141,7 @@
                     <p class="muted">No skills listed yet.</p>
                 </ng-template>
             </div>
+
         </div>
 
     </ng-container>

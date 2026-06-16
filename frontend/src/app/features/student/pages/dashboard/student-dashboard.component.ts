@@ -1,10 +1,10 @@
+// src/app/features/student/pages/dashboard/student-dashboard.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StudentService } from '../../services/student.service';
-import { SessionService } from '../../services/session.service';
+import { SessionService, SessionResponse } from '../../services/session.service';
 import { StudentProfile } from '../../models/student-profile.model';
-import { Session } from '../../models/session.model';
-import { AuthService } from "../../../../core/services/auth.service";
 
 @Component({
   selector: 'app-student-dashboard',
@@ -24,23 +24,16 @@ export class StudentDashboardComponent implements OnInit {
     completed: 0
   };
 
-  recentSessions: any[] = [];
-
-  quickActions = [
-    { label: 'Browse Mentors',   icon: '🔍', route: '/student/mentors'  },
-    { label: 'My Sessions',      icon: '📅', route: '/student/sessions' },
-    { label: 'Edit Profile',     icon: '✏️',  route: '/student/profile'  },
-    { label: 'Notifications',    icon: '🔔', route: '/student/notifications' }
-  ];
+  recentSessions: SessionResponse[] = [];
 
   constructor(
       private studentService: StudentService,
       private sessionService: SessionService,
-      private router: Router,
-      private authService: AuthService,
+      private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Load profile
     this.studentService.getProfile().subscribe({
       next: (p) => {
         this.profile = p;
@@ -50,6 +43,19 @@ export class StudentDashboardComponent implements OnInit {
         this.errorMsg = 'Failed to load dashboard.';
         this.loading = false;
       }
+    });
+
+    // Load real session data
+    this.sessionService.getMySessions().subscribe({
+      next: (sessions) => {
+        this.stats.totalSessions = sessions.length;
+        this.stats.upcoming  = sessions.filter(s => s.status === 'ACCEPTED').length;
+        this.stats.pending   = sessions.filter(s => s.status === 'PENDING').length;
+        this.stats.completed = sessions.filter(s => s.status === 'COMPLETED').length;
+        // Most recent 3 sessions
+        this.recentSessions = sessions.slice(0, 3);
+      },
+      error: () => {} // Non-critical — fail silently
     });
   }
 
@@ -64,6 +70,7 @@ export class StudentDashboardComponent implements OnInit {
     if (hour < 17) return 'Good afternoon';
     return 'Good evening';
   }
+
   get firstName(): string {
     return this.profile?.fullName?.split(' ')[0] ?? 'there';
   }
@@ -84,14 +91,14 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   formatDate(dateStr: string): string {
-    if (!dateStr) return 'TBD';
+    if (!dateStr) return 'Date TBD';
     return new Date(dateStr).toLocaleDateString('en-IN', {
       day: 'numeric', month: 'short', year: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
   }
 
-  logout() {
-    this.authService.logout();
+  getDurationLabel(mins: number): string {
+    return mins === 120 ? '2 hrs' : '1 hr';
   }
 }

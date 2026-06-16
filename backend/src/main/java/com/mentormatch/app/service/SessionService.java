@@ -11,6 +11,7 @@ import com.mentormatch.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,16 @@ public class SessionService {
         session.setPlanType(Session.PlanType.valueOf(request.getPlanType()));
         session.setTotalOccurrences(request.getTotalOccurrences());
         session.setStatus(Session.SessionStatus.PENDING);
+        session.setDurationMinutes(request.getDurationMinutes() != null ? request.getDurationMinutes() : 60);
+
+        // Parse scheduledAt
+        if (request.getScheduledAt() != null && !request.getScheduledAt().isEmpty()) {
+            try {
+                session.setScheduledAt(LocalDateTime.parse(request.getScheduledAt()));
+            } catch (Exception e) {
+                // If parsing fails just leave it null
+            }
+        }
 
         Session saved = sessionRepository.save(session);
 
@@ -61,7 +72,8 @@ public class SessionService {
         notificationService.send(
                 mentor.getId(),
                 "New Session Request!",
-                student.getFullName() + " wants to book a session with you: " + request.getTopic(),
+                student.getFullName() + " wants to book a session with you: " + request.getTopic()
+                        + " on " + (request.getScheduledAt() != null ? request.getScheduledAt().substring(0, 10) : "TBD"),
                 "/mentor/sessions/" + saved.getId()
         );
 
@@ -90,20 +102,27 @@ public class SessionService {
                 .collect(Collectors.toList());
     }
 
-    // PATCH /api/sessions/{id}/accept — Mentor accepts session
+    // PATCH /api/sessions/{id}/accept — Mentor accepts and adds meeting link
     @Transactional
     public SessionResponse acceptSession(Long sessionId, String mentorEmail, String meetingLink) {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         session.setStatus(Session.SessionStatus.ACCEPTED);
+
+        // Save meeting link when mentor accepts
+        if (meetingLink != null && !meetingLink.isBlank()) {
+            session.setMeetingLink(meetingLink);
+        }
+
         Session saved = sessionRepository.save(session);
 
-        // Notify student
+        // Notify student with meeting link
         notificationService.send(
                 session.getStudent().getId(),
-                "Session Accepted!",
-                session.getMentor().getFullName() + " accepted your session: " + session.getTopic(),
+                "Session Accepted! 🎉",
+                session.getMentor().getFullName() + " accepted your session: " + session.getTopic()
+                        + (meetingLink != null ? " | Meeting link: " + meetingLink : ""),
                 "/student/sessions/" + sessionId
         );
 
@@ -130,6 +149,46 @@ public class SessionService {
         return toResponse(saved);
     }
 
+    // PATCH /api/sessions/{id}/cancel — Student cancels session
+    @Transactional
+    public SessionResponse cancelSession(Long sessionId, String studentEmail) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        session.setStatus(Session.SessionStatus.CANCELLED);
+        Session saved = sessionRepository.save(session);
+
+        // Notify mentor
+        notificationService.send(
+                session.getMentor().getId(),
+                "Session Cancelled",
+                session.getStudent().getFullName() + " cancelled their session: " + session.getTopic(),
+                "/mentor/sessions/" + sessionId
+        );
+
+        return toResponse(saved);
+    }
+
+    // PATCH /api/sessions/{id}/complete — Mentor marks session as completed
+    @Transactional
+    public SessionResponse completeSession(Long sessionId, String mentorEmail) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        session.setStatus(Session.SessionStatus.COMPLETED);
+        Session saved = sessionRepository.save(session);
+
+        // Notify student to leave a review
+        notificationService.send(
+                session.getStudent().getId(),
+                "Session Completed! ⭐ Leave a review",
+                "Your session with " + session.getMentor().getFullName() + " is complete. Leave a review!",
+                "/student/sessions/" + sessionId
+        );
+
+        return toResponse(saved);
+    }
+
     private SessionResponse toResponse(Session s) {
         SessionResponse res = new SessionResponse();
         res.setId(s.getId());
@@ -139,6 +198,9 @@ public class SessionService {
         res.setPlanType(s.getPlanType().name());
         res.setTotalOccurrences(s.getTotalOccurrences());
         res.setCreatedAt(s.getCreatedAt());
+        res.setScheduledAt(s.getScheduledAt());
+        res.setDurationMinutes(s.getDurationMinutes());
+        res.setMeetingLink(s.getMeetingLink());
         res.setMentorId(s.getMentor().getId());
         res.setMentorName(s.getMentor().getFullName());
         res.setStudentId(s.getStudent().getId());

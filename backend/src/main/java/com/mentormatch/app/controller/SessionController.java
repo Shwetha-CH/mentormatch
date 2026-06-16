@@ -79,4 +79,26 @@ public class SessionController {
         SessionResponse session = sessionService.rejectSession(id, email);
         return ResponseEntity.ok(ApiResponse.success("Session rejected.", session));
     }
+
+    // PATCH /api/sessions/{id}/cancel — Student cancels session
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse<SessionResponse>> cancelSession(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        SessionResponse session = sessionService.cancelSession(id, email);
+        return ResponseEntity.ok(ApiResponse.success("Session cancelled.", session));
+    }
+
+    // PATCH /api/sessions/{id}/complete — Mentor marks session complete
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<ApiResponse<SessionResponse>> completeSession(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        SessionResponse session = sessionService.completeSession(id, email);
+        return ResponseEntity.ok(ApiResponse.success("Session completed.", session));
+    }
 }

@@ -20,5 +20,8 @@ export interface SessionResponse {
   mentorName: string;
   mentorId: number;
   studentId: number;
+  scheduledAt: string | null;
+  durationMinutes: number | null;
+  meetingLink: string | null;
   occurrences: OccurrenceSummary[];
 }

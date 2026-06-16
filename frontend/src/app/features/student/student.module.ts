@@ -13,7 +13,8 @@ import { SubmitReviewComponent } from './pages/submit-review/submit-review.compo
 import { MentorReviewsComponent } from './pages/mentor-reviews/mentor-reviews.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { NotificationBellComponent } from './components/notification-bell/notification-bell.component';
-
+import { StudentNavbarComponent } from './components/student-navbar/student-navbar.component';
+// add to declarations: StudentNavbarComponent
 @NgModule({
   declarations: [
     StudentDashboardComponent,
@@ -25,6 +26,7 @@ import { NotificationBellComponent } from './components/notification-bell/notifi
     MentorReviewsComponent,
     NotificationsComponent,
     NotificationBellComponent,
+    StudentNavbarComponent
   ],
   imports: [
     CommonModule,
