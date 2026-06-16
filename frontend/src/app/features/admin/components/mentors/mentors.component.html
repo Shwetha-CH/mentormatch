@@ -8,7 +8,17 @@
       <p class="page-subtitle">Manage mentor accounts and availability</p>
     </div>
     <div class="header-stats">
-      <span class="stat-badge">{{ mentors.length }} Total</span>
+      <!-- ✅ ADDED SEARCH BAR -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search by name or email..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()">
+      </div>
+      <span class="stat-badge">{{ filteredMentors.length }} Total</span>
     </div>
   </div>
 
@@ -37,7 +47,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let mentor of mentors">
+        <tr *ngFor="let mentor of filteredMentors">
           <td>
             <div class="user-cell">
               <div class="user-avatar">{{ mentor.fullName.charAt(0).toUpperCase() }}</div>
@@ -68,10 +78,11 @@
     </table>
 
     <!-- Empty State -->
-    <div *ngIf="mentors.length === 0" class="empty-state">
+    <div *ngIf="filteredMentors.length === 0" class="empty-state">
       <div class="empty-icon">👨‍🏫</div>
       <h3>No mentors found</h3>
-      <p>There are currently no registered mentors.</p>
+      <p *ngIf="!searchQuery">There are currently no registered mentors.</p>
+      <p *ngIf="searchQuery">No mentors match your search "{{ searchQuery }}"</p>
     </div>
   </div>
 </div>

@@ -12,8 +12,10 @@ import { AdminUser } from '../../models/admin-user.model';
 export class MentorsComponent implements OnInit {
   
   mentors: AdminUser[] = [];
+  filteredMentors: AdminUser[] = [];  // ✅ ADDED
   loading: boolean = true;
   error: string | null = null;
+  searchQuery: string = '';  // ✅ ADDED
 
   constructor(private adminService: AdminService) {}
 
@@ -28,6 +30,7 @@ export class MentorsComponent implements OnInit {
     this.adminService.getUsersByRole('MENTOR').subscribe({
       next: (data) => {
         this.mentors = data;
+        this.filteredMentors = data;  // ✅ CHANGED
         this.loading = false;
       },
       error: (err) => {
@@ -38,10 +41,23 @@ export class MentorsComponent implements OnInit {
     });
   }
 
+  // ✅ ADDED
+  onSearchChange(): void {
+    if (!this.searchQuery.trim()) {
+      this.filteredMentors = this.mentors;
+      return;
+    }
+
+    const query = this.searchQuery.toLowerCase();
+    this.filteredMentors = this.mentors.filter(mentor => 
+      mentor.fullName.toLowerCase().includes(query) ||
+      mentor.email.toLowerCase().includes(query)
+    );
+  }
+
   toggleStatus(mentor: AdminUser): void {
     this.adminService.toggleUserStatus(mentor.id).subscribe({
       next: (updatedUser) => {
-        // Update the local mentor object
         mentor.isActive = updatedUser.isActive;
       },
       error: (err) => {

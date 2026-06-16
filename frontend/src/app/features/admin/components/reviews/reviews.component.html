@@ -8,10 +8,20 @@
       <p class="page-subtitle">All ratings and feedback across the platform</p>
     </div>
     <div class="header-actions">
+      <!-- Search Bar -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search by name, email, or comment..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()">
+      </div>
+      
+      <!-- Rating Filter -->
       <div class="filter-group">
-        <label for="ratingFilter">Filter:</label>
         <select 
-          id="ratingFilter"
           class="rating-filter" 
           [(ngModel)]="selectedRating" 
           (change)="onFilterChange()">
@@ -20,6 +30,7 @@
           </option>
         </select>
       </div>
+      
       <span class="stat-badge">{{ filteredReviews.length }} Reviews</span>
     </div>
   </div>
@@ -42,10 +53,17 @@
     <!-- Review Card -->
     <div *ngFor="let review of filteredReviews" class="review-card">
       
+      <!-- Delete Button -->
+      <button class="delete-btn" (click)="deleteReview(review)" title="Delete Review">
+        🗑️
+      </button>
+
       <!-- Card Header -->
       <div class="review-header">
         <div class="reviewer-info">
-          <div class="avatar" [class.avatar-student]="review.reviewerRole === 'STUDENT'" [class.avatar-mentor]="review.reviewerRole === 'MENTOR'">
+          <div class="avatar" 
+               [class.avatar-student]="review.reviewerRole === 'STUDENT'" 
+               [class.avatar-mentor]="review.reviewerRole === 'MENTOR'">
             {{ review.reviewerName.charAt(0).toUpperCase() }}
           </div>
           <div class="user-details">
@@ -87,8 +105,9 @@
     <div *ngIf="filteredReviews.length === 0" class="empty-state">
       <div class="empty-icon">⭐</div>
       <h3>No reviews found</h3>
-      <p *ngIf="selectedRating === 'ALL'">No reviews have been submitted yet.</p>
+      <p *ngIf="selectedRating === 'ALL' && !searchQuery">No reviews have been submitted yet.</p>
       <p *ngIf="selectedRating !== 'ALL'">No {{ selectedRating }}-star reviews found.</p>
+      <p *ngIf="searchQuery">No reviews match your search "{{ searchQuery }}"</p>
     </div>
 
   </div>

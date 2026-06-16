@@ -122,4 +122,38 @@ public class AdminController {
         String message = "Broadcast sent successfully to " + request.getTargetAudience() + " users";
         return ResponseEntity.ok(new ApiResponse<>(true, message, null));  // ✅ Return JSON
     }
+
+    // ✅ ADD THESE ENDPOINTS TO AdminController.java
+
+// ── REVIEW MANAGEMENT ─────────────────────────────────────
+
+    // DELETE /api/admin/reviews/{id}
+    @DeleteMapping("/reviews/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteReview(@PathVariable Long id) {
+        adminService.deleteReview(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Review deleted successfully", null));
+    }
+
+// ── SESSION MANAGEMENT ────────────────────────────────────
+
+    // PATCH /api/admin/sessions/{id}/cancel
+    @PatchMapping("/sessions/{id}/cancel")
+    public ResponseEntity<ApiResponse<AdminSessionResponse>> cancelSession(@PathVariable Long id) {
+        AdminSessionResponse session = adminService.cancelSession(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Session cancelled successfully", session));
+    }
+
+    // PATCH /api/admin/sessions/{id}/force-complete
+    @PatchMapping("/sessions/{id}/force-complete")
+    public ResponseEntity<ApiResponse<AdminSessionResponse>> forceCompleteSession(@PathVariable Long id) {
+        AdminSessionResponse session = adminService.forceCompleteSession(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Session marked as completed", session));
+    }
+
+    // DELETE /api/admin/sessions/{id}
+    @DeleteMapping("/sessions/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteSession(@PathVariable Long id) {
+        adminService.deleteSession(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Session deleted successfully", null));
+    }
 }
