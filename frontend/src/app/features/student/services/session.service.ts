@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import {environment} from "../../../../environments/environment";
 
 interface ApiResponse<T> {
     success: boolean;
@@ -41,7 +42,7 @@ export interface SessionResponse {
 @Injectable({ providedIn: 'root' })
 export class SessionService {
 
-    private readonly API = 'http://localhost:8081/api/sessions';
+    private readonly API = `${environment.apiUrl}/api/sessions`;
 
     constructor(private http: HttpClient) {}
 

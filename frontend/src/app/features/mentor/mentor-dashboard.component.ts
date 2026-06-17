@@ -6,6 +6,7 @@ import { MentorProfile } from './models/mentor-profile.model';
 import { MentorProfileService } from './services/mentor-profile.service';
 import { SessionManagementService } from './services/session.service';
 import { SessionResponse } from './models/session.model';
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-mentor-dashboard',
@@ -74,7 +75,7 @@ export class MentorDashboardComponent implements OnInit {
   // UPDATED URL: Now maps directly to the authenticated endpoint /api/reviews/mentor/me
   loadMyReviews(): void {
     this.reviewsLoading = true;
-    this.http.get<any>('http://localhost:8081/api/reviews/mentor/me').subscribe({
+    this.http.get<any>(`${environment.apiUrl}/api/reviews/mentor/me`).subscribe({
       next: (res) => {
         this.reviewsList = res.data || [];
         this.reviewsLoading = false;
