@@ -2,4 +2,4 @@
 target/
 uploads/
 .junie/
-src/main/resources
+src/main/resources/application.properties
