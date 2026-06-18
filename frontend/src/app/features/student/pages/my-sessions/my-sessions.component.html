@@ -95,7 +95,10 @@
 
                     <!-- CANCELLED -->
                     <div class="rejection-note" *ngIf="session.status === 'CANCELLED'">
-                        <span class="rej-label">Status:</span> Session was cancelled.
+                        <span class="rej-label">Status:</span> Session was cancelled by the mentor.
+                        <span *ngIf="session.cancellationReason" class="reason-text">
+                            <strong>Reason:</strong> {{ session.cancellationReason }}
+                        </span>
                     </div>
                 </div>
 

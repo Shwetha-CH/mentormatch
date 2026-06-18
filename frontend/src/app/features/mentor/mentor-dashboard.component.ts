@@ -37,6 +37,12 @@ export class MentorDashboardComponent implements OnInit {
   selectedSessionId: number | null = null;
   inputMeetingLink = '';
 
+  // Cancel modal
+  showCancelModal = false;
+  cancelSessionId: number | null = null;
+  cancelReason = '';
+  cancelReasonError = false;
+
   reviewsList: any[] = [];
   reviewsLoading = false;
 
@@ -121,6 +127,33 @@ export class MentorDashboardComponent implements OnInit {
     this.sessionService.completeSession(id).subscribe({
       next: () => { this.sessionActionRunning = false; this.loadSessionRequests(); },
       error: () => { this.sessionActionRunning = false; alert('Could not complete session.'); }
+    });
+  }
+
+  // ── Cancel-with-reason modal ─────────────────────
+  openCancelModal(id: number): void {
+    this.cancelSessionId = id;
+    this.cancelReason = '';
+    this.cancelReasonError = false;
+    this.showCancelModal = true;
+  }
+
+  closeCancelModal(): void {
+    this.showCancelModal = false;
+    this.cancelSessionId = null;
+    this.cancelReason = '';
+  }
+
+  confirmCancellation(): void {
+    if (!this.cancelReason.trim()) {
+      this.cancelReasonError = true;
+      return;
+    }
+    if (!this.cancelSessionId) return;
+    this.sessionActionRunning = true;
+    this.sessionService.cancelSession(this.cancelSessionId, this.cancelReason.trim()).subscribe({
+      next: () => { this.sessionActionRunning = false; this.closeCancelModal(); this.loadSessionRequests(); },
+      error: () => { this.sessionActionRunning = false; alert('Could not cancel session. Please try again.'); }
     });
   }
 

@@ -51,11 +51,19 @@ input,textarea{width:100%;box-sizing:border-box;font-size:14px;color:#111827;bor
 .status-indicator-badge[data-status="CANCELLED"] { background: #f3f4f6; color: #374151; }
 
 /* Group Buttons Matrix actions */
-.btn-group { display: flex; gap: 8px; }
-.btn-action { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-action { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: opacity 0.15s; }
 .btn-action.accept { background: #10b981; color: white; }
 .btn-action.reject { background: #ef4444; color: white; }
+.btn-action.complete { background: #2563eb; color: white; }
+.btn-action.cancel-session { background: #f3f4f6; color: #b91c1c; border: 1px solid #fecaca; }
+.btn-action.cancel-session:hover { background: #fee2e2; }
 .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Cancelled / Completed notes inside session card */
+.completed-note { font-size: 13px; color: #065f46; background: #d1fae5; padding: 8px 12px; border-radius: 6px; margin-top: 10px; }
+.cancelled-note { font-size: 13px; color: #7f1d1d; background: #fee2e2; padding: 8px 12px; border-radius: 6px; margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-start; }
+.cancel-reason { display: block; margin-top: 4px; color: #374151; font-style: italic; }
 
 /* Segregation Timestamps Data Tables */
 .timeline-breakdown { background: #f9fafb; border-radius: 8px; padding: 16px; border: 1px solid #f3f4f6; }
@@ -80,6 +88,13 @@ input,textarea{width:100%;box-sizing:border-box;font-size:14px;color:#111827;bor
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .modal-container { background: white; max-width: 480px; width: 90%; padding: 24px; animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
 .modal-input { width: 100%; margin-top: 8px; font-family: monospace; font-size: 13px !important; }
+
+/* Cancel modal specific */
+.cancel-modal { border-top: 4px solid #dc2626; }
+.modal-icon { font-size: 32px; text-align: center; margin-bottom: 8px; }
+.cancel-textarea { font-family: inherit !important; font-size: 14px !important; resize: vertical; min-height: 90px; }
+.btn-danger:hover:not(:disabled) { background: #b91c1c; }
+
 .empty-sessions { text-align: center; padding: 40px; color: #6b7280; font-size: 14px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; }
 
 @keyframes scaleIn {

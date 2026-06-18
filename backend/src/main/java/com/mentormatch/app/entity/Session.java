@@ -58,6 +58,10 @@ public class Session {
     @Column(name = "meeting_link", length = 500)
     private String meetingLink;
 
+    // Reason provided by mentor when cancelling a session
+    @Column(name = "cancellation_reason", columnDefinition = "TEXT")
+    private String cancellationReason;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -99,6 +103,9 @@ public class Session {
 
     public String getMeetingLink() { return meetingLink; }
     public void setMeetingLink(String meetingLink) { this.meetingLink = meetingLink; }
+
+    public String getCancellationReason() { return cancellationReason; }
+    public void setCancellationReason(String cancellationReason) { this.cancellationReason = cancellationReason; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

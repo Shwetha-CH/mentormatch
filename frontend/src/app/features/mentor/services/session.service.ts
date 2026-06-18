@@ -31,6 +31,11 @@ export class SessionManagementService {
     return this.http.patch(`${this.apiUrl}/${sessionId}/complete`, {});
   }
 
+  // Mentor cancels a session with a mandatory reason
+  cancelSession(sessionId: number, reason: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${sessionId}/mentor-cancel`, { reason });
+  }
+
   cancelOccurrence(occurrenceId: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/occurrences/${occurrenceId}/cancel`, {});
   }

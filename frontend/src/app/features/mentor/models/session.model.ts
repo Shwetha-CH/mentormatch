@@ -23,5 +23,6 @@ export interface SessionResponse {
   scheduledAt: string | null;
   durationMinutes: number | null;
   meetingLink: string | null;
+  cancellationReason: string | null;
   occurrences: OccurrenceSummary[];
 }

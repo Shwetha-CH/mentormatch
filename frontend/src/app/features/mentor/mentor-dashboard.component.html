@@ -120,12 +120,14 @@
                             <div class="btn-group" *ngIf="session.status === 'PENDING'">
                                 <button type="button" class="btn-action accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">Accept</button>
                                 <button type="button" class="btn-action reject" [disabled]="sessionActionRunning" (click)="executeRejection(session.id)">Reject</button>
+                                <button type="button" class="btn-action cancel-session" [disabled]="sessionActionRunning" (click)="openCancelModal(session.id)">Cancel</button>
                             </div>
                             <div class="btn-group" *ngIf="session.status === 'ACCEPTED'">
                                 <span class="status-indicator-badge accepted-badge">ACCEPTED</span>
                                 <button type="button" class="btn-action complete" [disabled]="sessionActionRunning" (click)="markAsComplete(session.id)">
                                     Mark Complete
                                 </button>
+                                <button type="button" class="btn-action cancel-session" [disabled]="sessionActionRunning" (click)="openCancelModal(session.id)">Cancel</button>
                             </div>
                             <span class="status-indicator-badge"
                                   *ngIf="session.status !== 'PENDING' && session.status !== 'ACCEPTED'"
@@ -140,6 +142,12 @@
                     </div>
                     <div class="completed-note" *ngIf="session.status === 'COMPLETED'">
                         ✅ Session completed. Student has been prompted to leave a review.
+                    </div>
+                    <div class="cancelled-note" *ngIf="session.status === 'CANCELLED'">
+                        ❌ Session cancelled.
+                        <span *ngIf="session.cancellationReason" class="cancel-reason">
+                            <strong>Reason:</strong> {{ session.cancellationReason }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -207,6 +215,35 @@
                 {{ sessionActionRunning ? 'Saving...' : 'Confirm & Notify Student' }}
             </button>
             <button type="button" class="btn-secondary" (click)="closeAcceptWindow()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel with reason modal -->
+<div class="modal-overlay" *ngIf="showCancelModal">
+    <div class="modal-container card cancel-modal">
+        <div class="modal-icon">⚠️</div>
+        <h3>Cancel Session</h3>
+        <p>Please provide a reason for cancelling this session. The student will be notified.</p>
+        <div class="field">
+            <label for="cancelReason">Reason <span class="req">*</span></label>
+            <textarea
+                id="cancelReason"
+                rows="4"
+                [(ngModel)]="cancelReason"
+                (input)="cancelReasonError = false"
+                placeholder="e.g. I am unavailable on this date due to an emergency..."
+                class="modal-input cancel-textarea"
+            ></textarea>
+            <span class="err" *ngIf="cancelReasonError">Please enter a reason before cancelling.</span>
+        </div>
+        <div class="confirm-row">
+            <button type="button" class="btn-danger"
+                    [disabled]="sessionActionRunning"
+                    (click)="confirmCancellation()">
+                {{ sessionActionRunning ? 'Cancelling...' : '✕ Confirm Cancellation' }}
+            </button>
+            <button type="button" class="btn-secondary" (click)="closeCancelModal()">Go Back</button>
         </div>
     </div>
 </div>

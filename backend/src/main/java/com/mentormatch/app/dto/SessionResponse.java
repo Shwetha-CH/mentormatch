@@ -23,6 +23,9 @@ public class SessionResponse {
     private Long studentId;
     private String studentName;
 
+    // Cancellation reason (set by mentor when cancelling)
+    private String cancellationReason;
+
     public SessionResponse() {}
 
     // --- Getters & Setters ---
@@ -67,5 +70,8 @@ public class SessionResponse {
 
     public String getStudentName() { return studentName; }
     public void setStudentName(String studentName) { this.studentName = studentName; }
+
+    public String getCancellationReason() { return cancellationReason; }
+    public void setCancellationReason(String cancellationReason) { this.cancellationReason = cancellationReason; }
 }
 
