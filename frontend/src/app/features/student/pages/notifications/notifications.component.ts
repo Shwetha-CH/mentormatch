@@ -19,20 +19,20 @@ export class NotificationsComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
+        // Load from API, then stay subscribed to live BehaviorSubject
         this.notificationService.loadAll().subscribe({
-            next: (list: NotificationItem[]) => {
-                this.notifications = list;
-                this.loading = false;
-            },
+            next: () => { this.loading = false; },
             error: () => { this.loading = false; }
+        });
+        // Always display the reactive stream (reflects markAsRead updates)
+        this.notificationService.notifications$.subscribe(list => {
+            this.notifications = list;
         });
     }
 
     onClickNotification(n: NotificationItem): void {
         if (!n.isRead) {
-            this.notificationService.markOneAsRead(n.id).subscribe({
-                next: () => { n.isRead = true; }
-            });
+            this.notificationService.markOneAsRead(n.id).subscribe();
         }
         if (n.link) {
             this.router.navigateByUrl(n.link);
@@ -40,11 +40,11 @@ export class NotificationsComponent implements OnInit {
     }
 
     markAllRead(): void {
-        this.notificationService.markAllAsRead().subscribe({
-            next: () => {
-                this.notifications = this.notifications.map(n => ({ ...n, isRead: true }));
-            }
-        });
+        this.notificationService.markAllAsRead().subscribe();
+    }
+
+    get unreadCount(): number {
+        return this.notifications.filter(n => !n.isRead).length;
     }
 
     formatDate(iso: string): string {

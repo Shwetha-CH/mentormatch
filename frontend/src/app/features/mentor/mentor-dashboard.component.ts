@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../core/services/auth.service';
 import { MentorProfile } from './models/mentor-profile.model';
@@ -85,7 +86,8 @@ export class MentorDashboardComponent implements OnInit {
     private authService: AuthService,
     private sessionService: SessionManagementService,
     private notificationService: NotificationService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -260,13 +262,30 @@ export class MentorDashboardComponent implements OnInit {
   }
 
   markOneRead(n: NotificationItem): void {
-    if (n.isRead) return;
-    this.notificationService.markOneAsRead(n.id).subscribe({
-      next: () => {
-        n.isRead = true;
-        this.updateUnread();
+    // Always mark as read on click (navigate regardless of read state)
+    const navigate = () => {
+      if (!n.link) return;
+      // Session-related links → switch to sessions tab within dashboard
+      if (n.link.includes('/mentor/dashboard') || n.link.includes('/mentor/sessions')
+          || n.link.toLowerCase().includes('session')) {
+        this.switchTab('sessions');
+      } else {
+        this.router.navigateByUrl(n.link);
       }
-    });
+    };
+
+    if (!n.isRead) {
+      this.notificationService.markOneAsRead(n.id).subscribe({
+        next: () => {
+          n.isRead = true;
+          this.updateUnread();
+          navigate();
+        },
+        error: () => navigate()
+      });
+    } else {
+      navigate();
+    }
   }
 
   formatNotifDate(dateStr: string): string {
