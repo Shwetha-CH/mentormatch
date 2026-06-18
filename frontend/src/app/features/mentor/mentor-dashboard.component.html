@@ -5,13 +5,22 @@
 <!-- ── Sticky Navbar ── -->
 <nav class="navbar">
   <div class="navbar-inner">
+
+    <!-- Brand -->
     <div class="brand">
       <span class="brand-icon">🎓</span>
       <span class="brand-name">MentorMatch</span>
       <span class="brand-role">Mentor</span>
     </div>
 
+    <!-- Nav tabs -->
     <ul class="nav-links">
+      <li>
+        <button class="nav-btn" [class.active]="activeTab === 'dashboard'" (click)="switchTab('dashboard')">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+      </li>
       <li>
         <button class="nav-btn" [class.active]="activeTab === 'sessions'" (click)="switchTab('sessions')">
           <span class="nav-icon">📋</span>
@@ -23,7 +32,6 @@
         <button class="nav-btn" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">
           <span class="nav-icon">⭐</span>
           <span class="nav-label">My Reviews</span>
-          <span class="nav-badge reviews" *ngIf="reviewsList.length > 0">{{ reviewsList.length }}</span>
         </button>
       </li>
       <li>
@@ -41,76 +49,128 @@
       </li>
     </ul>
 
+    <!-- Right: user dropdown -->
     <div class="nav-right">
-      <!-- Availability toggle -->
-      <button class="avail-toggle" [class.available]="profile?.isAvailable"
-              [disabled]="!profile || availabilitySaving" (click)="toggleAvailability()" title="Toggle availability">
-        <span class="avail-dot"></span>
-        <span class="avail-label">{{ profile?.isAvailable ? 'Available' : 'Offline' }}</span>
-      </button>
-      <!-- User pill -->
-      <div class="user-pill">
-        <div class="user-avatar">{{ initials }}</div>
-        <span class="user-name">{{ displayName }}</span>
+      <div class="user-dropdown-wrap">
+        <button class="user-pill" (click)="toggleDropdown()">
+          <div class="user-avatar">{{ initials }}</div>
+          <span class="user-name">{{ displayName }}</span>
+          <span class="dropdown-chevron" [class.open]="showDropdown">▾</span>
+        </button>
+        <div class="dropdown-menu" *ngIf="showDropdown" [@dropDown]>
+          <div class="dropdown-header">
+            <p class="dd-name">{{ displayName }}</p>
+            <p class="dd-email">{{ email }}</p>
+          </div>
+          <hr class="dd-divider" />
+          <button class="dd-item logout-item" (click)="logout()">
+            <span>⏻</span> Logout
+          </button>
+        </div>
       </div>
-      <!-- Logout -->
-      <button class="logout-btn" (click)="logout()" title="Logout">⏻ Logout</button>
     </div>
+
   </div>
 </nav>
+
+<!-- Click-outside overlay to close dropdown -->
+<div class="overlay-dismiss" *ngIf="showDropdown" (click)="closeDropdown()"></div>
 
 <!-- ── Page body ── -->
 <div class="dash-page">
 
   <div *ngIf="loading" class="state-msg">
-    <div class="spinner"></div>
-    Loading your dashboard…
+    <div class="spinner"></div> Loading dashboard…
   </div>
 
   <ng-container *ngIf="!loading">
 
-    <!-- ── Welcome banner ── -->
-    <div class="welcome-banner">
-      <div class="welcome-left">
-        <div class="welcome-avatar">{{ initials }}</div>
-        <div>
-          <h1>{{ greeting }}, {{ firstName }}! 👋</h1>
-          <p class="sub">{{ profile?.industry || 'Complete your profile to start getting sessions' }}</p>
+    <!-- ══════════════════════════════════════════════
+         TAB: DASHBOARD (default)
+    ══════════════════════════════════════════════ -->
+    <div *ngIf="activeTab === 'dashboard'" [@fadeIn]>
+
+      <!-- Welcome banner -->
+      <div class="welcome-banner">
+        <div class="welcome-left">
+          <div class="welcome-avatar">{{ initials }}</div>
+          <div>
+            <h1>{{ greeting }}, {{ firstName }}! 👋</h1>
+            <p class="sub">{{ profile?.industry || 'Complete your profile to start getting sessions' }}</p>
+          </div>
+        </div>
+        <!-- Availability toggle (only in Dashboard) -->
+        <button class="avail-toggle" [class.available]="profile?.isAvailable"
+                [disabled]="!profile || availabilitySaving" (click)="toggleAvailability()">
+          <span class="avail-dot"></span>
+          <span>{{ profile?.isAvailable ? 'Available' : 'Unavailable' }}</span>
+        </button>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stats-row">
+        <div class="stat-card stat-amber">
+          <span class="stat-icon">⏳</span>
+          <span class="stat-val">{{ pendingCount }}</span>
+          <span class="stat-lbl">Pending Requests</span>
+        </div>
+        <div class="stat-card stat-green">
+          <span class="stat-icon">✅</span>
+          <span class="stat-val">{{ acceptedCount }}</span>
+          <span class="stat-lbl">Active Sessions</span>
+        </div>
+        <div class="stat-card stat-blue">
+          <span class="stat-icon">🏆</span>
+          <span class="stat-val">{{ completedCount }}</span>
+          <span class="stat-lbl">Completed</span>
+        </div>
+        <div class="stat-card stat-purple">
+          <span class="stat-icon">⭐</span>
+          <span class="stat-val">{{ getAvgRating() }}</span>
+          <span class="stat-lbl">Avg Rating</span>
         </div>
       </div>
-      <div class="welcome-right">
-        <div class="avail-pill" [class.on]="profile?.isAvailable">
-          <span class="pulse-dot"></span>
-          {{ profile?.isAvailable ? 'Accepting sessions' : 'Not accepting sessions' }}
+
+      <!-- Recent sessions -->
+      <div class="card recent-sessions-card">
+        <div class="card-head">
+          <p class="card-label">📋 Recent Session Requests</p>
+          <button class="link-btn" (click)="switchTab('sessions')">View all →</button>
+        </div>
+
+        <div *ngIf="sessionsLoading" class="state-msg small">
+          <div class="spinner sm"></div> Loading…
+        </div>
+
+        <div *ngIf="!sessionsLoading && sessionsList.length === 0" class="empty-msg">
+          No session requests yet.
+        </div>
+
+        <div class="recent-list" *ngIf="!sessionsLoading && sessionsList.length > 0">
+          <div class="recent-item" *ngFor="let s of recentSessions">
+            <div class="ri-avatar">{{ s.studentName | slice:0:1 }}</div>
+            <div class="ri-body">
+              <p class="ri-topic">{{ s.topic }}</p>
+              <p class="ri-meta">
+                <strong>{{ s.studentName }}</strong>
+                <span *ngIf="s.scheduledAt"> · {{ s.scheduledAt | date:'d MMM y' }}</span>
+              </p>
+              <span class="plan-badge plan-{{ s.planType.toLowerCase() }}">{{ s.planType }}</span>
+            </div>
+            <span class="status-pill {{ getStatusClass(s.status) }}">{{ s.status }}</span>
+          </div>
+
+          <div class="view-more-row" *ngIf="sessionsList.length > 5">
+            <button class="btn-view-more" (click)="switchTab('sessions')">
+              View {{ sessionsList.length - 5 }} more →
+            </button>
+          </div>
         </div>
       </div>
+
     </div>
 
-    <!-- ── Stats row ── -->
-    <div class="stats-row">
-      <div class="stat-card" [class.stat-amber]="pendingCount > 0">
-        <span class="stat-icon">⏳</span>
-        <span class="stat-val">{{ pendingCount }}</span>
-        <span class="stat-lbl">Pending Requests</span>
-      </div>
-      <div class="stat-card stat-green">
-        <span class="stat-icon">✅</span>
-        <span class="stat-val">{{ acceptedCount }}</span>
-        <span class="stat-lbl">Active Sessions</span>
-      </div>
-      <div class="stat-card stat-blue">
-        <span class="stat-icon">🏆</span>
-        <span class="stat-val">{{ completedCount }}</span>
-        <span class="stat-lbl">Completed</span>
-      </div>
-      <div class="stat-card stat-purple">
-        <span class="stat-icon">⭐</span>
-        <span class="stat-val">{{ getAvgRating() }}</span>
-        <span class="stat-lbl">Avg Rating</span>
-      </div>
-    </div>
-
-    <!-- ── Banners ── -->
+    <!-- Banners -->
     <div class="banner success" *ngIf="saveSuccess">✓ Profile saved successfully.</div>
     <div class="banner error"   *ngIf="errorMsg">{{ errorMsg }}</div>
 
@@ -133,13 +193,9 @@
 
       <div class="session-cards" *ngIf="!sessionsLoading && sessionsList.length > 0">
         <div class="session-card" *ngFor="let session of sessionsList">
-
-          <!-- Card top bar -->
           <div class="scard-header">
             <div class="scard-left">
-              <span class="plan-badge" [ngClass]="'plan-' + session.planType.toLowerCase()">
-                {{ session.planType }}
-              </span>
+              <span class="plan-badge plan-{{ session.planType.toLowerCase() }}">{{ session.planType }}</span>
               <h3 class="scard-topic">{{ session.topic }}</h3>
               <p class="scard-student">
                 <span class="student-avatar-sm">{{ session.studentName | slice:0:1 }}</span>
@@ -151,45 +207,27 @@
               </p>
             </div>
             <div class="scard-right">
-              <!-- PENDING actions -->
               <div class="btn-cluster" *ngIf="session.status === 'PENDING'">
-                <button class="btn-accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">
-                  ✓ Accept
-                </button>
-                <button class="btn-reject" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'reject')">
-                  ✕ Reject
-                </button>
+                <button class="btn-accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">✓ Accept</button>
+                <button class="btn-reject" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'reject')">✕ Reject</button>
               </div>
-              <!-- ACCEPTED actions -->
               <div class="btn-cluster" *ngIf="session.status === 'ACCEPTED'">
                 <span class="status-pill accepted">ACCEPTED</span>
-                <button class="btn-complete" [disabled]="sessionActionRunning" (click)="markAsComplete(session.id)">
-                  ✓ Complete
-                </button>
-                <button class="btn-cancel-sm" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'cancel')">
-                  Cancel
-                </button>
+                <button class="btn-complete" [disabled]="sessionActionRunning" (click)="markAsComplete(session.id)">✓ Complete</button>
+                <button class="btn-cancel-sm" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'cancel')">Cancel</button>
               </div>
-              <!-- Terminal status -->
-              <span class="status-pill"
-                    *ngIf="session.status !== 'PENDING' && session.status !== 'ACCEPTED'"
-                    [ngClass]="getStatusClass(session.status)">
+              <span class="status-pill {{ getStatusClass(session.status) }}"
+                    *ngIf="session.status !== 'PENDING' && session.status !== 'ACCEPTED'">
                 {{ session.status }}
               </span>
             </div>
           </div>
-
-          <!-- Meeting link -->
           <div class="meeting-row" *ngIf="session.status === 'ACCEPTED' && session.meetingLink">
             🎥 <a [href]="session.meetingLink" target="_blank" class="meet-link">{{ session.meetingLink }}</a>
           </div>
-
-          <!-- Completed note -->
           <div class="card-note success-note" *ngIf="session.status === 'COMPLETED'">
             ✅ Session completed. Student has been prompted to leave a review.
           </div>
-
-          <!-- Cancelled / rejected note -->
           <div class="card-note danger-note" *ngIf="session.status === 'CANCELLED' || session.status === 'REJECTED'">
             {{ session.status === 'CANCELLED' ? '❌ Cancelled' : '🚫 Rejected' }}
             <span *ngIf="session.cancellationReason" class="cancel-reason-text">
@@ -217,7 +255,6 @@
       </div>
 
       <ng-container *ngIf="!reviewsLoading && reviewsList.length > 0">
-        <!-- Rating summary -->
         <div class="rating-summary-card">
           <div class="rating-big">{{ getAvgRating() }}</div>
           <div class="rating-detail">
@@ -227,7 +264,6 @@
             <p class="rating-sub">{{ reviewsList.length }} review{{ reviewsList.length > 1 ? 's' : '' }}</p>
           </div>
         </div>
-
         <div class="review-grid">
           <div class="review-card" *ngFor="let review of reviewsList">
             <div class="review-top">
@@ -255,9 +291,7 @@
       <div class="panel-header">
         <h2 class="panel-title">✏️ Edit Profile</h2>
       </div>
-
       <div class="profile-grid">
-        <!-- Form -->
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="profile-form card">
           <div class="field">
             <label for="industry">Industry <span class="req">*</span></label>
@@ -276,7 +310,6 @@
               <span class="char-count" [class.over]="bioLength > 1000">{{ bioLength }}/1000</span>
             </div>
           </div>
-
           <div class="field">
             <label>Skills</label>
             <div class="tags-box" (click)="skillEl.focus()">
@@ -290,7 +323,6 @@
             </div>
             <p class="hint">Press Enter or comma to add a skill.</p>
           </div>
-
           <div class="form-actions">
             <button type="submit" class="btn-primary" [disabled]="saving">
               {{ saving ? 'Saving…' : 'Save Profile' }}
@@ -299,8 +331,6 @@
               Delete Profile
             </button>
           </div>
-
-          <!-- Delete confirm -->
           <div class="confirm-box" *ngIf="confirmDelete">
             <p>⚠️ This will permanently delete your mentor profile. Are you sure?</p>
             <div class="confirm-actions">
@@ -311,8 +341,6 @@
             </div>
           </div>
         </form>
-
-        <!-- Profile preview -->
         <div class="profile-preview-col">
           <div class="card profile-preview-card">
             <div class="preview-avatar">{{ initials }}</div>
@@ -322,9 +350,7 @@
             <div class="preview-skills" *ngIf="skillTags.length > 0">
               <span class="tag" *ngFor="let s of skillTags.slice(0,6)">{{ s }}</span>
             </div>
-            <div class="preview-rate" *ngIf="profile?.hourlyRate">
-              ₹{{ profile?.hourlyRate }}/hr
-            </div>
+            <div class="preview-rate" *ngIf="profile?.hourlyRate">₹{{ profile?.hourlyRate }}/hr</div>
           </div>
         </div>
       </div>
@@ -336,23 +362,17 @@
     <div class="tab-panel" *ngIf="activeTab === 'notifications'" [@fadeIn]>
       <div class="panel-header">
         <h2 class="panel-title">🔔 Notifications</h2>
-        <button class="btn-sm-outline" (click)="markAllRead()" *ngIf="unreadCount > 0">
-          ✓ Mark all read
-        </button>
+        <button class="btn-sm-outline" (click)="markAllRead()" *ngIf="unreadCount > 0">✓ Mark all read</button>
       </div>
-
       <div *ngIf="notifLoading" class="state-msg"><div class="spinner"></div> Loading notifications…</div>
-
       <div *ngIf="!notifLoading && notifications.length === 0" class="empty-state">
         <div class="empty-icon">🔕</div>
         <p class="empty-title">You're all caught up!</p>
         <p class="empty-sub">No notifications yet.</p>
       </div>
-
       <div class="notif-list" *ngIf="!notifLoading && notifications.length > 0">
         <div class="notif-item" *ngFor="let n of notifications"
-             [class.unread]="!n.isRead"
-             (click)="markOneRead(n)">
+             [class.unread]="!n.isRead" (click)="markOneRead(n)">
           <div class="notif-dot" *ngIf="!n.isRead"></div>
           <div class="notif-body">
             <p class="notif-title">{{ n.title }}</p>

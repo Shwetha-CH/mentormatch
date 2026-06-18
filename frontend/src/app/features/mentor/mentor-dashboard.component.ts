@@ -21,12 +21,21 @@ import { environment } from '../../../environments/environment';
         style({ opacity: 0, transform: 'translateY(8px)' }),
         animate('250ms ease', style({ opacity: 1, transform: 'none' }))
       ])
+    ]),
+    trigger('dropDown', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-8px) scale(0.96)' }),
+        animate('180ms cubic-bezier(0.16,1,0.3,1)', style({ opacity: 1, transform: 'none' }))
+      ]),
+      transition(':leave', [
+        animate('120ms ease', style({ opacity: 0, transform: 'translateY(-6px) scale(0.97)' }))
+      ])
     ])
   ]
 })
 export class MentorDashboardComponent implements OnInit {
 
-  activeTab: 'sessions' | 'reviews' | 'profile' | 'notifications' = 'sessions';
+  activeTab: 'dashboard' | 'sessions' | 'reviews' | 'profile' | 'notifications' = 'dashboard';
 
   // Profile
   form!: FormGroup;
@@ -40,6 +49,9 @@ export class MentorDashboardComponent implements OnInit {
   confirmDelete = false;
   saveSuccess = false;
   errorMsg = '';
+
+  // User dropdown
+  showDropdown = false;
 
   // Sessions
   sessionsList: SessionResponse[] = [];
@@ -88,12 +100,16 @@ export class MentorDashboardComponent implements OnInit {
   }
 
   // ── Tab switching ──────────────────────────────────────────
-  switchTab(tabName: 'sessions' | 'reviews' | 'profile' | 'notifications'): void {
+  switchTab(tabName: 'dashboard' | 'sessions' | 'reviews' | 'profile' | 'notifications'): void {
     this.activeTab = tabName;
     if (tabName === 'sessions')      this.loadSessionRequests();
     if (tabName === 'reviews')       this.loadMyReviews();
     if (tabName === 'notifications') this.loadNotifications();
   }
+
+  // ── Dropdown ───────────────────────────────────────────────
+  toggleDropdown(): void  { this.showDropdown = !this.showDropdown; }
+  closeDropdown(): void   { this.showDropdown = false; }
 
   // ── Greeting ───────────────────────────────────────────────
   get greeting(): string {
@@ -111,6 +127,7 @@ export class MentorDashboardComponent implements OnInit {
   get pendingCount(): number   { return this.sessionsList.filter(s => s.status === 'PENDING').length; }
   get acceptedCount(): number  { return this.sessionsList.filter(s => s.status === 'ACCEPTED').length; }
   get completedCount(): number { return this.sessionsList.filter(s => s.status === 'COMPLETED').length; }
+  get recentSessions(): SessionResponse[] { return this.sessionsList.slice(0, 5); }
 
   getStatusClass(status: string): string {
     const m: Record<string, string> = {
