@@ -1,249 +1,413 @@
-<div class="mentor-page">
+<!-- ═══════════════════════════════════════════════════════════
+     MENTOR DASHBOARD — MentorMatch
+══════════════════════════════════════════════════════════════ -->
 
-    <div *ngIf="loading" class="state-msg">Loading mentor dashboard...</div>
+<!-- ── Sticky Navbar ── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">
+      <span class="brand-icon">🎓</span>
+      <span class="brand-name">MentorMatch</span>
+      <span class="brand-role">Mentor</span>
+    </div>
 
-    <ng-container *ngIf="!loading">
+    <ul class="nav-links">
+      <li>
+        <button class="nav-btn" [class.active]="activeTab === 'sessions'" (click)="switchTab('sessions')">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">Session Requests</span>
+          <span class="nav-badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">
+          <span class="nav-icon">⭐</span>
+          <span class="nav-label">My Reviews</span>
+          <span class="nav-badge reviews" *ngIf="reviewsList.length > 0">{{ reviewsList.length }}</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" [class.active]="activeTab === 'profile'" (click)="switchTab('profile')">
+          <span class="nav-icon">✏️</span>
+          <span class="nav-label">Edit Profile</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" [class.active]="activeTab === 'notifications'" (click)="switchTab('notifications')">
+          <span class="nav-icon">🔔</span>
+          <span class="nav-label">Notifications</span>
+          <span class="nav-badge notif" *ngIf="unreadCount > 0">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
+        </button>
+      </li>
+    </ul>
 
-        <!-- Header -->
-        <div class="dash-header">
-            <div class="header-left">
-                <div class="avatar-wrap"><span>{{ initials }}</span></div>
-                <div>
-                    <h1>{{ displayName }}</h1>
-                    <p class="sub">{{ profile?.industry || 'Set up your mentor profile' }}</p>
-                </div>
-            </div>
-            <div class="header-right">
-                <button type="button" class="availability-btn"
-                        [class.available]="profile?.isAvailable"
-                        [disabled]="!profile || availabilitySaving"
-                        (click)="toggleAvailability()">
-                    <span class="dot"></span>
-                    {{ profile?.isAvailable ? 'Available' : 'Unavailable' }}
-                </button>
-                <button type="button" class="logout-btn" (click)="logout()">⏻ Logout</button>
-            </div>
+    <div class="nav-right">
+      <!-- Availability toggle -->
+      <button class="avail-toggle" [class.available]="profile?.isAvailable"
+              [disabled]="!profile || availabilitySaving" (click)="toggleAvailability()" title="Toggle availability">
+        <span class="avail-dot"></span>
+        <span class="avail-label">{{ profile?.isAvailable ? 'Available' : 'Offline' }}</span>
+      </button>
+      <!-- User pill -->
+      <div class="user-pill">
+        <div class="user-avatar">{{ initials }}</div>
+        <span class="user-name">{{ displayName }}</span>
+      </div>
+      <!-- Logout -->
+      <button class="logout-btn" (click)="logout()" title="Logout">⏻ Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Page body ── -->
+<div class="dash-page">
+
+  <div *ngIf="loading" class="state-msg">
+    <div class="spinner"></div>
+    Loading your dashboard…
+  </div>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- ── Welcome banner ── -->
+    <div class="welcome-banner">
+      <div class="welcome-left">
+        <div class="welcome-avatar">{{ initials }}</div>
+        <div>
+          <h1>{{ greeting }}, {{ firstName }}! 👋</h1>
+          <p class="sub">{{ profile?.industry || 'Complete your profile to start getting sessions' }}</p>
         </div>
-
-        <!-- Tabs -->
-        <div class="nav-tabs">
-            <button class="tab-link" [class.active]="activeTab === 'profile'" (click)="switchTab('profile')">
-                Edit Profile
-            </button>
-            <button class="tab-link" [class.active]="activeTab === 'sessions'" (click)="switchTab('sessions')">
-                Session Requests
-                <span class="badge" *ngIf="pendingCount > 0">{{ pendingCount }}</span>
-            </button>
-            <button class="tab-link" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">
-                My Reviews
-                <span class="badge" *ngIf="reviewsList.length > 0">{{ reviewsList.length }}</span>
-            </button>
+      </div>
+      <div class="welcome-right">
+        <div class="avail-pill" [class.on]="profile?.isAvailable">
+          <span class="pulse-dot"></span>
+          {{ profile?.isAvailable ? 'Accepting sessions' : 'Not accepting sessions' }}
         </div>
+      </div>
+    </div>
 
-        <div class="banner success" *ngIf="saveSuccess">Profile saved successfully.</div>
-        <div class="banner error" *ngIf="errorMsg">{{ errorMsg }}</div>
+    <!-- ── Stats row ── -->
+    <div class="stats-row">
+      <div class="stat-card" [class.stat-amber]="pendingCount > 0">
+        <span class="stat-icon">⏳</span>
+        <span class="stat-val">{{ pendingCount }}</span>
+        <span class="stat-lbl">Pending Requests</span>
+      </div>
+      <div class="stat-card stat-green">
+        <span class="stat-icon">✅</span>
+        <span class="stat-val">{{ acceptedCount }}</span>
+        <span class="stat-lbl">Active Sessions</span>
+      </div>
+      <div class="stat-card stat-blue">
+        <span class="stat-icon">🏆</span>
+        <span class="stat-val">{{ completedCount }}</span>
+        <span class="stat-lbl">Completed</span>
+      </div>
+      <div class="stat-card stat-purple">
+        <span class="stat-icon">⭐</span>
+        <span class="stat-val">{{ getAvgRating() }}</span>
+        <span class="stat-lbl">Avg Rating</span>
+      </div>
+    </div>
 
-        <!-- Profile tab -->
-        <div class="main-grid" *ngIf="activeTab === 'profile'">
-            <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="card edit-card">
-                <div class="card-head">
-                    <p class="card-label">Edit profile</p>
-                    <button type="submit" class="btn-primary" [disabled]="saving">
-                        {{ saving ? 'Saving...' : 'Save profile' }}
-                    </button>
-                </div>
-                <div class="field">
-                    <label for="industry">Industry <span class="req">*</span></label>
-                    <input id="industry" type="text" formControlName="industry" placeholder="Software / IT" />
-                    <span class="err" *ngIf="form.get('industry')?.invalid && form.get('industry')?.touched">Required, max 100 characters</span>
-                </div>
-                <div class="field">
-                    <label for="hourlyRate">Hourly rate in rupees</label>
-                    <input id="hourlyRate" type="number" min="0" max="100000" formControlName="hourlyRate" placeholder="e.g. 500" />
-                </div>
-                <div class="field">
-                    <label for="bio">Bio <span class="req">*</span></label>
-                    <textarea id="bio" rows="6" formControlName="bio" placeholder="Tell students what you can help with."></textarea>
-                    <div class="bio-footer">
-                        <span class="err" *ngIf="form.get('bio')?.hasError('maxlength')">Max 1000 characters</span>
-                        <span class="char" [class.over]="bioLength > 1000">{{ bioLength }} / 1000</span>
-                    </div>
-                </div>
-                <div class="skills-block">
-                    <label>Skills</label>
-                    <div class="tags-box" (click)="skillEl.focus()">
-            <span class="tag" *ngFor="let skill of skillTags">
-              {{ skill }}
-                <button type="button" class="tag-x" (click)="removeSkill(skill)">x</button>
-            </span>
-                        <input #skillEl class="tag-input" [(ngModel)]="skillInputValue"
-                               [ngModelOptions]="{standalone: true}" placeholder="Add skill..."
-                               (keydown)="onSkillKeydown($event)" (blur)="commitSkill()" />
-                    </div>
-                    <p class="hint">Press Enter or comma to add a skill.</p>
-                </div>
-            </form>
-            <div class="side-col">
-                <div class="card photo-card">
-                    <p class="card-label">Profile avatar</p>
-                    <div class="photo-preview"><span>{{ initials }}</span></div>
-                </div>
-                <div class="card account-card">
-                    <p class="card-label">Account</p>
-                    <p class="profile-name">{{ displayName }}</p>
-                    <p class="profile-meta">{{ email }}</p>
-                </div>
-            </div>
-        </div>
+    <!-- ── Banners ── -->
+    <div class="banner success" *ngIf="saveSuccess">✓ Profile saved successfully.</div>
+    <div class="banner error"   *ngIf="errorMsg">{{ errorMsg }}</div>
 
-        <!-- Sessions tab -->
-        <div class="sessions-workspace" *ngIf="activeTab === 'sessions'">
-            <div *ngIf="sessionsLoading" class="state-msg">Loading sessions...</div>
-            <div *ngIf="!sessionsLoading && sessionsList.length === 0" class="empty-sessions">
-                <p>No session requests yet.</p>
-            </div>
-            <div class="session-cards-container" *ngIf="!sessionsLoading && sessionsList.length > 0">
-                <div class="session-card-item card" *ngFor="let session of sessionsList">
-                    <div class="session-card-header">
-                        <div>
-              <span class="badge-plan" [class.monthly]="session.planType === 'MONTHLY'" [class.weekly]="session.planType === 'WEEKLY'">
-                {{ session.planType }} package
+    <!-- ══════════════════════════════════════════════
+         TAB: SESSION REQUESTS
+    ══════════════════════════════════════════════ -->
+    <div class="tab-panel" *ngIf="activeTab === 'sessions'" [@fadeIn]>
+      <div class="panel-header">
+        <h2 class="panel-title">📋 Session Requests</h2>
+        <button class="btn-sm-outline" (click)="loadSessionRequests()">↻ Refresh</button>
+      </div>
+
+      <div *ngIf="sessionsLoading" class="state-msg"><div class="spinner"></div> Loading sessions…</div>
+
+      <div *ngIf="!sessionsLoading && sessionsList.length === 0" class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p class="empty-title">No session requests yet</p>
+        <p class="empty-sub">Students will appear here when they book a session with you.</p>
+      </div>
+
+      <div class="session-cards" *ngIf="!sessionsLoading && sessionsList.length > 0">
+        <div class="session-card" *ngFor="let session of sessionsList">
+
+          <!-- Card top bar -->
+          <div class="scard-header">
+            <div class="scard-left">
+              <span class="plan-badge" [ngClass]="'plan-' + session.planType.toLowerCase()">
+                {{ session.planType }}
               </span>
-                            <h3>Topic: {{ session.topic }}</h3>
-                            <p class="student-info">Requested by: <strong>{{ session.studentName }}</strong></p>
-                            <p class="schedule-info" *ngIf="session.scheduledAt">
-                                📅 {{ session.scheduledAt | date:'medium' }}
-                                <span *ngIf="session.durationMinutes"> · {{ session.durationMinutes }} mins</span>
-                            </p>
-                        </div>
-                        <div class="action-status-block">
-                            <div class="btn-group" *ngIf="session.status === 'PENDING'">
-                                <button type="button" class="btn-action accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">Accept</button>
-                                <button type="button" class="btn-action reject" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'reject')">Reject</button>
-                                <button type="button" class="btn-action cancel-session" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'cancel')">Cancel</button>
-                            </div>
-                            <div class="btn-group" *ngIf="session.status === 'ACCEPTED'">
-                                <span class="status-indicator-badge accepted-badge">ACCEPTED</span>
-                                <button type="button" class="btn-action complete" [disabled]="sessionActionRunning" (click)="markAsComplete(session.id)">
-                                    Mark Complete
-                                </button>
-                                <button type="button" class="btn-action cancel-session" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'cancel')">Cancel</button>
-                            </div>
-                            <span class="status-indicator-badge"
-                                  *ngIf="session.status !== 'PENDING' && session.status !== 'ACCEPTED'"
-                                  [attr.data-status]="session.status">
+              <h3 class="scard-topic">{{ session.topic }}</h3>
+              <p class="scard-student">
+                <span class="student-avatar-sm">{{ session.studentName | slice:0:1 }}</span>
+                {{ session.studentName }}
+              </p>
+              <p class="scard-time" *ngIf="session.scheduledAt">
+                📅 {{ session.scheduledAt | date:'EEE, d MMM y · h:mm a' }}
+                <span *ngIf="session.durationMinutes"> · {{ session.durationMinutes }} mins</span>
+              </p>
+            </div>
+            <div class="scard-right">
+              <!-- PENDING actions -->
+              <div class="btn-cluster" *ngIf="session.status === 'PENDING'">
+                <button class="btn-accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">
+                  ✓ Accept
+                </button>
+                <button class="btn-reject" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'reject')">
+                  ✕ Reject
+                </button>
+              </div>
+              <!-- ACCEPTED actions -->
+              <div class="btn-cluster" *ngIf="session.status === 'ACCEPTED'">
+                <span class="status-pill accepted">ACCEPTED</span>
+                <button class="btn-complete" [disabled]="sessionActionRunning" (click)="markAsComplete(session.id)">
+                  ✓ Complete
+                </button>
+                <button class="btn-cancel-sm" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'cancel')">
+                  Cancel
+                </button>
+              </div>
+              <!-- Terminal status -->
+              <span class="status-pill"
+                    *ngIf="session.status !== 'PENDING' && session.status !== 'ACCEPTED'"
+                    [ngClass]="getStatusClass(session.status)">
                 {{ session.status }}
               </span>
-                        </div>
-                    </div>
-                    <div class="meeting-link-row" *ngIf="session.status === 'ACCEPTED' && session.meetingLink">
-                        <span class="meet-label">🎥 Meeting link:</span>
-                        <a [href]="session.meetingLink" target="_blank" class="meet-link">{{ session.meetingLink }}</a>
-                    </div>
-                    <div class="completed-note" *ngIf="session.status === 'COMPLETED'">
-                        ✅ Session completed. Student has been prompted to leave a review.
-                    </div>
-                    <div class="cancelled-note" *ngIf="session.status === 'CANCELLED'">
-                        ❌ Session cancelled.
-                        <span *ngIf="session.cancellationReason" class="cancel-reason">
-                            <strong>Reason:</strong> {{ session.cancellationReason }}
-                        </span>
-                    </div>
-                </div>
             </div>
+          </div>
+
+          <!-- Meeting link -->
+          <div class="meeting-row" *ngIf="session.status === 'ACCEPTED' && session.meetingLink">
+            🎥 <a [href]="session.meetingLink" target="_blank" class="meet-link">{{ session.meetingLink }}</a>
+          </div>
+
+          <!-- Completed note -->
+          <div class="card-note success-note" *ngIf="session.status === 'COMPLETED'">
+            ✅ Session completed. Student has been prompted to leave a review.
+          </div>
+
+          <!-- Cancelled / rejected note -->
+          <div class="card-note danger-note" *ngIf="session.status === 'CANCELLED' || session.status === 'REJECTED'">
+            {{ session.status === 'CANCELLED' ? '❌ Cancelled' : '🚫 Rejected' }}
+            <span *ngIf="session.cancellationReason" class="cancel-reason-text">
+              — <em>{{ session.cancellationReason }}</em>
+            </span>
+          </div>
         </div>
-
-        <!-- Reviews tab -->
-        <div class="reviews-workspace" *ngIf="activeTab === 'reviews'">
-            <div *ngIf="reviewsLoading" class="state-msg">Loading reviews...</div>
-
-            <div *ngIf="!reviewsLoading && reviewsList.length === 0" class="empty-sessions">
-                <p>No reviews yet. Complete sessions to receive reviews from students.</p>
-            </div>
-
-            <ng-container *ngIf="!reviewsLoading && reviewsList.length > 0">
-
-                <!-- Average rating summary -->
-                <div class="rating-summary">
-                    <div class="avg-score">{{ getAvgRating() }}</div>
-                    <div>
-                        <div class="avg-stars">
-                            <span *ngFor="let s of [1,2,3,4,5]" class="mini-star" [class.filled]="s <= getAvgRatingNum()">★</span>
-                        </div>
-                        <div class="avg-label">Average · {{ reviewsList.length }} review{{ reviewsList.length > 1 ? 's' : '' }}</div>
-                    </div>
-                </div>
-
-                <!-- Review cards -->
-                <div class="reviews-list">
-                    <div class="review-card card" *ngFor="let review of reviewsList">
-                        <div class="review-header">
-                            <div class="reviewer-avatar">{{ getReviewInitials(review.reviewerName) }}</div>
-                            <div class="reviewer-info">
-                                <p class="reviewer-name">{{ review.reviewerName }}</p>
-                                <p class="review-date">{{ formatReviewDate(review.createdAt) }}</p>
-                            </div>
-                            <div class="review-stars-right">
-                                <span class="stars-text">{{ getStars(review.rating) }}</span>
-                                <span class="rating-num">{{ review.rating }}/5</span>
-                            </div>
-                        </div>
-                        <p class="review-comment" *ngIf="review.comment">{{ review.comment }}</p>
-                        <p class="review-comment muted" *ngIf="!review.comment">No comment provided.</p>
-                    </div>
-                </div>
-
-            </ng-container>
-        </div>
-
-    </ng-container>
-</div>
-
-<!-- Accept modal -->
-<div class="modal-overlay" *ngIf="showAcceptModal">
-    <div class="modal-container card">
-        <h3>Add meeting link</h3>
-        <p>Provide your Google Meet, Zoom, or Teams URL:</p>
-        <div class="field">
-            <input type="url" [(ngModel)]="inputMeetingLink"
-                   placeholder="https://meet.google.com/abc-defg-hij" class="modal-input" />
-        </div>
-        <div class="confirm-row">
-            <button type="button" class="btn-primary"
-                    [disabled]="!inputMeetingLink.trim() || sessionActionRunning"
-                    (click)="confirmAcceptance()">
-                {{ sessionActionRunning ? 'Saving...' : 'Confirm & Notify Student' }}
-            </button>
-            <button type="button" class="btn-secondary" (click)="closeAcceptWindow()">Cancel</button>
-        </div>
+      </div>
     </div>
+
+    <!-- ══════════════════════════════════════════════
+         TAB: MY REVIEWS
+    ══════════════════════════════════════════════ -->
+    <div class="tab-panel" *ngIf="activeTab === 'reviews'" [@fadeIn]>
+      <div class="panel-header">
+        <h2 class="panel-title">⭐ My Reviews</h2>
+      </div>
+
+      <div *ngIf="reviewsLoading" class="state-msg"><div class="spinner"></div> Loading reviews…</div>
+
+      <div *ngIf="!reviewsLoading && reviewsList.length === 0" class="empty-state">
+        <div class="empty-icon">💬</div>
+        <p class="empty-title">No reviews yet</p>
+        <p class="empty-sub">Complete sessions to receive reviews from students.</p>
+      </div>
+
+      <ng-container *ngIf="!reviewsLoading && reviewsList.length > 0">
+        <!-- Rating summary -->
+        <div class="rating-summary-card">
+          <div class="rating-big">{{ getAvgRating() }}</div>
+          <div class="rating-detail">
+            <div class="stars-row">
+              <span *ngFor="let s of [1,2,3,4,5]" class="star" [class.filled]="s <= getAvgRatingNum()">★</span>
+            </div>
+            <p class="rating-sub">{{ reviewsList.length }} review{{ reviewsList.length > 1 ? 's' : '' }}</p>
+          </div>
+        </div>
+
+        <div class="review-grid">
+          <div class="review-card" *ngFor="let review of reviewsList">
+            <div class="review-top">
+              <div class="reviewer-av">{{ getReviewInitials(review.reviewerName) }}</div>
+              <div class="reviewer-info">
+                <p class="reviewer-name">{{ review.reviewerName }}</p>
+                <p class="review-date">{{ formatReviewDate(review.createdAt) }}</p>
+              </div>
+              <div class="review-stars-badge">
+                <span class="stars-text">{{ getStars(review.rating) }}</span>
+                <span class="rating-num">{{ review.rating }}/5</span>
+              </div>
+            </div>
+            <p class="review-body" *ngIf="review.comment">{{ review.comment }}</p>
+            <p class="review-body muted" *ngIf="!review.comment">No comment provided.</p>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         TAB: EDIT PROFILE
+    ══════════════════════════════════════════════ -->
+    <div class="tab-panel" *ngIf="activeTab === 'profile'" [@fadeIn]>
+      <div class="panel-header">
+        <h2 class="panel-title">✏️ Edit Profile</h2>
+      </div>
+
+      <div class="profile-grid">
+        <!-- Form -->
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="profile-form card">
+          <div class="field">
+            <label for="industry">Industry <span class="req">*</span></label>
+            <input id="industry" type="text" formControlName="industry" placeholder="e.g. Software / IT" />
+            <span class="err" *ngIf="form.get('industry')?.invalid && form.get('industry')?.touched">Required, max 100 chars</span>
+          </div>
+          <div class="field">
+            <label for="hourlyRate">Hourly Rate (₹)</label>
+            <input id="hourlyRate" type="number" min="0" max="100000" formControlName="hourlyRate" placeholder="e.g. 500" />
+          </div>
+          <div class="field">
+            <label for="bio">Bio <span class="req">*</span></label>
+            <textarea id="bio" rows="6" formControlName="bio" placeholder="Tell students what you can help with."></textarea>
+            <div class="bio-footer">
+              <span class="err" *ngIf="form.get('bio')?.hasError('maxlength')">Max 1000 characters</span>
+              <span class="char-count" [class.over]="bioLength > 1000">{{ bioLength }}/1000</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Skills</label>
+            <div class="tags-box" (click)="skillEl.focus()">
+              <span class="tag" *ngFor="let skill of skillTags">
+                {{ skill }}
+                <button type="button" class="tag-x" (click)="removeSkill(skill)">×</button>
+              </span>
+              <input #skillEl class="tag-input" [(ngModel)]="skillInputValue"
+                     [ngModelOptions]="{standalone: true}" placeholder="Add skill…"
+                     (keydown)="onSkillKeydown($event)" (blur)="commitSkill()" />
+            </div>
+            <p class="hint">Press Enter or comma to add a skill.</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="saving">
+              {{ saving ? 'Saving…' : 'Save Profile' }}
+            </button>
+            <button type="button" class="btn-danger-outline" *ngIf="profile" (click)="requestDeleteProfile()">
+              Delete Profile
+            </button>
+          </div>
+
+          <!-- Delete confirm -->
+          <div class="confirm-box" *ngIf="confirmDelete">
+            <p>⚠️ This will permanently delete your mentor profile. Are you sure?</p>
+            <div class="confirm-actions">
+              <button type="button" class="btn-danger" [disabled]="deleting" (click)="deleteProfile()">
+                {{ deleting ? 'Deleting…' : 'Yes, Delete' }}
+              </button>
+              <button type="button" class="btn-secondary" (click)="cancelDeleteProfile()">Cancel</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Profile preview -->
+        <div class="profile-preview-col">
+          <div class="card profile-preview-card">
+            <div class="preview-avatar">{{ initials }}</div>
+            <p class="preview-name">{{ displayName }}</p>
+            <p class="preview-email">{{ email }}</p>
+            <p class="preview-industry" *ngIf="profile?.industry">{{ profile?.industry }}</p>
+            <div class="preview-skills" *ngIf="skillTags.length > 0">
+              <span class="tag" *ngFor="let s of skillTags.slice(0,6)">{{ s }}</span>
+            </div>
+            <div class="preview-rate" *ngIf="profile?.hourlyRate">
+              ₹{{ profile?.hourlyRate }}/hr
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         TAB: NOTIFICATIONS
+    ══════════════════════════════════════════════ -->
+    <div class="tab-panel" *ngIf="activeTab === 'notifications'" [@fadeIn]>
+      <div class="panel-header">
+        <h2 class="panel-title">🔔 Notifications</h2>
+        <button class="btn-sm-outline" (click)="markAllRead()" *ngIf="unreadCount > 0">
+          ✓ Mark all read
+        </button>
+      </div>
+
+      <div *ngIf="notifLoading" class="state-msg"><div class="spinner"></div> Loading notifications…</div>
+
+      <div *ngIf="!notifLoading && notifications.length === 0" class="empty-state">
+        <div class="empty-icon">🔕</div>
+        <p class="empty-title">You're all caught up!</p>
+        <p class="empty-sub">No notifications yet.</p>
+      </div>
+
+      <div class="notif-list" *ngIf="!notifLoading && notifications.length > 0">
+        <div class="notif-item" *ngFor="let n of notifications"
+             [class.unread]="!n.isRead"
+             (click)="markOneRead(n)">
+          <div class="notif-dot" *ngIf="!n.isRead"></div>
+          <div class="notif-body">
+            <p class="notif-title">{{ n.title }}</p>
+            <p class="notif-msg">{{ n.message }}</p>
+            <p class="notif-time">{{ formatNotifDate(n.createdAt) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
 </div>
 
-<!-- Cancel / Reject reason modal -->
-<div class="modal-overlay" *ngIf="showCancelModal">
-    <div class="modal-container card cancel-modal">
-        <div class="modal-icon">{{ modalAction === 'reject' ? '🚫' : '⚠️' }}</div>
-        <h3>{{ modalAction === 'reject' ? 'Reject Session Request' : 'Cancel Session' }}</h3>
-        <p>Please provide a reason. The student will be notified.</p>
-        <div class="field">
-            <label for="cancelReason">Reason <span class="req">*</span></label>
-            <textarea
-                id="cancelReason"
-                rows="4"
-                [(ngModel)]="cancelReason"
+<!-- ══════════════════════════════════════════════
+     ACCEPT MODAL
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="showAcceptModal" (click)="closeAcceptWindow()">
+  <div class="modal-box card" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">🎥 Add Meeting Link</h3>
+    <p class="modal-sub">Provide your Google Meet, Zoom, or Teams URL:</p>
+    <div class="field">
+      <input type="url" [(ngModel)]="inputMeetingLink"
+             placeholder="https://meet.google.com/abc-defg-hij" class="modal-input" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" [disabled]="!inputMeetingLink.trim() || sessionActionRunning"
+              (click)="confirmAcceptance()">
+        {{ sessionActionRunning ? 'Saving…' : '✓ Confirm & Notify Student' }}
+      </button>
+      <button class="btn-secondary" (click)="closeAcceptWindow()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     REJECT / CANCEL REASON MODAL
+══════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="showCancelModal" (click)="closeCancelModal()">
+  <div class="modal-box card cancel-modal" (click)="$event.stopPropagation()">
+    <div class="modal-icon-lg">{{ modalAction === 'reject' ? '🚫' : '⚠️' }}</div>
+    <h3 class="modal-title">{{ modalAction === 'reject' ? 'Reject Session Request' : 'Cancel Session' }}</h3>
+    <p class="modal-sub">Please provide a reason — the student will be notified.</p>
+    <div class="field">
+      <label for="cancelReason">Reason <span class="req">*</span></label>
+      <textarea id="cancelReason" rows="4" [(ngModel)]="cancelReason"
                 (input)="cancelReasonError = false"
-                placeholder="e.g. I am unavailable on this date due to a prior commitment..."
-                class="modal-input cancel-textarea"
-            ></textarea>
-            <span class="err" *ngIf="cancelReasonError">Please enter a reason before proceeding.</span>
-        </div>
-        <div class="confirm-row">
-            <button type="button" class="btn-danger"
-                    [disabled]="sessionActionRunning"
-                    (click)="confirmCancellation()">
-                {{ sessionActionRunning ? 'Processing...' : (modalAction === 'reject' ? '✕ Confirm Rejection' : '✕ Confirm Cancellation') }}
-            </button>
-            <button type="button" class="btn-secondary" (click)="closeCancelModal()">Go Back</button>
-        </div>
+                placeholder="e.g. I am unavailable on this date due to a prior commitment…"
+                class="modal-input reason-textarea"></textarea>
+      <span class="err" *ngIf="cancelReasonError">Please enter a reason before proceeding.</span>
     </div>
+    <div class="modal-actions">
+      <button class="btn-danger" [disabled]="sessionActionRunning" (click)="confirmCancellation()">
+        {{ sessionActionRunning ? 'Processing…' : (modalAction === 'reject' ? '✕ Confirm Rejection' : '✕ Confirm Cancellation') }}
+      </button>
+      <button class="btn-secondary" (click)="closeCancelModal()">Go Back</button>
+    </div>
+  </div>
 </div>
