@@ -22,11 +22,11 @@ public class Session {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mentor_id", nullable = false)
+    @JoinColumn(name = "`mentor_id`", nullable = false)
     private User mentor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "`student_id`", nullable = false)
     private User student;
 
     @Column(nullable = false)
@@ -40,25 +40,25 @@ public class Session {
     private SessionStatus status = SessionStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "plan_type", nullable = false)
+    @Column(name = "`plan_type`", nullable = false)
     private PlanType planType;
 
-    @Column(name = "total_occurrences", nullable = false)
+    @Column(name = "`total_occurrences`", nullable = false)
     private Integer totalOccurrences;
 
     // When the student wants the session scheduled
-    @Column(name = "scheduled_at")
+    @Column(name = "`scheduled_at`")
     private LocalDateTime scheduledAt;
 
     // Duration in minutes — 60 or 120
-    @Column(name = "duration_minutes")
+    @Column(name = "`duration_minutes`")
     private Integer durationMinutes = 60;
 
     // Meeting link added by mentor when accepting
-    @Column(name = "meeting_link", length = 500)
+    @Column(name = "`meeting_link`", length = 500)
     private String meetingLink;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "`created_at`", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)

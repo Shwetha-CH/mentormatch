@@ -12,16 +12,16 @@ public class SessionOccurrence {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id", nullable = false)
+    @JoinColumn(name = "`session_id`", nullable = false)
     private Session session;
 
-    @Column(name = "scheduled_at", nullable = false)
+    @Column(name = "`scheduled_at`", nullable = false)
     private LocalDateTime scheduledAt;
 
-    @Column(name = "duration_minutes", nullable = false)
+    @Column(name = "`duration_minutes`", nullable = false)
     private Integer durationMinutes;
 
-    @Column(name = "meeting_link")
+    @Column(name = "`meeting_link`")
     private String meetingLink;
 
     @Enumerated(EnumType.STRING)
