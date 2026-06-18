@@ -11,23 +11,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "full_name", nullable = false)
+    @Column(name = "`full_name`", nullable = false)
     private String fullName;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "`email`", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "`password`", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "`role`", nullable = false)
     private Role role;
 
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "`is_active`", nullable = false)
     private Boolean isActive = true;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "`created_at`", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
