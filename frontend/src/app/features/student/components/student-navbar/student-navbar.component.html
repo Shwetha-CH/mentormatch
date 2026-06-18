@@ -12,30 +12,41 @@
         <!-- Nav links -->
         <ul class="nav-links">
             <li *ngFor="let item of navItems">
-                <button
-                        class="nav-btn"
+                <button class="nav-btn"
                         [class.active]="isActive(item.route)"
                         (click)="navigate(item.route)">
                     <span class="nav-icon">{{ item.icon }}</span>
                     <span class="nav-label">{{ item.label }}</span>
-                    <!-- Unread badge on notifications -->
                     <span class="notif-badge" *ngIf="item.label === 'Notifications' && unreadCount > 0">
-            {{ unreadCount > 9 ? '9+' : unreadCount }}
-          </span>
+                        {{ unreadCount > 9 ? '9+' : unreadCount }}
+                    </span>
                 </button>
             </li>
         </ul>
 
-        <!-- Right — user + logout -->
+        <!-- Right — user dropdown -->
         <div class="nav-right">
-            <div class="user-pill">
-                <div class="user-avatar">{{ initials }}</div>
-                <span class="user-name">{{ fullName }}</span>
+            <div class="user-dropdown-wrap">
+                <button class="user-pill-btn" (click)="toggleDropdown()">
+                    <div class="user-avatar">{{ initials }}</div>
+                    <span class="user-name">{{ fullName }}</span>
+                    <span class="chevron" [class.open]="showDropdown">▾</span>
+                </button>
+                <div class="dropdown-menu" *ngIf="showDropdown">
+                    <div class="dropdown-header">
+                        <p class="dd-name">{{ fullName }}</p>
+                        <p class="dd-email">{{ email }}</p>
+                    </div>
+                    <hr class="dd-divider" />
+                    <button class="dd-item logout-item" (click)="logout()">
+                        <span>⏻</span> Logout
+                    </button>
+                </div>
             </div>
-            <button class="logout-btn" (click)="logout()" title="Logout">
-                ⏻ Logout
-            </button>
         </div>
 
     </div>
 </nav>
+
+<!-- Overlay to close dropdown on outside click -->
+<div class="overlay-dismiss" *ngIf="showDropdown" (click)="closeDropdown()"></div>
