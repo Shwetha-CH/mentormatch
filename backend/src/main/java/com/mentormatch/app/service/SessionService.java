@@ -129,21 +129,25 @@ public class SessionService {
         return toResponse(saved);
     }
 
-    // PATCH /api/sessions/{id}/reject — Mentor rejects session
+    // PATCH /api/sessions/{id}/reject — Mentor rejects session with a reason
     @Transactional
-    public SessionResponse rejectSession(Long sessionId, String mentorEmail) {
+    public SessionResponse rejectSession(Long sessionId, String mentorEmail, String reason) {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         session.setStatus(Session.SessionStatus.REJECTED);
+        if (reason != null && !reason.isBlank()) {
+            session.setCancellationReason(reason.trim());
+        }
         Session saved = sessionRepository.save(session);
 
-        // Notify student
+        // Notify student with reason
+        String reasonText = (reason != null && !reason.isBlank()) ? " Reason: " + reason.trim() : "";
         notificationService.send(
                 session.getStudent().getId(),
                 "Session Rejected",
-                session.getMentor().getFullName() + " rejected your session: " + session.getTopic(),
-                "/student/sessions/" + sessionId
+                session.getMentor().getFullName() + " rejected your session: " + session.getTopic() + reasonText,
+                "/student/my-sessions"
         );
 
         return toResponse(saved);

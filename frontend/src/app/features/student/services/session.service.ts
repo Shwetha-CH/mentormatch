@@ -33,6 +33,7 @@ export interface SessionResponse {
     scheduledAt: string;
     durationMinutes: number;
     meetingLink: string | null;
+    cancellationReason: string | null;
     mentorId: number;
     mentorName: string;
     studentId: number;

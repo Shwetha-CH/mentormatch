@@ -91,6 +91,9 @@
                     <!-- REJECTED -->
                     <div class="rejection-note" *ngIf="session.status === 'REJECTED'">
                         <span class="rej-label">Status:</span> Session was rejected by the mentor.
+                        <span *ngIf="session.cancellationReason" class="reason-text">
+                            <strong>Reason:</strong> {{ session.cancellationReason }}
+                        </span>
                     </div>
 
                     <!-- CANCELLED -->

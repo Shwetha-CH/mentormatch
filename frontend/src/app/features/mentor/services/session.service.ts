@@ -22,8 +22,8 @@ export class SessionManagementService {
     return this.http.patch(`${this.apiUrl}/${sessionId}/accept`, { meetingLink });
   }
 
-  rejectSession(sessionId: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${sessionId}/reject`, {});
+  rejectSession(sessionId: number, reason: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${sessionId}/reject`, { reason });
   }
 
   // Mark session as COMPLETED — only mentor can do this
