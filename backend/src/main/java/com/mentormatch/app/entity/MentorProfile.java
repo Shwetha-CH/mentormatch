@@ -15,32 +15,32 @@ public class MentorProfile {
     // FetchType.LAZY ensures the User data is only loaded when explicitly
     // requested, optimizing performance.
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "`user_id`", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(name = "`industry`")
+    @Column(name = "industry")
     private String industry;
 
-    @Column(name = "`hourly_rate`")
+    @Column(name = "hourly_rate")
     private Integer hourlyRate;
 
     // Creates a separate table 'mentor_skills' to store multiple tags/skills for a
     // mentor,
     // which helps with your "Browse filters" feature.
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "mentor_skills", joinColumns = @JoinColumn(name = "`mentor_profile_id`"))
-    @Column(name = "`skill`")
+    @CollectionTable(name = "mentor_skills", joinColumns = @JoinColumn(name = "mentor_profile_id"))
+    @Column(name = "skill")
     private List<String> skills;
 
     // Supports the "Availability toggle UI"
-    @Column(name = "`is_available`", nullable = false)
+    @Column(name = "is_available", nullable = false)
     private Boolean isAvailable = true;
 
     // Supports the rating filter on the browse page
-    @Column(name = "`rating`")
+    @Column(name = "rating")
     private Double rating = 0.0;
 
     public MentorProfile() {

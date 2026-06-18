@@ -12,7 +12,7 @@ public class Notification {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "`user_id`", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
@@ -24,10 +24,10 @@ public class Notification {
     @Column(length = 500)
     private String link;
 
-    @Column(name = "`is_read`", nullable = false)
+    @Column(name = "is_read", nullable = false)
     private boolean isRead = false;
 
-    @Column(name = "`created_at`", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

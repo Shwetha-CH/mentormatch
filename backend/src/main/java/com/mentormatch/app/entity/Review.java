@@ -18,15 +18,15 @@ public class Review {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "`session_id`", nullable = false)
+    @JoinColumn(name = "session_id", nullable = false)
     private Session session;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "`reviewer_id`", nullable = false)
+    @JoinColumn(name = "reviewer_id", nullable = false)
     private User reviewer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "`reviewee_id`", nullable = false)
+    @JoinColumn(name = "reviewee_id", nullable = false)
     private User reviewee;
 
     @Column(nullable = false)
@@ -37,10 +37,10 @@ public class Review {
 
     // STUDENT = student reviewing mentor, MENTOR = mentor reviewing student
     @Enumerated(EnumType.STRING)
-    @Column(name = "`reviewer_role`", nullable = false, length = 10)
+    @Column(name = "reviewer_role", nullable = false, length = 10)
     private ReviewerRole reviewerRole;
 
-    @Column(name = "`created_at`", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
