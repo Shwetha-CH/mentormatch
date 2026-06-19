@@ -1,21 +1,44 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { AuthService } from '../../core/services/auth.service';
 import { MentorProfile } from './models/mentor-profile.model';
 import { MentorProfileService } from './services/mentor-profile.service';
 import { SessionManagementService } from './services/session.service';
+import { NotificationService } from './services/notification.service';
 import { SessionResponse } from './models/session.model';
+import { NotificationItem } from '../student/models/notification.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-mentor-dashboard',
   templateUrl: './mentor-dashboard.component.html',
-  styleUrls: ['./mentor-dashboard.component.css']
+  styleUrls: ['./mentor-dashboard.component.css'],
+  animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(8px)' }),
+        animate('250ms ease', style({ opacity: 1, transform: 'none' }))
+      ])
+    ]),
+    trigger('dropDown', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-8px) scale(0.96)' }),
+        animate('180ms cubic-bezier(0.16,1,0.3,1)', style({ opacity: 1, transform: 'none' }))
+      ]),
+      transition(':leave', [
+        animate('120ms ease', style({ opacity: 0, transform: 'translateY(-6px) scale(0.97)' }))
+      ])
+    ])
+  ]
 })
 export class MentorDashboardComponent implements OnInit {
 
-  activeTab: 'profile' | 'sessions' | 'reviews' = 'profile';
+  activeTab: 'dashboard' | 'sessions' | 'reviews' | 'profile' | 'notifications' = 'dashboard';
 
+  // Profile
   form!: FormGroup;
   profile: MentorProfile | null = null;
   skillTags: string[] = [];
@@ -28,23 +51,43 @@ export class MentorDashboardComponent implements OnInit {
   saveSuccess = false;
   errorMsg = '';
 
+  // User dropdown
+  showDropdown = false;
+
+  // Sessions
   sessionsList: SessionResponse[] = [];
   sessionsLoading = false;
   sessionActionRunning = false;
 
+  // Accept modal
   showAcceptModal = false;
   selectedSessionId: number | null = null;
   inputMeetingLink = '';
 
+  // Reason modal (Reject / Cancel)
+  showCancelModal = false;
+  cancelSessionId: number | null = null;
+  cancelReason = '';
+  cancelReasonError = false;
+  modalAction: 'reject' | 'cancel' = 'reject';
+
+  // Reviews
   reviewsList: any[] = [];
   reviewsLoading = false;
 
+  // Notifications
+  notifications: NotificationItem[] = [];
+  notifLoading = false;
+  unreadCount = 0;
+
   constructor(
-      private fb: FormBuilder,
-      private mentorService: MentorProfileService,
-      private authService: AuthService,
-      private sessionService: SessionManagementService,
-      private http: HttpClient
+    private fb: FormBuilder,
+    private mentorService: MentorProfileService,
+    private authService: AuthService,
+    private sessionService: SessionManagementService,
+    private notificationService: NotificationService,
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -54,14 +97,49 @@ export class MentorDashboardComponent implements OnInit {
       bio: ['', [Validators.required, Validators.maxLength(1000)]]
     });
     this.loadProfile();
+    this.loadSessionRequests();
+    this.loadUnreadCount();
   }
 
-  switchTab(tabName: 'profile' | 'sessions' | 'reviews'): void {
+  // ── Tab switching ──────────────────────────────────────────
+  switchTab(tabName: 'dashboard' | 'sessions' | 'reviews' | 'profile' | 'notifications'): void {
     this.activeTab = tabName;
-    if (tabName === 'sessions') this.loadSessionRequests();
-    if (tabName === 'reviews') this.loadMyReviews();
+    if (tabName === 'sessions')      this.loadSessionRequests();
+    if (tabName === 'reviews')       this.loadMyReviews();
+    if (tabName === 'notifications') this.loadNotifications();
   }
 
+  // ── Dropdown ───────────────────────────────────────────────
+  toggleDropdown(): void  { this.showDropdown = !this.showDropdown; }
+  closeDropdown(): void   { this.showDropdown = false; }
+
+  // ── Greeting ───────────────────────────────────────────────
+  get greeting(): string {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  get firstName(): string {
+    return this.displayName.split(' ')[0];
+  }
+
+  // ── Stats ──────────────────────────────────────────────────
+  get pendingCount(): number   { return this.sessionsList.filter(s => s.status === 'PENDING').length; }
+  get acceptedCount(): number  { return this.sessionsList.filter(s => s.status === 'ACCEPTED').length; }
+  get completedCount(): number { return this.sessionsList.filter(s => s.status === 'COMPLETED').length; }
+  get recentSessions(): SessionResponse[] { return this.sessionsList.slice(0, 5); }
+
+  getStatusClass(status: string): string {
+    const m: Record<string, string> = {
+      ACCEPTED: 'accepted', COMPLETED: 'completed',
+      REJECTED: 'rejected', CANCELLED: 'cancelled'
+    };
+    return m[status] ?? '';
+  }
+
+  // ── Sessions ───────────────────────────────────────────────
   loadSessionRequests(): void {
     this.sessionsLoading = true;
     this.errorMsg = '';
@@ -71,31 +149,13 @@ export class MentorDashboardComponent implements OnInit {
     });
   }
 
-  // UPDATED URL: Now maps directly to the authenticated endpoint /api/reviews/mentor/me
-  loadMyReviews(): void {
-    this.reviewsLoading = true;
-    this.http.get<any>('http://localhost:8081/api/reviews/mentor/me').subscribe({
-      next: (res) => {
-        this.reviewsList = res.data || [];
-        this.reviewsLoading = false;
-      },
-      error: () => {
-        this.reviewsLoading = false;
-      }
-    });
-  }
-
+  // Accept modal
   openAcceptWindow(id: number): void {
     this.selectedSessionId = id;
     this.inputMeetingLink = '';
     this.showAcceptModal = true;
   }
-
-  closeAcceptWindow(): void {
-    this.showAcceptModal = false;
-    this.selectedSessionId = null;
-  }
-
+  closeAcceptWindow(): void { this.showAcceptModal = false; this.selectedSessionId = null; }
   confirmAcceptance(): void {
     if (!this.inputMeetingLink.trim() || !this.selectedSessionId) return;
     this.sessionActionRunning = true;
@@ -105,12 +165,25 @@ export class MentorDashboardComponent implements OnInit {
     });
   }
 
-  executeRejection(id: number): void {
-    if (!confirm('Decline this request?')) return;
+  // Reason modal
+  openReasonModal(id: number, action: 'reject' | 'cancel'): void {
+    this.cancelSessionId = id;
+    this.modalAction = action;
+    this.cancelReason = '';
+    this.cancelReasonError = false;
+    this.showCancelModal = true;
+  }
+  closeCancelModal(): void { this.showCancelModal = false; this.cancelSessionId = null; this.cancelReason = ''; }
+  confirmCancellation(): void {
+    if (!this.cancelReason.trim()) { this.cancelReasonError = true; return; }
+    if (!this.cancelSessionId) return;
     this.sessionActionRunning = true;
-    this.sessionService.rejectSession(id).subscribe({
-      next: () => { this.sessionActionRunning = false; this.loadSessionRequests(); },
-      error: () => { this.sessionActionRunning = false; alert('Could not reject session.'); }
+    const obs = this.modalAction === 'reject'
+      ? this.sessionService.rejectSession(this.cancelSessionId, this.cancelReason.trim())
+      : this.sessionService.cancelSession(this.cancelSessionId, this.cancelReason.trim());
+    obs.subscribe({
+      next: () => { this.sessionActionRunning = false; this.closeCancelModal(); this.loadSessionRequests(); },
+      error: () => { this.sessionActionRunning = false; alert('Could not complete action. Please try again.'); }
     });
   }
 
@@ -132,8 +205,13 @@ export class MentorDashboardComponent implements OnInit {
     });
   }
 
-  get pendingCount(): number {
-    return this.sessionsList.filter(s => s.status === 'PENDING').length;
+  // ── Reviews ────────────────────────────────────────────────
+  loadMyReviews(): void {
+    this.reviewsLoading = true;
+    this.http.get<any>(`${environment.apiUrl}/api/reviews/mentor/me`).subscribe({
+      next: (res) => { this.reviewsList = res.data || []; this.reviewsLoading = false; },
+      error: () => { this.reviewsLoading = false; }
+    });
   }
 
   getAvgRating(): string {
@@ -141,26 +219,87 @@ export class MentorDashboardComponent implements OnInit {
     const avg = this.reviewsList.reduce((s: number, r: any) => s + r.rating, 0) / this.reviewsList.length;
     return avg.toFixed(1);
   }
-
-  getAvgRatingNum(): number {
-    return Math.round(parseFloat(this.getAvgRating()));
-  }
-
+  getAvgRatingNum(): number { return Math.round(parseFloat(this.getAvgRating())); }
   getReviewInitials(name: string): string {
     if (!name) return 'S';
     return name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
   }
-
   formatReviewDate(dateStr: string): string {
     if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   }
-
   getStars(rating: number): string {
     return '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
   }
 
-  // ── Profile handlers ──────────────────────────────
+  // ── Notifications ──────────────────────────────────────────
+  loadNotifications(): void {
+    this.notifLoading = true;
+    this.notificationService.loadAll().subscribe({
+      next: (data) => { this.notifications = data; this.notifLoading = false; this.updateUnread(); },
+      error: () => { this.notifLoading = false; }
+    });
+  }
+
+  loadUnreadCount(): void {
+    this.notificationService.getUnreadCount().subscribe({
+      next: (count) => { this.unreadCount = count; },
+      error: () => {}
+    });
+  }
+
+  updateUnread(): void {
+    this.unreadCount = this.notifications.filter(n => !n.isRead).length;
+  }
+
+  markAllRead(): void {
+    this.notificationService.markAllAsRead().subscribe({
+      next: () => {
+        this.notifications = this.notifications.map(n => ({ ...n, isRead: true }));
+        this.unreadCount = 0;
+      }
+    });
+  }
+
+  markOneRead(n: NotificationItem): void {
+    // Always mark as read on click (navigate regardless of read state)
+    const navigate = () => {
+      if (!n.link) return;
+      // Session-related links → switch to sessions tab within dashboard
+      if (n.link.includes('/mentor/dashboard') || n.link.includes('/mentor/sessions')
+          || n.link.toLowerCase().includes('session')) {
+        this.switchTab('sessions');
+      } else {
+        this.router.navigateByUrl(n.link);
+      }
+    };
+
+    if (!n.isRead) {
+      this.notificationService.markOneAsRead(n.id).subscribe({
+        next: () => {
+          n.isRead = true;
+          this.updateUnread();
+          navigate();
+        },
+        error: () => navigate()
+      });
+    } else {
+      navigate();
+    }
+  }
+
+  formatNotifDate(dateStr: string): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
+    if (diff < 60)   return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  }
+
+  // ── Profile ────────────────────────────────────────────────
   loadProfile(): void {
     this.loading = true;
     this.mentorService.getMyProfile().subscribe({
@@ -203,7 +342,7 @@ export class MentorDashboardComponent implements OnInit {
   }
 
   requestDeleteProfile(): void { if (!this.profile) return; this.confirmDelete = true; }
-  cancelDeleteProfile(): void { this.confirmDelete = false; }
+  cancelDeleteProfile(): void  { this.confirmDelete = false; }
 
   deleteProfile(): void {
     if (!this.profile || this.deleting) return;
@@ -222,22 +361,17 @@ export class MentorDashboardComponent implements OnInit {
     if (event.key === 'Enter' || event.key === ',') { event.preventDefault(); this.commitSkill(); }
     if (event.key === 'Backspace' && !this.skillInputValue && this.skillTags.length) { this.skillTags.pop(); }
   }
-
   commitSkill(): void {
     const value = this.skillInputValue.trim().replace(/,+$/, '');
     if (value && !this.skillTags.includes(value)) { this.skillTags.push(value); }
     this.skillInputValue = '';
   }
-
   removeSkill(skill: string): void { this.skillTags = this.skillTags.filter(item => item !== skill); }
+
   get initials(): string { return this.displayName.split(' ').map(word => word[0]).join('').slice(0, 2).toUpperCase(); }
   get displayName(): string { return this.profile?.user?.fullName || this.authService.getFullName() || 'Mentor'; }
   get email(): string { return this.profile?.user?.email || this.authService.getUserData()?.email || ''; }
   get bioLength(): number { return (this.form.get('bio')?.value ?? '').length; }
-  get profileCompletion(): number {
-    const fields = [this.form.get('industry')?.value, this.form.get('hourlyRate')?.value !== null && this.form.get('hourlyRate')?.value !== '', this.form.get('bio')?.value, this.skillTags.length > 0];
-    return Math.round((fields.filter(Boolean).length / fields.length) * 100);
-  }
 
   logout(): void { this.authService.logout(); }
   private resetForm(): void { this.form.reset({ industry: '', hourlyRate: null, bio: '' }); }

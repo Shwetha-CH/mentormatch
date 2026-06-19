@@ -1,5 +1,6 @@
 package com.mentormatch.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class NotificationResponse {
@@ -8,6 +9,8 @@ public class NotificationResponse {
     private String title;
     private String message;
     private String link;
+
+    @JsonProperty("isRead")
     private boolean isRead;
     private LocalDateTime createdAt;
 

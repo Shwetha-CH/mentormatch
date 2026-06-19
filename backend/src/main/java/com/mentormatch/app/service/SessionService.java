@@ -129,21 +129,25 @@ public class SessionService {
         return toResponse(saved);
     }
 
-    // PATCH /api/sessions/{id}/reject — Mentor rejects session
+    // PATCH /api/sessions/{id}/reject — Mentor rejects session with a reason
     @Transactional
-    public SessionResponse rejectSession(Long sessionId, String mentorEmail) {
+    public SessionResponse rejectSession(Long sessionId, String mentorEmail, String reason) {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
         session.setStatus(Session.SessionStatus.REJECTED);
+        if (reason != null && !reason.isBlank()) {
+            session.setCancellationReason(reason.trim());
+        }
         Session saved = sessionRepository.save(session);
 
-        // Notify student
+        // Notify student with reason
+        String reasonText = (reason != null && !reason.isBlank()) ? " Reason: " + reason.trim() : "";
         notificationService.send(
                 session.getStudent().getId(),
                 "Session Rejected",
-                session.getMentor().getFullName() + " rejected your session: " + session.getTopic(),
-                "/student/sessions/" + sessionId
+                session.getMentor().getFullName() + " rejected your session: " + session.getTopic() + reasonText,
+                "/student/my-sessions"
         );
 
         return toResponse(saved);
@@ -164,6 +168,30 @@ public class SessionService {
                 "Session Cancelled",
                 session.getStudent().getFullName() + " cancelled their session: " + session.getTopic(),
                 "/mentor/sessions/" + sessionId
+        );
+
+        return toResponse(saved);
+    }
+
+    // PATCH /api/sessions/{id}/mentor-cancel — Mentor cancels session with a reason
+    @Transactional
+    public SessionResponse mentorCancelSession(Long sessionId, String mentorEmail, String reason) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        session.setStatus(Session.SessionStatus.CANCELLED);
+        if (reason != null && !reason.isBlank()) {
+            session.setCancellationReason(reason.trim());
+        }
+        Session saved = sessionRepository.save(session);
+
+        // Notify student with reason
+        String reasonText = (reason != null && !reason.isBlank()) ? " Reason: " + reason.trim() : "";
+        notificationService.send(
+                session.getStudent().getId(),
+                "Session Cancelled by Mentor",
+                session.getMentor().getFullName() + " cancelled your session: " + session.getTopic() + reasonText,
+                "/student/my-sessions"
         );
 
         return toResponse(saved);
@@ -201,6 +229,7 @@ public class SessionService {
         res.setScheduledAt(s.getScheduledAt());
         res.setDurationMinutes(s.getDurationMinutes());
         res.setMeetingLink(s.getMeetingLink());
+        res.setCancellationReason(s.getCancellationReason());
         res.setMentorId(s.getMentor().getId());
         res.setMentorName(s.getMentor().getFullName());
         res.setStudentId(s.getStudent().getId());

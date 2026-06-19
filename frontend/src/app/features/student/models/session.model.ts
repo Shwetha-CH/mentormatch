@@ -15,6 +15,7 @@ export interface Session {
     planType: PlanType;
     totalOccurrences: number;
     rejectionReason: string;
+    cancellationReason: string | null;
     createdAt: string;
     scheduledAt: string;        // first occurrence date
 }

@@ -15,6 +15,7 @@ export class StudentNavbarComponent {
 
     unreadCount = 0;
     currentRoute = '';
+    showDropdown = false;
 
     navItems = [
         { label: 'Dashboard',       icon: '🏠', route: '/student/dashboard'      },
@@ -53,8 +54,15 @@ export class StudentNavbarComponent {
         return this.currentRoute.startsWith(route);
     }
 
+    toggleDropdown(): void  { this.showDropdown = !this.showDropdown; }
+    closeDropdown(): void   { this.showDropdown = false; }
+
     get fullName(): string {
         return this.authService.getFullName() || 'Student';
+    }
+
+    get email(): string {
+        return this.authService.getUserData()?.email || '';
     }
 
     get initials(): string {
@@ -62,6 +70,7 @@ export class StudentNavbarComponent {
     }
 
     logout(): void {
+        this.showDropdown = false;
         this.authService.logout();
     }
 }

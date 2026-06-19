@@ -401,7 +401,7 @@ public class AdminService {
 
         return mapToAdminSessionResponse(sessionRepository.save(session));
     }
-
+    //delete
     public void deleteSession(Long sessionId) {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));

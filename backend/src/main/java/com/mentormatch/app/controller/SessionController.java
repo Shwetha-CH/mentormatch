@@ -69,14 +69,16 @@ public class SessionController {
         return ResponseEntity.ok(ApiResponse.success("Session accepted.", session));
     }
 
-    // PATCH /api/sessions/{id}/reject — Mentor rejects session
+    // PATCH /api/sessions/{id}/reject — Mentor rejects session with a reason
     @PatchMapping("/{id}/reject")
     public ResponseEntity<ApiResponse<SessionResponse>> rejectSession(
             @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body,
             Authentication authentication) {
 
         String email = authentication.getName();
-        SessionResponse session = sessionService.rejectSession(id, email);
+        String reason = body != null ? body.get("reason") : null;
+        SessionResponse session = sessionService.rejectSession(id, email, reason);
         return ResponseEntity.ok(ApiResponse.success("Session rejected.", session));
     }
 
@@ -88,6 +90,19 @@ public class SessionController {
 
         String email = authentication.getName();
         SessionResponse session = sessionService.cancelSession(id, email);
+        return ResponseEntity.ok(ApiResponse.success("Session cancelled.", session));
+    }
+
+    // PATCH /api/sessions/{id}/mentor-cancel — Mentor cancels session with a reason
+    @PatchMapping("/{id}/mentor-cancel")
+    public ResponseEntity<ApiResponse<SessionResponse>> mentorCancelSession(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> body,
+            Authentication authentication) {
+
+        String email = authentication.getName();
+        String reason = body != null ? body.get("reason") : null;
+        SessionResponse session = sessionService.mentorCancelSession(id, email, reason);
         return ResponseEntity.ok(ApiResponse.success("Session cancelled.", session));
     }
 

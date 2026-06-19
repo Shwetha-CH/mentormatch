@@ -76,6 +76,13 @@ public class ReviewService {
 
         Review saved = reviewRepository.save(review);
 
+        // Recalculate and persist the mentor's average rating
+        MentorProfile mentorProfile = mentorRepository.findByUserId(reviewee.getId())
+                .orElseThrow(() -> new RuntimeException("Mentor profile not found for user: " + reviewee.getId()));
+        Double avgRating = reviewRepository.calculateAvgRatingForMentor(reviewee.getId());
+        mentorProfile.setRating(avgRating != null ? avgRating : 0.0);
+        mentorRepository.save(mentorProfile);
+
         notificationService.send(
                 reviewee.getId(),
                 "New Review Received!",
