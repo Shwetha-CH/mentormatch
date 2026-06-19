@@ -14,6 +14,8 @@ import { MentorReviewsComponent } from './pages/mentor-reviews/mentor-reviews.co
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { NotificationBellComponent } from './components/notification-bell/notification-bell.component';
 import { StudentNavbarComponent } from './components/student-navbar/student-navbar.component';
+import {FooterComponent} from "../footer/footer.component";
+
 // add to declarations: StudentNavbarComponent
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { StudentNavbarComponent } from './components/student-navbar/student-navb
     MentorReviewsComponent,
     NotificationsComponent,
     NotificationBellComponent,
-    StudentNavbarComponent
+    StudentNavbarComponent,
+      FooterComponent
 
   ],
   imports: [
