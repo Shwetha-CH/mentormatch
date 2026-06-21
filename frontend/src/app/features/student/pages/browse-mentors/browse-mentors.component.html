@@ -36,12 +36,12 @@
 
             <div class="filter-group">
                 <label>Search by skill</label>
-                <input type="text" formControlName="skill" placeholder="e.g. Java, AWS, React" />
+            <input id="filter-skill-input" type="text" formControlName="skill" placeholder="e.g. Java, AWS, React" />
             </div>
 
             <div class="filter-group">
                 <label>Industry</label>
-                <select formControlName="industry">
+                <select id="filter-industry-select" formControlName="industry">
                     <option value="">All industries</option>
                     <option *ngFor="let ind of industries" [value]="ind">{{ ind }}</option>
                 </select>
@@ -59,7 +59,7 @@
 
             <div class="filter-group">
                 <label class="checkbox-item">
-                    <input type="checkbox" formControlName="available" />
+                    <input id="filter-available-checkbox" type="checkbox" formControlName="available" />
                     Available mentors only
                 </label>
             </div>
@@ -79,7 +79,7 @@
                 <button class="clear-btn" (click)="clearFilters()">Clear filters</button>
             </div>
 
-            <div class="mentor-card" *ngFor="let mentor of filteredMentors"
+            <div class="mentor-card" [id]="'mentor-card-' + mentor.id" *ngFor="let mentor of filteredMentors"
                  (click)="viewMentor(mentor.id)">
 
                 <div class="mentor-avatar">
@@ -113,7 +113,7 @@
                 </div>
 
                 <div class="mentor-actions">
-                    <button class="btn-book" (click)="$event.stopPropagation(); viewMentor(mentor.id)">
+                    <button [id]="'view-profile-btn-' + mentor.id" class="btn-book" (click)="$event.stopPropagation(); viewMentor(mentor.id)">
                         View profile
                     </button>
                 </div>

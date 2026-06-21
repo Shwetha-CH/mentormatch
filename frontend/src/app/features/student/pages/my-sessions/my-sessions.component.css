@@ -97,6 +97,12 @@
     cursor: pointer; transition: all 0.15s;
 }
 .review-btn:hover { background: #fde68a; border-color: #d97706; }
+.reviewed-badge {
+    padding: 6px 16px; border-radius: 8px;
+    background: #d1fae5; color: #065f46;
+    font-size: 13px; font-weight: 500;
+    border: 1px solid #6ee7b7;
+}
 .rejection-note {
     margin-top: 6px; font-size: 12px; color: #991b1b;
     background: #fef2f2; border-radius: 6px; padding: 5px 10px;

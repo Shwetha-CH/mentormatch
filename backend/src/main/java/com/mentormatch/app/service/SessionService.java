@@ -6,6 +6,7 @@ import com.mentormatch.app.entity.MentorProfile;
 import com.mentormatch.app.entity.Session;
 import com.mentormatch.app.entity.User;
 import com.mentormatch.app.repository.MentorRepository;
+import com.mentormatch.app.repository.ReviewRepository;
 import com.mentormatch.app.repository.SessionRepository;
 import com.mentormatch.app.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -22,15 +23,18 @@ public class SessionService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final MentorRepository mentorRepository;
+    private final ReviewRepository reviewRepository;
 
     public SessionService(SessionRepository sessionRepository,
                           UserRepository userRepository,
                           NotificationService notificationService,
-                          MentorRepository mentorRepository) {
+                          MentorRepository mentorRepository,
+                          ReviewRepository reviewRepository) {
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
         this.mentorRepository = mentorRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     // POST /api/sessions — Student books a session
@@ -234,6 +238,7 @@ public class SessionService {
         res.setMentorName(s.getMentor().getFullName());
         res.setStudentId(s.getStudent().getId());
         res.setStudentName(s.getStudent().getFullName());
+        res.setReviewed(reviewRepository.existsBySessionIdAndReviewerId(s.getId(), s.getStudent().getId()));
         return res;
     }
 }

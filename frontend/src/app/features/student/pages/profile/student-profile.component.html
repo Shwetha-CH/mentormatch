@@ -11,7 +11,7 @@
                 <h2>{{ profile.fullName }}</h2>
                 <span class="email">{{ profile.email }}</span>
             </div>
-            <button class="btn-danger" style="align-items:end"
+            <button id="delete-profile-btn" class="btn-danger" style="align-items:end"
                     type="button"
                     (click)="deleteProfile()"
                     [disabled]="deleting"
@@ -83,7 +83,7 @@
 
             <div class="action-row">
                 <button type="button" class="btn-ghost" (click)="goToDashboard()">Cancel</button>
-                <button type="submit" class="btn-primary" [disabled]="saving">
+                <button id="save-profile-btn" type="submit" class="btn-primary" [disabled]="saving">
                     {{ saving ? 'Saving…' : 'Save profile' }}
                 </button>
             </div>
