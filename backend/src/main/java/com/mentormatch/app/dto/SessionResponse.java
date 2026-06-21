@@ -26,6 +26,9 @@ public class SessionResponse {
     // Cancellation reason (set by mentor when cancelling)
     private String cancellationReason;
 
+    // Whether the student has already submitted a review for this session
+    private boolean reviewed;
+
     public SessionResponse() {}
 
     // --- Getters & Setters ---
@@ -73,5 +76,8 @@ public class SessionResponse {
 
     public String getCancellationReason() { return cancellationReason; }
     public void setCancellationReason(String cancellationReason) { this.cancellationReason = cancellationReason; }
+
+    public boolean isReviewed() { return reviewed; }
+    public void setReviewed(boolean reviewed) { this.reviewed = reviewed; }
 }
 

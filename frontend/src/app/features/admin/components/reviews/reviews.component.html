@@ -12,8 +12,9 @@
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input 
+          id="reviews-search-input"
           type="text" 
-          class="search-input" 
+          class="search-input"
           placeholder="Search by name, email, or comment..."
           [(ngModel)]="searchQuery"
           (input)="onSearchChange()">
@@ -22,7 +23,8 @@
       <!-- Rating Filter -->
       <div class="filter-group">
         <select 
-          class="rating-filter" 
+          id="reviews-rating-filter"
+          class="rating-filter"
           [(ngModel)]="selectedRating" 
           (change)="onFilterChange()">
           <option *ngFor="let option of ratingOptions" [value]="option.value">
@@ -54,7 +56,7 @@
     <div *ngFor="let review of filteredReviews" class="review-card">
       
       <!-- Delete Button -->
-      <button class="delete-btn" (click)="deleteReview(review)" title="Delete Review">
+      <button [id]="'delete-review-btn-' + review.sessionId" class="delete-btn" (click)="deleteReview(review)" title="Delete Review">
         🗑️
       </button>
 

@@ -26,6 +26,7 @@
             <!-- Star rating -->
             <div class="stars-row">
         <span
+                [id]="'star-' + star"
                 *ngFor="let star of stars"
                 [class]="getStarClass(star)"
                 (click)="setRating(star)"
@@ -53,7 +54,8 @@
             </div>
 
             <!-- Submit -->
-            <button class="btn-submit"
+            <button id="review-submit-btn"
+                    class="btn-submit"
                     [disabled]="selectedRating === 0 || submitting"
                     (click)="onSubmit()">
                 {{ submitting ? 'Submitting...' : 'Submit Review' }}

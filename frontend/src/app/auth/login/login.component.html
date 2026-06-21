@@ -6,7 +6,7 @@
       <p class="subtitle">Sign in to your account</p>
     </div>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+    <form id="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
 
       <div class="form-group">
         <label for="email">Email</label>
@@ -38,11 +38,11 @@
         </span>
       </div>
 
-      <div class="server-error" *ngIf="errorMessage">
+      <div id="login-error" class="server-error" *ngIf="errorMessage">
         {{ errorMessage }}
       </div>
 
-      <button type="submit" class="btn-primary" [disabled]="isLoading">
+      <button id="login-submit-btn" type="submit" class="btn-primary" [disabled]="isLoading">
         {{ isLoading ? 'Signing in...' : 'Sign In' }}
       </button>
 

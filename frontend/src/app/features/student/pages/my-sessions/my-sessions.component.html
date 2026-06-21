@@ -32,7 +32,7 @@
         </div>
 
         <div class="session-list">
-            <div class="session-card" *ngFor="let session of filteredSessions">
+            <div class="session-card" [id]="'session-card-' + session.id" *ngFor="let session of filteredSessions">
 
                 <div class="mentor-avatar">
                     <span>{{ getInitials(session.mentorName) }}</span>
@@ -82,7 +82,10 @@
                     <!-- COMPLETED — show Leave Review button (only if not yet reviewed) -->
                     <div class="completed-actions" *ngIf="session.status === 'COMPLETED'">
                         <div class="completed-note">✅ Session completed!</div>
-                        <button class="review-btn"
+                        <span class="reviewed-badge" *ngIf="session.reviewed">⭐ Reviewed</span>
+                        <button [id]="'leave-review-btn-' + session.id"
+                                class="review-btn"
+                                *ngIf="!session.reviewed"
                                 (click)="goToReview(session.id); $event.stopPropagation()">
                             ⭐ Leave a Review
                         </button>
@@ -107,12 +110,13 @@
 
                 <!-- Cancel button — only for PENDING or ACCEPTED -->
                 <div class="card-right">
-                    <button class="cancel-btn"
+                    <button [id]="'cancel-session-btn-' + session.id"
+                            class="cancel-btn"
                             *ngIf="session.status === 'PENDING' || session.status === 'ACCEPTED'"
                             (click)="cancelSession(session.id); $event.stopPropagation()">
                         Cancel
                     </button>
-                    <div class="card-arrow">&gt;</div>
+<!--                    <div class="card-arrow">&gt;</div>-->
                 </div>
 
             </div>

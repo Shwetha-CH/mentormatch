@@ -12,6 +12,7 @@
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input 
+          id="students-search-input"
           type="text" 
           class="search-input" 
           placeholder="Search by name or email..."
@@ -66,7 +67,8 @@
           </td>
           <td>
             <button 
-              class="toggle-btn"
+            [id]="'toggle-student-btn-' + student.email"
+            class="toggle-btn"
               [class.btn-deactivate]="student.isActive"
               [class.btn-activate]="!student.isActive"
               (click)="toggleStatus(student)">
