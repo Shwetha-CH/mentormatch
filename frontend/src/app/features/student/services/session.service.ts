@@ -34,6 +34,7 @@ export interface SessionResponse {
     durationMinutes: number;
     meetingLink: string | null;
     cancellationReason: string | null;
+    reviewed: boolean;
     mentorId: number;
     mentorName: string;
     studentId: number;

@@ -12,6 +12,7 @@
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input 
+          id="mentors-search-input"
           type="text" 
           class="search-input" 
           placeholder="Search by name or email..."
@@ -19,8 +20,6 @@
           (input)="onSearchChange()">
       </div>
       <span class="stat-badge">{{ filteredMentors.length }} Total</span>
-    </div>
-  </div>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-state">
@@ -66,7 +65,8 @@
           </td>
           <td>
             <button 
-              class="toggle-btn"
+            [id]="'toggle-mentor-btn-' + mentor.email"
+            class="toggle-btn"
               [class.btn-deactivate]="mentor.isActive"
               [class.btn-activate]="!mentor.isActive"
               (click)="toggleStatus(mentor)">

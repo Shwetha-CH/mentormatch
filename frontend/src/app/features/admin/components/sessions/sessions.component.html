@@ -12,9 +12,9 @@
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input 
+          id="sessions-search-input"
           type="text" 
-          class="search-input" 
-          placeholder="Search by name, email, or topic..."
+          class="search-input"
           [(ngModel)]="searchQuery"
           (input)="onSearchChange()">
       </div>
@@ -22,7 +22,8 @@
       <!-- Status Filter -->
       <div class="filter-group">
         <select 
-          class="status-filter" 
+          id="sessions-status-filter"
+          class="status-filter"
           [(ngModel)]="selectedStatus" 
           (change)="onFilterChange()">
           <option *ngFor="let option of statusOptions" [value]="option.value">
@@ -117,6 +118,7 @@
             <div class="action-buttons">
               <!-- Cancel Button -->
               <button 
+                [id]="'admin-cancel-session-btn-' + session.sessionId"
                 *ngIf="canCancel(session)"
                 class="action-btn btn-cancel" 
                 (click)="cancelSession(session)"
@@ -126,6 +128,7 @@
               
               <!-- Force Complete Button -->
               <button 
+                [id]="'admin-complete-session-btn-' + session.sessionId"
                 *ngIf="canForceComplete(session)"
                 class="action-btn btn-complete" 
                 (click)="forceCompleteSession(session)"
@@ -135,7 +138,8 @@
               
               <!-- Delete Button -->
               <button 
-                class="action-btn btn-delete" 
+                [id]="'admin-delete-session-btn-' + session.sessionId"
+                class="action-btn btn-delete"
                 (click)="deleteSession(session)"
                 title="Delete Session">
                 🗑️

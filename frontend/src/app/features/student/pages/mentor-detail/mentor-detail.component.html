@@ -29,6 +29,7 @@
 
             <div class="head-actions">
                 <button
+                        id="book-session-btn"
                         class="btn-book"
                         (click)="toggleBookingForm()"
                         *ngIf="mentor.isAvailable">
@@ -49,12 +50,12 @@
         <div class="booking-card" *ngIf="showBookingForm">
             <p class="card-label">Book a session with {{ mentor.user.fullName }}</p>
 
-            <form [formGroup]="bookingForm" (ngSubmit)="onBook()" novalidate>
+            <form id="booking-form" [formGroup]="bookingForm" (ngSubmit)="onBook()" novalidate>
 
                 <!-- Topic -->
                 <div class="field">
                     <label>Session Topic <span class="req">*</span></label>
-                    <input type="text" formControlName="topic"
+                    <input id="booking-topic" type="text" formControlName="topic"
                            placeholder="e.g. Spring Boot REST API development" />
                     <span class="err" *ngIf="bookingForm.get('topic')?.invalid && bookingForm.get('topic')?.touched">
             Topic is required
@@ -65,7 +66,7 @@
                 <div class="form-row">
                     <div class="field">
                         <label>Preferred Date <span class="req">*</span></label>
-                        <input type="date" formControlName="sessionDate" [min]="minDate" />
+                        <input id="booking-date" type="date" formControlName="sessionDate" [min]="minDate" />
                         <span class="err" *ngIf="bookingForm.get('sessionDate')?.invalid && bookingForm.get('sessionDate')?.touched">
               Please select a date
             </span>
@@ -73,7 +74,7 @@
 
                     <div class="field">
                         <label>Preferred Time <span class="req">*</span></label>
-                        <input type="time" formControlName="sessionTime" />
+                        <input id="booking-time" type="time" formControlName="sessionTime" />
                         <span class="err" *ngIf="bookingForm.get('sessionTime')?.invalid && bookingForm.get('sessionTime')?.touched">
               Please select a time
             </span>
@@ -84,14 +85,14 @@
                 <div class="form-row">
                     <div class="field">
                         <label>Duration <span class="req">*</span></label>
-                        <select formControlName="durationMinutes">
+                        <select id="booking-duration" formControlName="durationMinutes">
                             <option *ngFor="let d of durations" [value]="d.value">{{ d.label }}</option>
                         </select>
                     </div>
 
                     <div class="field">
                         <label>Plan Type <span class="req">*</span></label>
-                        <select formControlName="planType">
+                        <select id="booking-plan-type" formControlName="planType">
                             <option *ngFor="let p of planTypes" [value]="p.value">{{ p.label }}</option>
                         </select>
                     </div>
@@ -100,14 +101,14 @@
                 <!-- No. of sessions (only for recurring) -->
                 <div class="field" *ngIf="bookingForm.value.planType !== 'SINGLE'">
                     <label>Number of sessions <span class="req">*</span></label>
-                    <input type="number" formControlName="totalOccurrences" min="1" max="30"
+                    <input id="booking-occurrences" type="number" formControlName="totalOccurrences" min="1" max="30"
                            placeholder="e.g. 4 for 4 weeks" />
                 </div>
 
                 <!-- Message -->
                 <div class="field">
                     <label>Message to mentor</label>
-                    <textarea formControlName="message" rows="3"
+                    <textarea id="booking-message" formControlName="message" rows="3"
                               placeholder="Introduce yourself and describe what you want to learn...">
           </textarea>
                 </div>
@@ -116,7 +117,7 @@
 
                 <div class="form-actions">
                     <button type="button" class="btn-ghost" (click)="toggleBookingForm()">Cancel</button>
-                    <button type="submit" class="btn-primary" [disabled]="bookingForm.invalid || booking">
+                    <button id="booking-submit-btn" type="submit" class="btn-primary" [disabled]="bookingForm.invalid || booking">
                         {{ booking ? 'Sending…' : '📤 Send Session Request' }}
                     </button>
                 </div>

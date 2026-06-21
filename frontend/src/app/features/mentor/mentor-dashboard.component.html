@@ -192,7 +192,7 @@
       </div>
 
       <div class="session-cards" *ngIf="!sessionsLoading && sessionsList.length > 0">
-        <div class="session-card" *ngFor="let session of sessionsList">
+        <div class="session-card" [id]="'mentor-session-card-' + session.id" *ngFor="let session of sessionsList">
           <div class="scard-header">
             <div class="scard-left">
               <span class="plan-badge plan-{{ session.planType.toLowerCase() }}">{{ session.planType }}</span>
@@ -208,13 +208,13 @@
             </div>
             <div class="scard-right">
               <div class="btn-cluster" *ngIf="session.status === 'PENDING'">
-                <button class="btn-accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">✓ Accept</button>
-                <button class="btn-reject" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'reject')">✕ Reject</button>
+                <button [id]="'accept-session-btn-' + session.id" class="btn-accept" [disabled]="sessionActionRunning" (click)="openAcceptWindow(session.id)">✓ Accept</button>
+                <button [id]="'reject-session-btn-' + session.id" class="btn-reject" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'reject')">✕ Reject</button>
               </div>
               <div class="btn-cluster" *ngIf="session.status === 'ACCEPTED'">
                 <span class="status-pill accepted">ACCEPTED</span>
-                <button class="btn-complete" [disabled]="sessionActionRunning" (click)="markAsComplete(session.id)">✓ Complete</button>
-                <button class="btn-cancel-sm" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'cancel')">Cancel</button>
+                <button [id]="'complete-session-btn-' + session.id" class="btn-complete" [disabled]="sessionActionRunning" (click)="markAsComplete(session.id)">✓ Complete</button>
+                <button [id]="'cancel-session-btn-' + session.id" class="btn-cancel-sm" [disabled]="sessionActionRunning" (click)="openReasonModal(session.id, 'cancel')">Cancel</button>
               </div>
               <span class="status-pill {{ getStatusClass(session.status) }}"
                     *ngIf="session.status !== 'PENDING' && session.status !== 'ACCEPTED'">
@@ -394,11 +394,11 @@
     <h3 class="modal-title">🎥 Add Meeting Link</h3>
     <p class="modal-sub">Provide your Google Meet, Zoom, or Teams URL:</p>
     <div class="field">
-      <input type="url" [(ngModel)]="inputMeetingLink"
+    <input id="accept-meeting-link-input" type="url" [(ngModel)]="inputMeetingLink"
              placeholder="https://meet.google.com/abc-defg-hij" class="modal-input" />
     </div>
     <div class="modal-actions">
-      <button class="btn-primary" [disabled]="!inputMeetingLink.trim() || sessionActionRunning"
+      <button id="accept-confirm-btn" class="btn-primary" [disabled]="!inputMeetingLink.trim() || sessionActionRunning"
               (click)="confirmAcceptance()">
         {{ sessionActionRunning ? 'Saving…' : '✓ Confirm & Notify Student' }}
       </button>
@@ -424,7 +424,7 @@
       <span class="err" *ngIf="cancelReasonError">Please enter a reason before proceeding.</span>
     </div>
     <div class="modal-actions">
-      <button class="btn-danger" [disabled]="sessionActionRunning" (click)="confirmCancellation()">
+      <button id="confirm-cancellation-btn" class="btn-danger" [disabled]="sessionActionRunning" (click)="confirmCancellation()">
         {{ sessionActionRunning ? 'Processing…' : (modalAction === 'reject' ? '✕ Confirm Rejection' : '✕ Confirm Cancellation') }}
       </button>
       <button class="btn-secondary" (click)="closeCancelModal()">Go Back</button>
