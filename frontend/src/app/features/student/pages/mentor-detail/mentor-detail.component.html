@@ -145,5 +145,43 @@
 
         </div>
 
+        <!-- Reviews section -->
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <p class="card-label" style="margin:0">
+                    Student Reviews
+                    <span class="reviews-count" *ngIf="reviews.length > 0">({{ reviews.length }})</span>
+                </p>
+                <div class="avg-rating-inline" *ngIf="reviews.length > 0">
+                    <span class="stars">{{ getReviewStars(avgRating) }}</span>
+                    <span class="rating-num">{{ avgRating.toFixed(1) }}</span>
+                </div>
+            </div>
+
+            <div *ngIf="reviewsLoading" class="state-msg small">Loading reviews…</div>
+
+            <div *ngIf="!reviewsLoading && reviews.length === 0" class="muted" style="padding: 12px 0;">
+                No reviews yet for this mentor.
+            </div>
+
+            <div class="review-list" *ngIf="!reviewsLoading && reviews.length > 0">
+                <div class="review-card" *ngFor="let r of displayedReviews">
+                    <div class="review-top">
+                        <div class="reviewer-avatar">{{ getReviewerInitials(r.reviewerName) }}</div>
+                        <div class="reviewer-meta">
+                            <span class="reviewer-name">{{ r.reviewerName }}</span>
+                            <span class="review-date">{{ formatReviewDate(r.createdAt) }}</span>
+                        </div>
+                        <span class="review-stars">{{ getReviewStars(r.rating) }}</span>
+                    </div>
+                    <p class="review-comment" *ngIf="r.comment">{{ r.comment }}</p>
+                </div>
+
+                <button class="view-all-btn" *ngIf="reviews.length > 3" (click)="showAllReviews = !showAllReviews">
+                    {{ showAllReviews ? '▲ Show less' : '▼ View all ' + reviews.length + ' reviews' }}
+                </button>
+            </div>
+        </div>
+
     </ng-container>
 </div>

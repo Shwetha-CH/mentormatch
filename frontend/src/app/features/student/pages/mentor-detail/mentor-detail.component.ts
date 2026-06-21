@@ -6,6 +6,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MentorProfile } from '../../models/mentor.model';
 import { MentorService } from '../../services/mentor.service';
 import { SessionService } from '../../services/session.service';
+import { ReviewService } from '../../services/review.service';
+import { ReviewResponse } from '../../models/review.model';
 
 @Component({
   selector: 'app-mentor-detail',
@@ -17,6 +19,19 @@ export class MentorDetailComponent implements OnInit {
   mentor: MentorProfile | null = null;
   loading = true;
   errorMsg = '';
+
+  reviews: ReviewResponse[] = [];
+  reviewsLoading = true;
+  showAllReviews = false;
+
+  get displayedReviews(): ReviewResponse[] {
+    return this.showAllReviews ? this.reviews : this.reviews.slice(0, 3);
+  }
+
+  get avgRating(): number {
+    if (!this.reviews.length) return 0;
+    return this.reviews.reduce((sum, r) => sum + r.rating, 0) / this.reviews.length;
+  }
 
   showBookingForm = false;
   bookingForm!: FormGroup;
@@ -45,7 +60,8 @@ export class MentorDetailComponent implements OnInit {
       private router: Router,
       private fb: FormBuilder,
       private mentorService: MentorService,
-      private sessionService: SessionService
+      private sessionService: SessionService,
+      private reviewService: ReviewService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +76,7 @@ export class MentorDetailComponent implements OnInit {
       next: (mentor) => {
         this.mentor = mentor;
         this.loading = false;
+        this.loadReviews(id);
       },
       error: () => {
         this.errorMsg = 'Could not load mentor profile.';
@@ -115,6 +132,35 @@ export class MentorDetailComponent implements OnInit {
         this.booking      = false;
         this.bookingError = err.error?.message || 'Failed to book session. Please try again.';
       }
+    });
+  }
+
+  loadReviews(mentorId: number): void {
+    this.reviewsLoading = true;
+    this.reviewService.getMentorReviews(mentorId).subscribe({
+      next: (data) => {
+        // Most recent first
+        this.reviews = data.sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        this.reviewsLoading = false;
+      },
+      error: () => { this.reviewsLoading = false; }
+    });
+  }
+
+  getReviewStars(rating: number): string {
+    const full = Math.max(0, Math.min(5, Math.floor(rating || 0)));
+    return '★'.repeat(full) + '☆'.repeat(5 - full);
+  }
+
+  getReviewerInitials(name: string): string {
+    return (name ?? 'U').split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
+  }
+
+  formatReviewDate(iso: string): string {
+    return new Date(iso).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric'
     });
   }
 

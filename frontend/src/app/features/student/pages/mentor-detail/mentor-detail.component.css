@@ -180,3 +180,87 @@
     .form-row   { grid-template-columns: 1fr; }
     .profile-head { flex-direction: column; align-items: flex-start; }
 }
+
+/* ── Reviews section ─────────────────────────────── */
+.reviews-section {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.reviews-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.reviews-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    margin-left: 4px;
+}
+
+.avg-rating-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.state-msg.small { padding: 12px 0; font-size: 13px; text-align: left; }
+
+.review-list { display: flex; flex-direction: column; gap: 14px; }
+
+.review-card {
+    border: 1px solid #f3f4f6;
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: #fafafa;
+}
+
+.review-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.reviewer-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+
+.reviewer-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.reviewer-name { font-size: 13px; font-weight: 600; color: #111827; }
+.review-date   { font-size: 11px; color: #9ca3af; }
+
+.review-stars { color: #f59e0b; font-size: 14px; margin-left: auto; flex-shrink: 0; }
+
+.review-comment {
+    font-size: 13px; color: #4b5563;
+    line-height: 1.6; margin: 0;
+}
+
+.view-all-btn {
+    align-self: center;
+    margin-top: 4px;
+    background: none; border: 1px solid #d1d5db;
+    border-radius: 8px; padding: 8px 20px;
+    font-size: 13px; font-weight: 500; color: #2563eb;
+    cursor: pointer; transition: all 0.2s;
+}
+.view-all-btn:hover { background: #eff6ff; border-color: #93c5fd; }
