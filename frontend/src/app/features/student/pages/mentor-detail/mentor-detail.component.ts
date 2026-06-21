@@ -2,12 +2,26 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MentorProfile } from '../../models/mentor.model';
 import { MentorService } from '../../services/mentor.service';
 import { SessionService } from '../../services/session.service';
 import { ReviewService } from '../../services/review.service';
 import { ReviewResponse } from '../../models/review.model';
+
+// Cross-field validator: if date is today, time must not be in the past
+function futureDateTimeValidator(control: AbstractControl): ValidationErrors | null {
+  const date = control.get('sessionDate')?.value;
+  const time = control.get('sessionTime')?.value;
+  if (!date || !time) return null;
+
+  const selected = new Date(`${date}T${time}:00`);
+  const now = new Date();
+  if (selected <= now) {
+    return { pastDateTime: true };
+  }
+  return null;
+}
 
 @Component({
   selector: 'app-mentor-detail',
@@ -92,7 +106,7 @@ export class MentorDetailComponent implements OnInit {
       sessionDate:      ['', Validators.required],
       sessionTime:      ['', Validators.required],
       durationMinutes:  [60, Validators.required]
-    });
+    }, { validators: futureDateTimeValidator });
   }
 
   toggleBookingForm(): void {

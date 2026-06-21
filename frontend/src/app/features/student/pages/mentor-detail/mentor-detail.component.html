@@ -66,7 +66,8 @@
                 <div class="form-row">
                     <div class="field">
                         <label>Preferred Date <span class="req">*</span></label>
-                        <input id="booking-date" type="date" formControlName="sessionDate" [min]="minDate" />
+                        <input id="booking-date" type="date" formControlName="sessionDate" [min]="minDate"
+                               (change)="bookingForm.get('sessionTime')?.reset()" />
                         <span class="err" *ngIf="bookingForm.get('sessionDate')?.invalid && bookingForm.get('sessionDate')?.touched">
               Please select a date
             </span>
@@ -76,8 +77,11 @@
                         <label>Preferred Time <span class="req">*</span></label>
                         <input id="booking-time" type="time" formControlName="sessionTime" />
                         <span class="err" *ngIf="bookingForm.get('sessionTime')?.invalid && bookingForm.get('sessionTime')?.touched">
-              Please select a time
-            </span>
+                            Please select a time
+                        </span>
+                        <span class="err" *ngIf="bookingForm.errors?.['pastDateTime'] && bookingForm.get('sessionTime')?.touched && bookingForm.get('sessionDate')?.touched">
+                            Please select a future time
+                        </span>
                     </div>
                 </div>
 
