@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { MentorDashboardComponent } from './mentor-dashboard.component';
 import { MentorNotificationsComponent } from './notifications/notifications.component';
+import {FooterComponent} from "./footer/footer.component";
 
 const routes: Routes = [
   { path: 'dashboard', component: MentorDashboardComponent },
@@ -14,7 +15,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     MentorDashboardComponent,
-    MentorNotificationsComponent
+    MentorNotificationsComponent,
+      FooterComponent
   ],
   imports: [
     CommonModule,
