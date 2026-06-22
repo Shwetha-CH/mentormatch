@@ -89,7 +89,7 @@ public class AdminService {
     // 6. Get platform-wide stats for dashboard
     public AdminStats getPlatformStats() {
         AdminStats stats = new AdminStats();
-        stats.totalUsers = userRepository.count();
+        stats.totalUsers = userRepository.count()-1;
         stats.totalMentors = userRepository.countByRole(Role.MENTOR);
         stats.totalStudents = userRepository.countByRole(Role.STUDENT);
         stats.totalSessions = sessionRepository.count();
