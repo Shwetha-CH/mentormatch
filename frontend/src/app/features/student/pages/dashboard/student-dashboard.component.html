@@ -16,29 +16,29 @@
                     <p class="sub">Here's your mentorship journey at a glance.</p>
                 </div>
             </div>
-            <button class="btn-primary" (click)="navigate('/student/mentors')">
-                + Book a session
+        <button id="dashboard-book-btn" class="btn-primary" (click)="navigate('/student/mentors')">
+            book session
             </button>
         </div>
 
         <!-- Stats row -->
         <div class="stats-row">
-            <div class="stat-card">
+            <div id="stat-total-sessions" class="stat-card">
                 <span class="stat-icon">📚</span>
                 <span class="stat-val">{{ stats.totalSessions }}</span>
                 <span class="stat-lbl">Total Sessions</span>
             </div>
-            <div class="stat-card accent-green">
+            <div id="stat-upcoming" class="stat-card accent-green">
                 <span class="stat-icon">📅</span>
                 <span class="stat-val">{{ stats.upcoming }}</span>
                 <span class="stat-lbl">Upcoming</span>
             </div>
-            <div class="stat-card accent-amber">
+            <div id="stat-pending" class="stat-card accent-amber">
                 <span class="stat-icon">⏳</span>
                 <span class="stat-val">{{ stats.pending }}</span>
                 <span class="stat-lbl">Pending Requests</span>
             </div>
-            <div class="stat-card accent-blue">
+            <div id="stat-completed" class="stat-card accent-blue">
                 <span class="stat-icon">✅</span>
                 <span class="stat-val">{{ stats.completed }}</span>
                 <span class="stat-lbl">Completed</span>
